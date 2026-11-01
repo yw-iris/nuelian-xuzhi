@@ -90,19 +90,18 @@ body::before{
   .page{transition:opacity .2s;transform:none}
 }
 
-/* ————— 文字入场动画：翻到该页时逐个淡入上浮 ————— */
+/* ————— 文字入场动画：翻到该页时逐个淡入上浮（无模糊） ————— */
 @keyframes txtRise{
-  from{opacity:0;transform:translateY(16px);filter:blur(5px)}
-  60%{filter:blur(1.5px)}
-  to{opacity:1;transform:none;filter:blur(0)}
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
 }
 @keyframes txtTrack{
-  from{opacity:0;letter-spacing:.42em;filter:blur(6px)}
-  to{filter:blur(0)}
+  from{opacity:0;letter-spacing:.42em}
+  to{opacity:1}
 }
 @keyframes sealIn{
-  from{opacity:0;transform:rotate(6deg) translateY(10px);filter:blur(4px)}
-  to{opacity:1;transform:rotate(6deg);filter:blur(0)}
+  from{opacity:0;transform:rotate(6deg) translateY(10px)}
+  to{opacity:1;transform:rotate(6deg)}
 }
 .page.active :is(.vtext,.seal,.cover-meta,.cover-sub,.cover-tagline,.cover-note,
                  .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,
@@ -622,8 +621,9 @@ body::before{
       s.className = i < cur ? 'done' : (i === cur ? 'now' : '');
     });
     curEl.textContent = String(cur+1).padStart(2,'0');
-    prevBtn.disabled = cur === 0;
-    nextBtn.disabled = cur === total-1;
+    // 允许循环翻页：首尾都不禁用按钮
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
   }
 
   /* ═════════ 翻页燃烧过场 ═════════ */
@@ -812,9 +812,11 @@ body::before{
     };
   })();
 
-  function goTo(i){
-    if(animating || i === cur || i < 0 || i >= total) return;
-    var dir = i > cur ? 1 : -1;
+  function goTo(raw){
+    if(animating) return;
+    var dir = (raw > cur) ? 1 : -1;          // 方向按原始意图（末页→首页仍是向前）
+    var i = ((raw % total) + total) % total; // 末页下一页→回到第一页，首页上一页→最后一页
+    if(i === cur) return;
     var prev = cur;
     if(reduced || !Burn.available){
       pages[prev].classList.remove('active','exit-left');
