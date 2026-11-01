@@ -477,7 +477,7 @@ body::before{
     // —— 复用末页拍立得同款逐像素燃烧算法（金橙焦边 + 炭化带 + 火星）——
     var cv = document.getElementById('burnOver');
     var c = cv.getContext('2d');
-    var W=0, H=0, OX=0, OY=0, MAXD=0, dpr=1;
+    var W=0, H=0, OX=0, OY=0, TX=0, TY=0, MAXD=0, dpr=1;
     var bw=0, bh=0, scale=1, bctx=null, bitData=null, buf=null;
     var dist=null, nArr=null, frontLUT=new Float32Array(256), flickLUT=new Float32Array(256);
     var sparks=[], smoke=[];
