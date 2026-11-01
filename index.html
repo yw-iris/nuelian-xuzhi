@@ -90,6 +90,60 @@ body::before{
   .page{transition:opacity .2s;transform:none}
 }
 
+/* ————— 文字入场动画：翻到该页时逐个淡入上浮 ————— */
+@keyframes txtRise{
+  from{opacity:0;transform:translateY(16px);filter:blur(5px)}
+  60%{filter:blur(1.5px)}
+  to{opacity:1;transform:none;filter:blur(0)}
+}
+@keyframes txtTrack{
+  from{opacity:0;letter-spacing:.42em;filter:blur(6px)}
+  to{filter:blur(0)}
+}
+@keyframes sealIn{
+  from{opacity:0;transform:rotate(6deg) translateY(10px);filter:blur(4px)}
+  to{opacity:1;transform:rotate(6deg);filter:blur(0)}
+}
+.page.active :is(.vtext,.seal,.cover-meta,.cover-sub,.cover-tagline,.cover-note,
+                 .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,
+                 .fact,.plus,.neg){
+  animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
+}
+.page.active .cover-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
+.page.active .vtext{animation-delay:.04s}
+.page.active .seal{animation:sealIn .62s cubic-bezier(.25,.6,.25,1) backwards;animation-delay:.10s}
+.page.active .cover-meta{animation-delay:.14s}
+.page.active .cover-title{animation-delay:.16s}
+.page.active .cover-sub{animation-delay:.30s}
+.page.active .cover-tagline{animation-delay:.40s}
+.page.active .cover-note{animation-delay:.50s}
+.page.active .sec-head{animation-delay:.06s}
+.page.active .sec-cap{animation-delay:.16s}
+.page.active .fact:nth-child(1){animation-delay:.22s}
+.page.active .fact:nth-child(2){animation-delay:.28s}
+.page.active .fact:nth-child(3){animation-delay:.34s}
+.page.active .fact:nth-child(4){animation-delay:.40s}
+.page.active .fact:nth-child(5){animation-delay:.46s}
+.page.active .fact:nth-child(6){animation-delay:.52s}
+.page.active .plus:nth-child(1){animation-delay:.24s}
+.page.active .plus:nth-child(2){animation-delay:.34s}
+.page.active .plus:nth-child(3){animation-delay:.44s}
+.page.active .neg:nth-child(1){animation-delay:.22s}
+.page.active .neg:nth-child(2){animation-delay:.30s}
+.page.active .neg:nth-child(3){animation-delay:.38s}
+.page.active .neg:nth-child(4){animation-delay:.46s}
+.page.active .sec-quote{animation-delay:.34s}
+.page.active .sec-foot{animation-delay:.42s}
+.page.active .monologue{animation-delay:.10s}
+.page.active .sig-line{animation-delay:.16s}
+.page.active .burn-hint{animation-delay:.34s}
+@media (prefers-reduced-motion:reduce){
+  .page.active :is(.vtext,.seal,.cover-meta,.cover-title,.cover-sub,.cover-tagline,.cover-note,
+                   .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,.fact,.plus,.neg){
+    animation:none;
+  }
+}
+
 /* 巨型幽灵编号 / 图形 */
 .ghost{
   position:absolute;z-index:0;pointer-events:none;
@@ -233,7 +287,6 @@ body::before{
   color:var(--ink);text-transform:uppercase;
 }
 .monologue .dim{color:var(--gray-2)}
-.quote-mark{font-family:var(--serif-en);font-size:36px;display:block;line-height:1;margin-bottom:8px}
 
 /* 页 6 · 收尾 */
 .finale{align-items:center;text-align:center}
@@ -353,7 +406,6 @@ body::before{
   .sec-foot{ margin-top:min(2.2vh,15px); font-size:12px; }
   .sec-quote{ margin-top:min(2.8vh,20px); font-size:12px; line-height:1.8; }
   .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; }
-  .quote-mark{ font-size:28px; margin-bottom:6px; }
   .polaroid-wrap{ width:min(62vmin,250px); }
   .polaroid figcaption{ font-size:11px; }
   .sig-line{ margin-top:min(3vh,20px); }
@@ -441,7 +493,6 @@ body::before{
     <!-- 5 · 独白 -->
     <section class="page" aria-label="独白">
       <div class="monologue">
-        <span class="quote-mark">”</span>
         I'm like a child. I don't change my nature and play tricks on you.<br>
         I'll talk about it and push you away.<br>
         I want to prove that I am still favoured by you.<br>
