@@ -510,12 +510,12 @@ body::before{
       bctx=buf.getContext('2d'); bitData=bctx.createImageData(bw,bh);
       G1=makeGrid(10); G2=makeGrid(4);
       dist=new Float32Array(bw*bh); nArr=new Float32Array(bw*bh);
-      OX=W*0.08; OY=H*0.96;          // 点燃点：左下页脚
-      TX=W*0.94; TY=H*0.06;          // 蔓延终点：右上角
+      OX=W*0.5; OY=H*0.99;           // 点燃点：页底中心
+      TX=W*0.5; TY=H*0.01;           // 蔓延终点：最上方
       var ax=TX-OX, ay=TY-OY, L=Math.hypot(ax,ay), ux=ax/L, uy=ay/L;
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++){
         var px=x*scale, py=y*scale, i=y*bw+x;
-        dist[i]=(px-OX)*ux+(py-OY)*uy;   // 沿左下→右上对角轴投影：火舌斜扫至右上角
+        dist[i]=(px-OX)*ux+(py-OY)*uy;   // 沿页底中心→最上方竖直轴投影：火舌自下而上烧
         var n=.62*sample(G1,px,py)+.38*sample(G2,px,py);
         nArr[i]=n<0?0:(n>1?1:n);
       }
@@ -523,7 +523,7 @@ body::before{
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
-    var running=false, t=0, dur=1200, dir=1, last=0, half=null, cb=null;
+    var running=false, t=0, dur=2400, dir=1, last=0, half=null, cb=null;
 
     function renderFrame(tt, burnR){
       var k,n;
@@ -598,9 +598,9 @@ body::before{
       var tt=t*6.283;
       var SWAP_AT=0.72;
       var burnR;
-      if(t<=SWAP_AT){                       // 相位A：火舌从页脚燃到整页烧穿
+      if(t<=SWAP_AT){                       // 相位A：火舌自页底中心匀速烧到最上方
         var u=t/SWAP_AT;
-        burnR=MAXD*(1-Math.pow(1-u,2));      // u=1 时 burnR=MAXD，最远角也焦黑
+        burnR=MAXD*(0.1+0.9*u);             // 自下而上匀速行进，u=1 时整页焦黑
       } else {
         burnR=MAXD;                          // 整页已焦黑，保持至化灰
       }
