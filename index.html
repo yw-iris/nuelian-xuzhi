@@ -960,9 +960,8 @@ body::before{
     if(state==='burn'){
       burnR += hover ? 1.7 : .55;
       renderFrame(t,burnR); spawn(); drawParticles(t);
-      if(burnR>=MAXD){ state='fade'; fadeT0=now; }
-      else if(cycle>=2 && burnR>=MAXD*0.5){
-        // 第二遍烧到一半即截掉：炭壳淡去，藏着的底片显现
+      if(burnR>=MAXD){
+        // 第一遍烧到右上角（最远角 MAXD）即截断：炭壳淡去，藏着的底片显现
         cut=true;
         if(rafId!==null){ cancelAnimationFrame(rafId); rafId=null; }
         canvas.style.transition='opacity 1.8s ease';   // 只淡出炭化画布，白框与底片保留
