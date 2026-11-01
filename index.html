@@ -6,7 +6,7 @@
 <title>虐恋须知 · 冬因</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mrs+Saint+Delafield&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
   --paper:#ffffff;
@@ -19,6 +19,7 @@
   --track:#e2e2e2;
   --serif-en:'Cormorant Garamond','Times New Roman',serif;
   --serif-cn:'Noto Serif SC','Songti SC',serif;
+  --script:'Mrs Saint Delafield',cursive;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
@@ -114,9 +115,9 @@ body::before{
   from{opacity:0;transform:rotate(6deg) translateY(10px)}
   to{opacity:1;transform:rotate(6deg)}
 }
-.page.active :is(.vtext,.seal,.cover-meta,.cover-sub,.cover-tagline,.cover-note,
+.page.active :is(.cover-meta,.crosses,.name-box,.cover-bar,
                  .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,
-                 .fact,.plus,.neg){
+                 .fact,.plus,.neg,.cover-list li){
   animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
 }
 .page.active .cover-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
@@ -124,9 +125,12 @@ body::before{
 .page.active .seal{animation:sealIn .62s cubic-bezier(.25,.6,.25,1) backwards;animation-delay:.10s}
 .page.active .cover-meta{animation-delay:.14s}
 .page.active .cover-title{animation-delay:.16s}
-.page.active .cover-sub{animation-delay:.30s}
-.page.active .cover-tagline{animation-delay:.40s}
-.page.active .cover-note{animation-delay:.50s}
+.page.active .crosses{animation-delay:.26s}
+.page.active .cover-list li:nth-child(1){animation-delay:.30s}
+.page.active .cover-list li:nth-child(2){animation-delay:.36s}
+.page.active .cover-list li:nth-child(3){animation-delay:.42s}
+.page.active .name-box{animation-delay:.46s}
+.page.active .cover-bar{animation-delay:.55s}
 .page.active .sec-head{animation-delay:.06s}
 .page.active .sec-cap{animation-delay:.16s}
 .page.active .fact:nth-child(1){animation-delay:.22s}
@@ -148,8 +152,8 @@ body::before{
 .page.active .sig-line{animation-delay:.16s}
 .page.active .burn-hint{animation-delay:.34s}
 @media (prefers-reduced-motion:reduce){
-  .page.active :is(.vtext,.seal,.cover-meta,.cover-title,.cover-sub,.cover-tagline,.cover-note,
-                   .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,.fact,.plus,.neg){
+  .page.active :is(.cover-meta,.cover-title,.crosses,.name-box,.cover-bar,
+                   .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,.fact,.plus,.neg,.cover-list li){
     animation:none;
   }
 }
@@ -183,43 +187,70 @@ body::before{
   display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;transform:rotate(6deg);
 }
+/* 封面 · 杂志 NAME 版式：巨号标题压角、方点列表、黑框名牌、十字符号、灰阶渐变、底部黑条 */
+.page.cover{justify-content:flex-start;padding-top:min(7vh,56px)}
+.title-wrap{position:relative;z-index:1}
 .cover-title{
+  font-size:clamp(2.7rem,15.5vmin,5.6rem);
+  font-weight:900;letter-spacing:.05em;text-indent:.05em;
+  line-height:1.05;position:relative;z-index:1;
+}
+.halftone{
+  position:absolute;top:-16px;left:-12px;width:118px;height:104px;z-index:0;
+  background-image:radial-gradient(rgba(17,17,17,.75) 1.1px,transparent 1.4px);
+  background-size:7px 7px;
+  -webkit-mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
+  mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
+  opacity:.45;pointer-events:none;
+}
+.crosses{
+  position:absolute;right:0;bottom:-14px;z-index:2;text-align:right;
+  font-size:13px;letter-spacing:.32em;line-height:1.75;color:var(--ink);
+}
+.crosses span{display:block}
+.crosses .sym{font-size:10px;letter-spacing:.5em;color:var(--gray-1)}
+.cover-row{
+  margin-top:min(4.5vh,34px);
+  display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
   position:relative;z-index:1;
-  margin-top:min(9vh,72px);
-  font-size:clamp(2.5rem,11vmin,4.2rem);
-  font-weight:900;letter-spacing:.3em;text-indent:.3em;
 }
-.cover-sub{
-  margin-top:14px;font-family:var(--serif-en);font-weight:500;
-  font-size:clamp(11px,2.2vmin,14px);letter-spacing:.6em;text-indent:.6em;
-  color:var(--gray-1);
+.cover-list{list-style:none}
+.cover-list li{
+  position:relative;padding-left:15px;
+  font-size:12.5px;letter-spacing:.2em;line-height:2.1;color:var(--ink);
 }
-.cover-rule{
-  width:150px;height:1px;margin:min(4.5vh,34px) auto 0;
-  background:linear-gradient(90deg,transparent,#bbb 20%,#bbb 80%,transparent);
-  position:relative;
+.cover-list li::before{
+  content:"";position:absolute;left:0;top:.72em;
+  width:5px;height:5px;background:var(--ink);
 }
-.cover-rule::after{
-  content:"";position:absolute;left:50%;top:50%;
-  width:5px;height:5px;transform:translate(-50%,-50%) rotate(45deg);
-  background:var(--ink);
+.name-box{
+  flex:none;border:2.5px solid var(--ink);background:rgba(255,255,255,.85);
+  padding:9px 13px;position:relative;z-index:1;
+  font-size:17px;font-weight:900;letter-spacing:.3em;text-indent:.3em;
+  box-shadow:4px 4px 0 rgba(17,17,17,.12);
 }
+.name-box i{font-style:normal;font-size:10px;vertical-align:top;margin-left:2px;letter-spacing:0;text-indent:0}
+.cover-gray{
+  position:absolute;left:5%;right:5%;top:41%;bottom:0;z-index:0;
+  background:linear-gradient(180deg,rgba(17,17,17,0) 0%,rgba(17,17,17,.05) 45%,rgba(17,17,17,.17) 100%);
+  pointer-events:none;
+}
+.cover-bottom{margin-top:auto;position:relative;z-index:1;text-align:center;padding-bottom:10px}
 .cover-tagline{
-  margin-top:min(3.5vh,26px);text-align:center;
-  font-size:clamp(12px,2.4vmin,14px);letter-spacing:.42em;text-indent:.42em;
-  color:var(--ink);
+  font-family:var(--serif-en);font-size:10.5px;letter-spacing:.18em;
+  color:var(--gray-1);line-height:1.8;
 }
-.cover-note{
-  margin-top:min(2vh,14px);text-align:center;
-  font-size:10px;letter-spacing:.34em;text-indent:.34em;color:var(--gray-2);
+.cover-script{
+  position:absolute;left:50%;bottom:48px;transform:translateX(-50%) rotate(-6deg);
+  font-family:var(--script);font-size:clamp(42px,9vmin,60px);line-height:1;
+  color:var(--ink);pointer-events:none;white-space:nowrap;
 }
-.vtext{
-  position:absolute;z-index:0;pointer-events:none;
-  top:13vh;right:clamp(8px,4vw,30px);
-  writing-mode:vertical-rl;
-  font-size:clamp(11px,2.2vmin,13px);letter-spacing:.5em;
-  color:rgba(17,17,17,.3);font-weight:600;
+.cover-bar{
+  margin-top:36px;background:var(--ink);color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;font-family:var(--serif-en);font-size:11px;letter-spacing:.22em;
 }
+.cover-bar .ico{font-size:12px}
 
 /* ————— 章节页通用：居中馆签式标题 ————— */
 .sec-head{display:flex;align-items:baseline;justify-content:center;gap:12px;position:relative;z-index:1}
@@ -412,16 +443,21 @@ body::before{
   .nav-btn{ width:38px; height:38px; }
   .tap-hint{ display:none; }          /* 窄屏隐藏中间提示，底部更清爽 */
 
-  /* 封面：标题收字距防溢出，整体重心略上移 */
+  /* 封面 · NAME 版式：手机收紧 */
   .cover-meta{ font-size:10px; letter-spacing:.2em; padding-bottom:10px; }
   .cover-meta .en{ font-size:9px; letter-spacing:.18em; }
-  .seal{ width:36px; height:36px; font-size:16px; top:44px; right:24px; border-width:1.2px; }
-  .cover-title{ font-size:clamp(2.1rem,12.5vmin,3rem); margin-top:min(6vh,46px); letter-spacing:.22em; text-indent:.22em; }
-  .cover-sub{ font-size:10.5px; letter-spacing:.36em; text-indent:.36em; margin-top:12px; }
-  .cover-rule{ width:118px; margin-top:min(3.6vh,26px); }
-  .cover-tagline{ font-size:11.5px; letter-spacing:.3em; text-indent:.3em; margin-top:min(3.4vh,26px); }
-  .cover-note{ font-size:9px; letter-spacing:.26em; text-indent:.26em; margin-top:14px; }
-  .vtext{ font-size:10px; top:10vh; right:10px; letter-spacing:.4em; }
+  .page.cover{ padding-top:min(5vh,40px); }
+  .cover-title{ font-size:clamp(2.5rem,14.5vmin,3.6rem); letter-spacing:.04em; text-indent:.04em; }
+  .halftone{ width:92px; height:82px; top:-12px; left:-8px; }
+  .crosses{ font-size:11px; letter-spacing:.26em; bottom:-10px; }
+  .crosses .sym{ font-size:9px; }
+  .cover-row{ margin-top:min(3.6vh,26px); gap:14px; }
+  .cover-list li{ font-size:11px; letter-spacing:.16em; line-height:2; }
+  .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(17,17,17,.12); }
+  .cover-gray{ left:12px; right:12px; top:44%; }
+  .cover-tagline{ font-size:9.5px; letter-spacing:.14em; }
+  .cover-script{ font-size:40px; bottom:44px; }
+  .cover-bar{ margin-top:30px; font-size:10px; padding:7px 12px; }
   .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
   .disc{ width:min(46vmin,300px); height:min(46vmin,300px); right:-24vw; top:-18vh; }
 
@@ -468,11 +504,9 @@ body::before{
 /* 手机 · 矮屏（准 iPhone SE / 横窗）：进一步压缩纵向节奏，保证不裁切 */
 @media (max-width:480px) and (max-height:660px){
   .page{ padding:6px 24px 10px; }
-  .seal{ top:38px; }
-  .vtext{ top:15vh; }
-  .cover-title{ margin-top:min(3.5vh,26px); }
-  .cover-rule{ margin-top:min(2.4vh,16px); }
-  .cover-tagline{ margin-top:min(2vh,14px); }
+  .page.cover{ padding-top:3.5vh; }
+  .cover-row{ margin-top:2.4vh; }
+  .cover-bar{ margin-top:22px; }
   .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); padding:min(1.6vh,12px) 16px; }
   .fact{ padding:max(1.2vh,9px) 2px; }
   .plus{ gap:max(1.1vh,8px); }
@@ -509,17 +543,28 @@ body::before{
 
   <main class="pages" id="pages">
 
-    <!-- 1 · 封面 -->
-    <section class="page active" aria-label="封面">
-      <div class="disc" aria-hidden="true"></div>
-      <div class="vtext" aria-hidden="true">虎 · 須知 · 恋</div>
-      <div class="seal" aria-hidden="true">冬因</div>
+    <!-- 1 · 封面（杂志 NAME 版式） -->
+    <section class="page active cover" aria-label="封面">
       <div class="cover-meta"><span>A · 赞赏码</span><span class="en">SERIAL — NO.01</span></div>
-      <h1 class="cover-title">虐恋须知</h1>
-      <p class="cover-sub">SUMMER&nbsp;&nbsp;ENROLLMENT</p>
-      <div class="cover-rule"></div>
-      <p class="cover-tagline">从头于始</p>
-      <p class="cover-note">客诉进度为零&nbsp;&nbsp;不必紧张</p>
+      <div class="title-wrap">
+        <div class="halftone" aria-hidden="true"></div>
+        <h1 class="cover-title">虐恋须知</h1>
+        <div class="crosses" aria-hidden="true"><span>×&thinsp;×&thinsp;×&thinsp;×&thinsp;×</span><span>×&thinsp;×&thinsp;×&thinsp;×&thinsp;×</span><span class="sym">✦ ✕ ✦</span></div>
+      </div>
+      <div class="cover-row">
+        <ul class="cover-list">
+          <li>从头于始</li>
+          <li>客诉进度为零</li>
+          <li>不必紧张</li>
+        </ul>
+        <div class="name-box">冬因<i aria-hidden="true">✦</i></div>
+      </div>
+      <div class="cover-gray" aria-hidden="true"></div>
+      <div class="cover-bottom">
+        <p class="cover-tagline">No extra colors —<br>light and shadow is all the romance.</p>
+        <p class="cover-script" aria-hidden="true">winter</p>
+        <div class="cover-bar"><span class="ico" aria-hidden="true">☰</span><span class="no">0123&thinsp;▸</span></div>
+      </div>
     </section>
 
     <!-- 2 · 关于我 -->
