@@ -73,7 +73,7 @@ body::before{
 @media (prefers-reduced-motion:reduce){.progress button.now{animation:none}}
 
 /* ————— 页面层 ————— */
-.pages{position:relative;flex:1;min-height:0}
+.pages{position:relative;flex:1;min-height:0;overflow:hidden}
 .page{
   position:absolute;inset:0;
   display:flex;flex-direction:column;justify-content:center;
@@ -115,7 +115,7 @@ body::before{
   from{opacity:0;transform:rotate(6deg) translateY(10px)}
   to{opacity:1;transform:rotate(6deg)}
 }
-.page.active :is(.cover-meta,.crosses,.name-box,.cover-bar,
+.page.active :is(.cover-meta,.name-box,.cover-bar,
                  .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,
                  .fact,.plus,.neg,.cover-list li){
   animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
@@ -125,8 +125,7 @@ body::before{
 .page.active .seal{animation:sealIn .62s cubic-bezier(.25,.6,.25,1) backwards;animation-delay:.10s}
 .page.active .cover-meta{animation-delay:.14s}
 .page.active .cover-title{animation-delay:.16s}
-.page.active .crosses{animation-delay:.26s}
-.page.active .cover-list li:nth-child(1){animation-delay:.30s}
+.page.active .cover-list li:nth-child(1){animation-delay:.28s}
 .page.active .cover-list li:nth-child(2){animation-delay:.36s}
 .page.active .cover-list li:nth-child(3){animation-delay:.42s}
 .page.active .name-box{animation-delay:.46s}
@@ -152,7 +151,7 @@ body::before{
 .page.active .sig-line{animation-delay:.16s}
 .page.active .burn-hint{animation-delay:.34s}
 @media (prefers-reduced-motion:reduce){
-  .page.active :is(.cover-meta,.cover-title,.crosses,.name-box,.cover-bar,
+  .page.active :is(.cover-meta,.cover-title,.name-box,.cover-bar,
                    .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.burn-hint,.fact,.plus,.neg,.cover-list li){
     animation:none;
   }
@@ -187,8 +186,8 @@ body::before{
   display:flex;align-items:center;justify-content:center;
   font-size:19px;font-weight:700;transform:rotate(6deg);
 }
-/* 封面 · 杂志 NAME 版式：巨号标题压角、方点列表、黑框名牌、十字符号、灰阶渐变、底部黑条 */
-.page.cover{justify-content:flex-start;padding-top:min(7vh,56px)}
+/* 封面 · 杂志 NAME 版式：文字纵向均匀分布（space-between），黑白硬朗 */
+.page.cover{justify-content:space-between;padding:min(5vh,44px) clamp(26px,7vw,72px) min(4vh,32px)}
 .title-wrap{position:relative;z-index:1}
 .cover-title{
   font-size:clamp(2.7rem,15.5vmin,5.6rem);
@@ -203,14 +202,7 @@ body::before{
   mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
   opacity:.45;pointer-events:none;
 }
-.crosses{
-  position:absolute;right:0;bottom:-14px;z-index:2;text-align:right;
-  font-size:13px;letter-spacing:.32em;line-height:1.75;color:var(--ink);
-}
-.crosses span{display:block}
-.crosses .sym{font-size:10px;letter-spacing:.5em;color:var(--gray-1)}
 .cover-row{
-  margin-top:min(4.5vh,34px);
   display:flex;align-items:flex-start;justify-content:space-between;gap:20px;
   position:relative;z-index:1;
 }
@@ -235,7 +227,7 @@ body::before{
   background:linear-gradient(180deg,rgba(17,17,17,0) 0%,rgba(17,17,17,.05) 45%,rgba(17,17,17,.17) 100%);
   pointer-events:none;
 }
-.cover-bottom{margin-top:auto;position:relative;z-index:1;text-align:center;padding-bottom:10px}
+.cover-bottom{position:relative;z-index:1;text-align:center;padding-bottom:10px}
 .cover-tagline{
   font-family:var(--serif-en);font-size:10.5px;letter-spacing:.18em;
   color:var(--gray-1);line-height:1.8;
@@ -252,69 +244,56 @@ body::before{
 }
 .cover-bar .ico{font-size:12px}
 
-/* ————— 章节页通用：居中馆签式标题 ————— */
-.sec-head{display:flex;align-items:baseline;justify-content:center;gap:12px;position:relative;z-index:1}
-.sec-no{font-family:var(--serif-en);font-weight:500;font-style:italic;font-size:14px;color:var(--gray-2);letter-spacing:.08em}
-.sec-head h2{font-size:clamp(19px,4.6vmin,26px);font-weight:700;letter-spacing:.14em;display:flex;align-items:baseline;gap:10px}
-.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:1.15em;letter-spacing:.01em;color:var(--gray-1)}
-.sec-line{flex:none;width:30px;height:1px;background:linear-gradient(90deg,transparent,var(--hairline))}
+/* ————— 章节页通用 · 留白海报式：左对齐粗标题＋细下划线 ————— */
+.sec-head{display:block;position:relative;z-index:1}
+.sec-no{display:block;font-family:var(--serif-en);font-weight:500;font-size:11px;letter-spacing:.34em;color:var(--gray-1);margin-bottom:10px}
+.sec-head h2{
+  display:inline-block;font-size:clamp(20px,4.8vmin,27px);font-weight:900;letter-spacing:.1em;
+  border-bottom:2px solid var(--ink);padding-bottom:9px;
+}
+.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.85em;letter-spacing:.02em;color:var(--gray-1);margin-right:8px}
 .sec-cap{
-  margin-top:8px;text-align:center;font-family:var(--serif-en);font-size:10px;
-  letter-spacing:.4em;color:var(--gray-2);position:relative;z-index:1;
+  margin-top:10px;font-family:var(--serif-en);font-size:10px;
+  letter-spacing:.34em;color:var(--gray-2);position:relative;z-index:1;
 }
 
-/* 内容卡片：实白底 + 利落描边，硬朗不磨砂 */
-.facts,.plus-list,.neg-grid{
-  background:var(--card);
-  border:1px solid var(--hairline);
-  border-radius:14px;
-  box-shadow:0 10px 28px rgba(0,0,0,.05);
-}
-
-/* 页 2 · 关于我 */
+/* 页 2 · 关于我：overline 细线分组块（参考留白海报四格文本组） */
 .facts{
   margin-top:min(6.5vh,48px);
-  display:grid;grid-template-columns:1fr 1fr;column-gap:min(7vw,48px);
-  padding:min(2.6vh,20px) min(6vw,34px);
+  display:grid;grid-template-columns:1fr 1fr;
+  column-gap:min(8vw,56px);row-gap:max(3.5vh,26px);
   position:relative;z-index:1;
 }
-.fact{
-  display:flex;justify-content:space-between;align-items:baseline;
-  padding:max(2.4vh,16px) 2px;border-bottom:1px solid rgba(26,26,26,.08);
-}
-.fact:nth-last-child(-n+2){border-bottom:none}
-.fact dt{font-size:12px;letter-spacing:.3em;color:var(--gray-1)}
-.fact dd{font-size:clamp(13px,2.8vmin,16px);font-weight:600;letter-spacing:.1em}
-.fact dd.en{font-family:var(--serif-en);font-weight:500;font-size:1.1em}
+.fact{border-top:2px solid var(--ink);padding-top:10px}
+.fact dt{font-size:10.5px;letter-spacing:.28em;color:var(--gray-1)}
+.fact dd{margin-top:7px;font-size:clamp(14px,3vmin,17px);font-weight:700;letter-spacing:.12em}
+.fact dd.en{font-family:var(--serif-en);font-weight:600;font-size:1.15em}
 
-/* 页 3 · 加分项：一行两句 */
-.plus-list{margin-top:min(6.5vh,48px);display:grid;grid-template-columns:repeat(2,1fr);gap:max(4.5vh,32px) min(7vw,36px);padding:min(4vh,32px) min(5vw,28px);position:relative;z-index:1}
-.plus{display:flex;flex-direction:column;align-items:center;gap:max(1.8vh,14px)}
-.plus:last-child:nth-child(odd){grid-column:1/-1}
-.plus-cap{font-size:clamp(11px,2.2vmin,13.5px);letter-spacing:.18em;color:var(--gray-1);white-space:nowrap}
-.plus-t{font-size:clamp(14px,3vmin,17px);letter-spacing:.2em;font-weight:600}
-.plus-d{font-family:var(--serif-en);font-style:italic;font-size:12px;color:var(--gray-2);margin-top:4px;letter-spacing:.05em}
-/* 实心黑胶囊标签 */
-.chip{
-  flex:none;background:var(--ink);color:var(--paper);
-  font-size:11.5px;letter-spacing:.32em;text-indent:.32em;
-  padding:8px 13px;min-width:92px;text-align:center;
-  transition:transform .3s,box-shadow .3s;
+/* 页 3 · 加分项：实心黑条错宽叠排（参考 6/7 的黑色横条） */
+.plus-list{margin-top:min(6.5vh,48px);display:flex;flex-direction:column;gap:max(2.4vh,18px);position:relative;z-index:1}
+.plus{
+  display:flex;align-items:center;gap:14px;
+  background:var(--ink);color:#fff;padding:15px 20px;
+  box-shadow:5px 5px 0 rgba(17,17,17,.12);
 }
-.chip:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.plus:nth-child(1){width:100%}
+.plus:nth-child(2){width:92%}
+.plus:nth-child(3){width:84%}
+.plus-t{font-size:clamp(14px,3vmin,17px);letter-spacing:.26em;font-weight:700;white-space:nowrap}
+.plus-cap{font-size:11px;letter-spacing:.2em;color:rgba(255,255,255,.66);white-space:nowrap}
+.plus::after{
+  content:attr(data-letter);margin-left:auto;
+  font-family:var(--serif-en);font-style:italic;font-weight:500;
+  font-size:clamp(26px,5.5vmin,38px);line-height:.8;color:rgba(255,255,255,.4);
+}
 
-/* 页 4 · 负分项：一行一句 */
+/* 页 4 · 负分项：2×2 overline 细线小块 */
 .neg-grid{
-  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr;
-  gap:max(3.5vh,26px);padding:min(4vh,32px) min(6vw,32px);position:relative;z-index:1;
+  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr 1fr;
+  gap:max(3.5vh,26px) min(9vw,52px);position:relative;z-index:1;
 }
-.neg{position:relative;padding-left:19px}
-.neg::before{
-  content:"";position:absolute;left:0;top:8px;
-  width:7px;height:7px;transform:rotate(45deg);
-  border:1px solid rgba(26,26,26,.45);
-}
-.neg-t{font-size:clamp(13px,2.9vmin,16px);font-weight:600;letter-spacing:.12em}
+.neg{border-top:2px solid var(--ink);padding-top:10px}
+.neg-t{font-size:clamp(14px,3vmin,16px);font-weight:700;letter-spacing:.1em}
 .neg-d{margin-top:6px;font-size:11.5px;color:var(--gray-1);letter-spacing:.08em}
 .sec-foot{
   position:relative;z-index:1;
@@ -446,12 +425,10 @@ body::before{
   /* 封面 · NAME 版式：手机收紧 */
   .cover-meta{ font-size:10px; letter-spacing:.2em; padding-bottom:10px; }
   .cover-meta .en{ font-size:9px; letter-spacing:.18em; }
-  .page.cover{ padding-top:min(5vh,40px); }
+  .page.cover{ padding:min(4vh,34px) 24px min(3.5vh,28px); }
   .cover-title{ font-size:clamp(2.5rem,14.5vmin,3.6rem); letter-spacing:.04em; text-indent:.04em; }
   .halftone{ width:92px; height:82px; top:-12px; left:-8px; }
-  .crosses{ font-size:11px; letter-spacing:.26em; bottom:-10px; }
-  .crosses .sym{ font-size:9px; }
-  .cover-row{ margin-top:min(3.6vh,26px); gap:14px; }
+  .cover-row{ gap:14px; }
   .cover-list li{ font-size:11px; letter-spacing:.16em; line-height:2; }
   .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(17,17,17,.12); }
   .cover-gray{ left:12px; right:12px; top:44%; }
@@ -459,31 +436,31 @@ body::before{
   .cover-script{ font-size:40px; bottom:44px; }
   .cover-bar{ margin-top:30px; font-size:10px; padding:7px 12px; }
   .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
-  .disc{ width:min(46vmin,300px); height:min(46vmin,300px); right:-24vw; top:-18vh; }
 
-  /* 章节头 */
-  .sec-no{ font-size:13px; }
-  .sec-head{ gap:9px; }
-  .sec-head h2{ font-size:clamp(17px,5.2vmin,21px); gap:8px; }
-  .sec-cap{ font-size:9px; letter-spacing:.26em; }
+  /* 章节头 · 海报式 */
+  .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
+  .sec-head h2{ font-size:clamp(18px,5.4vmin,22px); padding-bottom:7px; border-bottom-width:1.5px; }
+  .sec-cap{ font-size:9px; letter-spacing:.26em; margin-top:8px; }
 
-  /* 关于我：两列表格行高稍收 */
-  .facts{ margin-top:min(4vh,30px); column-gap:20px; padding:min(2vh,16px) 18px; }
-  .fact{ padding:max(2vh,13px) 2px; }
-  .fact dt{ font-size:10.5px; letter-spacing:.16em; }
-  .fact dd{ font-size:13.5px; }
+  /* 关于我：overline 分组块 */
+  .facts{ margin-top:min(4.5vh,34px); column-gap:24px; row-gap:max(2.6vh,18px); }
+  .fact{ padding-top:8px; }
+  .fact dt{ font-size:10px; letter-spacing:.22em; }
+  .fact dd{ font-size:14px; margin-top:5px; }
 
-  /* 加分项：一行两句 */
-  .plus-list{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 24px; padding:min(3vh,24px) 16px; }
-  .plus{ gap:max(1.6vh,12px); min-width:0; }
-  .plus-cap{ font-size:10.5px; letter-spacing:.04em; white-space:nowrap; }
-  .chip{ width:auto; min-width:88px; padding:7px 13px; font-size:11px; letter-spacing:.14em; text-indent:.14em; }
+  /* 加分项：黑条 */
+  .plus-list{ margin-top:min(4.5vh,32px); gap:max(2vh,14px); }
+  .plus{ padding:12px 16px; gap:10px; box-shadow:4px 4px 0 rgba(17,17,17,.12); }
+  .plus:nth-child(2){ width:94%; }
+  .plus:nth-child(3){ width:88%; }
+  .plus-t{ font-size:13.5px; letter-spacing:.2em; }
+  .plus-cap{ font-size:9.5px; letter-spacing:.14em; }
+  .plus::after{ font-size:24px; }
 
-  /* 负分项：一行一句 */
-  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.8vh,18px); padding:min(3vh,24px) 20px; }
-  .neg{ padding-left:17px; }
-  .neg::before{ top:6px; width:6px; height:6px; }
-  .neg-t{ font-size:13px; letter-spacing:.1em; }
+  /* 负分项：2×2 overline 块 */
+  .neg-grid{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 22px; }
+  .neg{ padding-top:8px; }
+  .neg-t{ font-size:13px; letter-spacing:.08em; }
   .neg-d{ font-size:10.5px; margin-top:4px; }
 
   /* 收束句 / 独白 */
@@ -504,27 +481,23 @@ body::before{
 /* 手机 · 矮屏（准 iPhone SE / 横窗）：进一步压缩纵向节奏，保证不裁切 */
 @media (max-width:480px) and (max-height:660px){
   .page{ padding:6px 24px 10px; }
-  .page.cover{ padding-top:3.5vh; }
-  .cover-row{ margin-top:2.4vh; }
+  .page.cover{ padding:3vh 24px 2.5vh; }
   .cover-bar{ margin-top:22px; }
-  .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); padding:min(1.6vh,12px) 16px; }
-  .fact{ padding:max(1.2vh,9px) 2px; }
-  .plus{ gap:max(1.1vh,8px); }
-  .neg-grid{ gap:max(1.8vh,12px); }
+  .facts,.plus-list,.neg-grid{ margin-top:min(2.6vh,18px); }
+  .fact{ padding-top:6px; }
+  .plus{ padding:10px 14px; }
+  .neg-grid{ gap:max(2vh,14px) 18px; }
   .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
   .polaroid-wrap{ width:min(52vmin,200px); }
   .sig-line{ margin-top:min(2.2vh,14px); }
 }
 @media (max-width:360px){
   .page{ padding:8px 18px 10px; }
-  .vtext{ display:none; }
-  .cover-title{ font-size:clamp(1.85rem,11.5vmin,2.5rem); }
-  .cover-sub{ letter-spacing:.28em; text-indent:.28em; }
-  .cover-tagline{ letter-spacing:.22em; text-indent:.22em; }
-  .chip{ font-size:10px; letter-spacing:.08em; }
-  .plus-cap{ font-size:10px; }
+  .cover-title{ font-size:clamp(2.2rem,13vmin,3rem); }
+  .cover-tagline{ letter-spacing:.1em; }
+  .plus-cap{ font-size:9px; }
   .neg-t{ font-size:12px; }
-  .fact dd{ font-size:12.5px; }
+  .fact dd{ font-size:13px; }
   .monologue{ font-size:10px; letter-spacing:.12em; }
   .polaroid-wrap{ width:min(64vmin,220px); }
 }
@@ -549,7 +522,6 @@ body::before{
       <div class="title-wrap">
         <div class="halftone" aria-hidden="true"></div>
         <h1 class="cover-title">虐恋须知</h1>
-        <div class="crosses" aria-hidden="true"><span>×&thinsp;×&thinsp;×&thinsp;×&thinsp;×</span><span>×&thinsp;×&thinsp;×&thinsp;×&thinsp;×</span><span class="sym">✦ ✕ ✦</span></div>
       </div>
       <div class="cover-row">
         <ul class="cover-list">
@@ -571,7 +543,7 @@ body::before{
     <section class="page" aria-label="关于我">
       <div class="ghost" aria-hidden="true">01</div>
       <header class="sec-top">
-        <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2><span class="sec-line"></span></div>
+        <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
         <p class="sec-cap">— BASIC PROFILE —</p>
       </header>
       <dl class="facts">
@@ -589,13 +561,13 @@ body::before{
     <section class="page" aria-label="加分项">
       <div class="ghost" aria-hidden="true">02</div>
       <header class="sec-top">
-        <div class="sec-head"><span class="sec-no">02</span><h2><em>Predilection</em>加分项</h2><span class="sec-line"></span></div>
+        <div class="sec-head"><span class="sec-no">02</span><h2><em>Predilection</em>加分项</h2></div>
         <p class="sec-cap">— WHAT WINS ME OVER —</p>
       </header>
       <div class="plus-list">
-        <div class="plus"><p class="plus-cap">有个人风格</p><span class="chip">留话口</span></div>
-        <div class="plus"><p class="plus-cap">理性 且 有逻辑</p><span class="chip">剖析</span></div>
-        <div class="plus"><p class="plus-cap">有效话术</p><span class="chip">微文艺</span></div>
+        <div class="plus" data-letter="S"><span class="plus-t">留话口</span><span class="plus-cap">有个人风格</span></div>
+        <div class="plus" data-letter="L"><span class="plus-t">剖析</span><span class="plus-cap">理性 且 有逻辑</span></div>
+        <div class="plus" data-letter="A"><span class="plus-t">微文艺</span><span class="plus-cap">有效话术</span></div>
       </div>
       <p class="sec-quote">如果流水有声音<br>你听到的是结束还是开始</p>
     </section>
@@ -604,7 +576,7 @@ body::before{
     <section class="page" aria-label="负分项">
       <div class="ghost" aria-hidden="true">03</div>
       <header class="sec-top">
-        <div class="sec-head"><span class="sec-no">03</span><h2><em>Abhor</em>负分项</h2><span class="sec-line"></span></div>
+        <div class="sec-head"><span class="sec-no">03</span><h2><em>Abhor</em>负分项</h2></div>
         <p class="sec-cap">— INSTANT DEAL-BREAKERS —</p>
       </header>
       <div class="neg-grid">
