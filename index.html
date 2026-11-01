@@ -911,14 +911,15 @@ body::before{
 
   var sparks=[], smoke=[];
   function spawn(){
-    for(var s=0;s<26;s++){
+    var maxS = hover?320:160, maxM = hover?28:14;
+    for(var s=0;s<(hover?52:26);s++){
       var x=Math.random()*W, y=Math.random()*H;
       var i=(y|0)*W+(x|0);
       var v=dist[i]-frontLUT[(nArr[i]*255)|0];
-      if(v>=0&&v<10&&Math.random()<.3&&sparks.length<160){
+      if(v>=0&&v<10&&Math.random()<(hover?.6:.3)&&sparks.length<maxS){
         sparks.push({x:x,y:y,vx:(Math.random()-.5)*.5,vy:-(.5+Math.random()*1.5),
-          life:1,decay:.008+Math.random()*.015,r:.8+Math.random()*1.6,ph:Math.random()*6.28});
-      } else if(v>=10&&v<24&&Math.random()<.06&&smoke.length<14){
+          life:1,decay:.008+Math.random()*.015,r:(.8+Math.random()*1.6)*(hover?1.4:1),ph:Math.random()*6.28});
+      } else if(v>=10&&v<24&&Math.random()<(hover?.12:.06)&&smoke.length<maxM){
         smoke.push({x:x,y:y,vx:(Math.random()-.5)*.2,vy:-(.25+Math.random()*.4),
           life:1,decay:.004+Math.random()*.006,r:5+Math.random()*9});
       }
@@ -947,9 +948,45 @@ body::before{
     }
   }
 
+  // 悬停时拍立得边缘燃起一圈金色火舌：不悬停只有微弱余烬火，悬停则火舌明显变大
+  function drawPolaroidFire(now){
+    var t=now/1000;
+    if(state!=='burn'){ flameAmt += (0-flameAmt)*0.10; return; }
+    flameAmt += ((hover?1:0)-flameAmt)*0.12;
+    var prog=Math.min(1,burnR/MAXD);
+    var amp=(8+22*prog)*(0.55+flameAmt*1.4);   // 悬停放大火舌（高度/宽度均增大）
+    if(amp<1) return;
+    ctx.save();
+    ctx.globalCompositeOperation='lighter';
+    var n=16;
+    for(var k=0;k<n;k++){
+      var a=-Math.PI+(k/(n-1))*Math.PI*2;
+      var ca=Math.cos(a), sa=Math.sin(a);
+      var bx=OX+ca*burnR, by=OY+sa*burnR;       // 火舌根部贴着燃烧边缘
+      var ph=k*1.7;
+      var fl=0.65+0.45*Math.sin(t*9+ph)+0.5*Math.sin(t*4.3+ph*1.7);
+      var h=amp*(0.55+0.6*fl);
+      var wob=Math.sin(t*6+ph)*5*flameAmt;
+      var tx=bx+ca*h+wob*(-sa), ty=by+sa*h+wob*(ca);   // 火舌尖端向纸面方向舔出
+      var pw=(4+flameAmt*5)*(0.7+0.4*fl);
+      var px=-sa, py=ca;
+      ctx.beginPath();
+      ctx.moveTo(bx+px*pw, by+py*pw);
+      ctx.quadraticCurveTo(bx+ca*h*0.55+px*pw*0.6, by+sa*h*0.55+py*pw*0.6, tx,ty);
+      ctx.quadraticCurveTo(bx+ca*h*0.55-px*pw*0.6, by+sa*h*0.55-py*pw*0.6, bx-px*pw, by-py*pw);
+      ctx.closePath();
+      var g=ctx.createLinearGradient(bx,by,tx,ty);
+      g.addColorStop(0,'rgba(255,205,130,'+(0.45+0.4*flameAmt).toFixed(3)+')');
+      g.addColorStop(0.6,'rgba(255,225,170,'+(0.22+0.22*flameAmt).toFixed(3)+')');
+      g.addColorStop(1,'rgba(255,240,210,0)');
+      ctx.fillStyle=g; ctx.fill();
+    }
+    ctx.restore();
+  }
+
   var wrap = document.getElementById('polaroidWrap');
   var polaroid = document.getElementById('polaroid');
-  var state='burn', burnR=0, fadeT0=0, hover=false, rafId=null, cycle=1, cut=false;
+  var state='burn', burnR=0, fadeT0=0, hover=false, rafId=null, cycle=1, cut=false, flameAmt=0;
   polaroid.addEventListener('mouseenter',function(){hover=true;});
   polaroid.addEventListener('mouseleave',function(){hover=false;});
   polaroid.addEventListener('touchstart',function(){hover=!hover;},{passive:true});
@@ -958,8 +995,8 @@ body::before{
     if(cut) return;
     var t = now/1000;
     if(state==='burn'){
-      burnR += hover ? 1.7 : .55;
-      renderFrame(t,burnR); spawn(); drawParticles(t);
+      burnR += hover ? 2.6 : .5;
+      renderFrame(t,burnR); spawn(); drawParticles(t); drawPolaroidFire(now);
       if(burnR>=MAXD){ state='fade'; fadeT0=now; }
       else if(cycle>=2 && burnR>=MAXD*0.5){
         // 第二遍烧到一半即截掉：炭壳淡去，藏着的底片显现
