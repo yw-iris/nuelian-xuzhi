@@ -575,13 +575,21 @@ body::before{
       var dt=now-last; last=now;
       t+=dt/dur; if(t>1) t=1;
       var tt=t*6.283;
-      var burnR=MAXD*(1-Math.pow(1-t,2));
+      var SWAP_AT=0.72;
+      var burnR;
+      if(t<=SWAP_AT){                       // 相位A：火舌从页脚燃到整页烧穿
+        var u=t/SWAP_AT;
+        burnR=MAXD*(1-Math.pow(1-u,2));      // u=1 时 burnR=MAXD，最远角也焦黑
+      } else {
+        burnR=MAXD;                          // 整页已焦黑，保持至化灰
+      }
       renderFrame(tt,burnR);
-      spawn(); drawParticles(tt);
-      // 燃尽化灰：t>0.82 整层焦黑淡出，新页自灰烬中浮现
-      var op = t<0.82?1:Math.max(0,1-(t-0.82)/0.18);
+      if(t<SWAP_AT) spawn();                 // 仅燃烧阶段迸火星
+      drawParticles(tt);
+      // 相位B：整层焦黑化灰淡出，新页自灰烬中浮现
+      var op = t<SWAP_AT ? 1 : Math.max(0,1-(t-SWAP_AT)/(1-SWAP_AT));
       cv.style.opacity=op;
-      if(t>=0.5 && half){ var f=half; half=null; f(); }
+      if(t>=SWAP_AT && half){ var f=half; half=null; f(); }
       if(t>=1){
         running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
         sparks.length=0; smoke.length=0;
