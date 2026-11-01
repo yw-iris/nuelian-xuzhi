@@ -295,6 +295,21 @@ body::before{
   transition:opacity .25s ease;
 }
 
+/* 背景音乐开关 */
+.bgm-toggle{
+  position:fixed;top:calc(env(safe-area-inset-top,0) + 12px);right:14px;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(20,20,20,.35);background:rgba(255,255,255,.55);
+  color:var(--ink);font-size:17px;line-height:1;cursor:pointer;
+  z-index:55;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:transform .2s,background .2s,opacity .4s;
+}
+.bgm-toggle:hover{transform:scale(1.08)}
+.bgm-toggle.off{opacity:.45}
+.bgm-toggle.playing{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bgm-toggle .wave{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
 @media (max-width:400px){
   .handle span{display:none}
   .chip{min-width:82px;padding:7px 9px}
@@ -420,6 +435,10 @@ body::before{
 
   <!-- 翻页燃烧过场 -->
   <canvas id="burnOver" class="burn-overlay" aria-hidden="true"></canvas>
+
+  <!-- 背景音乐（来自网盘视频音频轨） -->
+  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+  <button id="bgmToggle" class="bgm-toggle" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐">♪</button>
 
 </div>
 
@@ -791,17 +810,24 @@ body::before{
 
   var wrap = document.getElementById('polaroidWrap');
   var polaroid = document.getElementById('polaroid');
-  var state='burn', burnR=0, fadeT0=0, hover=false, rafId=null;
+  var state='burn', burnR=0, fadeT0=0, hover=false, rafId=null, cycle=1, cut=false;
   polaroid.addEventListener('mouseenter',function(){hover=true;});
   polaroid.addEventListener('mouseleave',function(){hover=false;});
   polaroid.addEventListener('touchstart',function(){hover=!hover;},{passive:true});
 
   function tick(now){
+    if(cut) return;
     var t = now/1000;
     if(state==='burn'){
       burnR += hover ? 1.7 : .55;
       renderFrame(t,burnR); spawn(); drawParticles(t);
       if(burnR>=MAXD){ state='fade'; fadeT0=now; }
+      else if(cycle>=2 && burnR>=MAXD*0.5){
+        // 第二遍烧到一半即截掉，不再重生循环
+        cut=true;
+        if(rafId!==null){ cancelAnimationFrame(rafId); rafId=null; }
+        return;
+      }
     } else if(state==='fade'){
       var p=(now-fadeT0)/1100;
       drawParticles(t);
@@ -811,13 +837,15 @@ body::before{
       var q=(now-fadeT0)/1100;
       renderFrame(t,0);
       wrap.style.opacity=Math.min(1,q).toFixed(3);
-      if(q>=1) state='burn';
+      if(q>=1){ cycle++; state='burn'; }
     }
     rafId = requestAnimationFrame(tick);
   }
 
   window.__burnStart = function(){
     if(reduced){ renderFrame(1.7, MAXD*.55); return; }
+    cut=false; cycle=1; state='burn'; burnR=0;
+    wrap.style.opacity=1; sparks.length=0; smoke.length=0;
     if(rafId===null) rafId = requestAnimationFrame(tick);
   };
   window.__burnStop = function(){
@@ -830,6 +858,41 @@ body::before{
   function onEnter(i){ if(i===burnPageIndex) window.__burnStart(); }
   function onLeave(i){ if(i===burnPageIndex) window.__burnStop(); }
   if(pages[cur] && cur===burnPageIndex) window.__burnStart();
+
+  /* ═════════ 背景音乐（来自网盘视频音轨） ═════════ */
+  (function(){
+    var bgm = document.getElementById('bgm');
+    var btn = document.getElementById('bgmToggle');
+    if(!bgm || !btn) return;
+    var started=false, userOff=false;
+    bgm.volume=0.5;
+    function icon(on){ btn.innerHTML = on ? '<span class="wave">♪</span>' : '♪'; btn.classList.toggle('playing', on); btn.setAttribute('aria-pressed', on?'true':'false'); }
+    function tryPlay(){
+      if(userOff) return;
+      bgm.play().then(function(){ started=true; icon(true); }).catch(function(){ /* 等用户手势 */ });
+    }
+    // 浏览器禁止无手势自动播放：首次交互后启动
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){
+      var handler = function(e){
+        if(e.target && e.target.id==='bgmToggle') return;   // 按钮自己处理
+        tryPlay();
+        if(started) document.removeEventListener(ev, handler, {passive:true});
+      };
+      document.addEventListener(ev, handler, {passive:true});
+    });
+    // 开关：手动静音 / 恢复
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(bgm.paused){ userOff=false; tryPlay(); }
+      else { bgm.pause(); userOff=true; icon(false); }
+    });
+    // 切后台暂停、回前台恢复
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) bgm.pause();
+      else if(started && !userOff) tryPlay();
+    });
+    icon(false);
+  })();
 })();
 </script>
 </body>
