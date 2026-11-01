@@ -510,14 +510,16 @@ body::before{
       bctx=buf.getContext('2d'); bitData=bctx.createImageData(bw,bh);
       G1=makeGrid(10); G2=makeGrid(4);
       dist=new Float32Array(bw*bh); nArr=new Float32Array(bw*bh);
-      OX=W*0.08; OY=H*0.96;          // 点燃点：左下页脚（同拍立得）
+      OX=W*0.08; OY=H*0.96;          // 点燃点：左下页脚
+      TX=W*0.94; TY=H*0.06;          // 蔓延终点：右上角
+      var ax=TX-OX, ay=TY-OY, L=Math.hypot(ax,ay), ux=ax/L, uy=ay/L;
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++){
         var px=x*scale, py=y*scale, i=y*bw+x;
-        dist[i]=Math.hypot(px-OX,py-OY);
+        dist[i]=(px-OX)*ux+(py-OY)*uy;   // 沿左下→右上对角轴投影：火舌斜扫至右上角
         var n=.62*sample(G1,px,py)+.38*sample(G2,px,py);
         nArr[i]=n<0?0:(n>1?1:n);
       }
-      MAXD=Math.hypot(W-OX,H-OY)+46;
+      MAXD=L+46;
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
