@@ -657,10 +657,10 @@ body::before{
       c.filter='blur(2.4px)';
       // 四条缎带：各自错位/相位/摆速/卷向 → 绸缎叠涌
       var ribs=[
-        {ox:0,   w:44, ph:0.0, len:1.00, sw:1.00, sp:0.8, curl: 1},
-        {ox:-22, w:34, ph:1.9, len:0.85, sw:1.30, sp:0.6, curl:-1},
-        {ox:20,  w:36, ph:3.4, len:0.92, sw:0.85, sp:1.0, curl: 1},
-        {ox:-8,  w:26, ph:5.0, len:0.68, sw:1.45, sp:1.2, curl:-1}
+        {ox:0,   w:44, ph:0.0, len:1.00, sw:1.00, sp:2.4, curl: 1},
+        {ox:-22, w:34, ph:1.9, len:0.85, sw:1.30, sp:1.9, curl:-1},
+        {ox:20,  w:36, ph:3.4, len:0.92, sw:0.85, sp:2.8, curl: 1},
+        {ox:-8,  w:26, ph:5.0, len:0.68, sw:1.45, sp:3.2, curl:-1}
       ];
       var layers=[
         [2.6,'rgba(120,118,114,0.10)'],
@@ -684,7 +684,7 @@ body::before{
             var cx=fx+rb.ox+sway+tip, cy=fy-h*len;
             // 宽度：根部收拢→中段丰满→末端收尖；低频噪声造成缎面褶皱
             var prof=(0.30+0.70*Math.sin(h*Math.PI*0.9))*(1-h*0.45);
-            var fold=0.72+0.5*vnoise(h*4.5 + t*1.1 + ri*2.3);
+            var fold=0.72+0.5*vnoise(h*4.5 + t*2.4 + ri*2.3);
             var hw=wd*prof*fold;
             Lp.push([cx-hw,cy]); Rp.push([cx+hw,cy]);
           }
@@ -718,20 +718,22 @@ body::before{
       var dt=now-last; last=now;
       t+=dt/dur; if(t>1) t=1;
       var tt=t*6.283;
-      var IGN=0.16;                          // 前16%：火舌在页底中心燃起，焦面几乎未扩散
+      var IGN=0.09;                          // 前9%：烟绸快速涌出，焦面几乎未扩散
+      var FADE=0.34;                         // 扩散开始后烟绸再扭几下即淡出（占总时长约30%）
       var SWAP_AT=0.72;
       var burnR, grow;
-      if(t<IGN){                             // 相位0：点火——火舌生长，只有点燃点微焦
+      if(t<IGN){                             // 相位0：点火——烟绸生长，只有点燃点微焦
         var g0=t/IGN;
         grow=1-Math.pow(1-g0,2);             // ease-out 生长
         burnR=10+18*grow;
       } else if(t<=SWAP_AT){                 // 相位A：焦黑自火舌根部向外径向扩散
         var u=(t-IGN)/(SWAP_AT-IGN);
         burnR=MAXD*(0.1+0.9*u);              // u=1 时整页焦黑
-        grow=1-0.45*u;                       // 火舌随火线走远略微收势
+        var fade=Math.max(0,1-u/FADE);       // 烟绸出现→扭动一下→很快退场
+        grow=(1-0.2*u)*fade*fade;
       } else {
         burnR=MAXD;                          // 整页已焦黑，保持至化灰
-        grow=0.55;
+        grow=0;
       }
       renderFrame(tt,burnR);
       drawFlame(now,grow);
