@@ -287,12 +287,14 @@ body::before{
   font-size:clamp(26px,5.5vmin,38px);line-height:.8;color:rgba(255,255,255,.4);
 }
 
-/* 页 4 · 负分项：2×2 overline 细线小块 */
+/* 页 4 · 负分项：左—右—左—右 交错阶梯（overline 细线小块） */
 .neg-grid{
-  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr 1fr;
-  gap:max(3.5vh,26px) min(9vw,52px);position:relative;z-index:1;
+  margin-top:min(6.5vh,48px);display:flex;flex-direction:column;
+  gap:max(3.4vh,26px);position:relative;z-index:1;
 }
-.neg{border-top:2px solid var(--ink);padding-top:10px}
+.neg{width:min(50%,560px);border-top:2px solid var(--ink);padding-top:10px}
+.neg:nth-child(odd){align-self:flex-start}
+.neg:nth-child(even){align-self:flex-end}
 .neg-t{font-size:clamp(14px,3vmin,16px);font-weight:700;letter-spacing:.1em}
 .neg-d{margin-top:6px;font-size:11.5px;color:var(--gray-1);letter-spacing:.08em}
 .sec-foot{
@@ -457,9 +459,9 @@ body::before{
   .plus-cap{ font-size:9.5px; letter-spacing:.14em; }
   .plus::after{ font-size:24px; }
 
-  /* 负分项：2×2 overline 块 */
-  .neg-grid{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 22px; }
-  .neg{ padding-top:8px; }
+  /* 负分项：左右交错阶梯 */
+  .neg-grid{ margin-top:min(4.5vh,32px); gap:max(2.8vh,18px); }
+  .neg{ width:64%; padding-top:8px; }
   .neg-t{ font-size:13px; letter-spacing:.08em; }
   .neg-d{ font-size:10.5px; margin-top:4px; }
 
@@ -486,7 +488,7 @@ body::before{
   .facts,.plus-list,.neg-grid{ margin-top:min(2.6vh,18px); }
   .fact{ padding-top:6px; }
   .plus{ padding:10px 14px; }
-  .neg-grid{ gap:max(2vh,14px) 18px; }
+  .neg-grid{ gap:max(2vh,14px); }
   .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
   .polaroid-wrap{ width:min(52vmin,200px); }
   .sig-line{ margin-top:min(2.2vh,14px); }
