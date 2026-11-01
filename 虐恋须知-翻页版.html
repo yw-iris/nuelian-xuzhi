@@ -467,30 +467,49 @@ body::before{
     }
     window.addEventListener('resize', resize); resize();
 
-    var running=false, t=0, dur=950, dir=1, last=0, half=null, cb=null,
-        embers=[], smoke=[], ashes=[];
+    var running=false, t=0, dur=1200, dir=1, last=0, half=null, cb=null,
+        embers=[], smoke=[], ashes=[], specks=[];
 
     // 燃烧前沿的角度噪声：不规则锯齿焦边（参考视频）
     function edgeNoise(a, tt){
-      return 0.13*Math.sin(a*3.1+tt*4.1+dir) + 0.09*Math.sin(a*7.3-tt*6.7) + 0.06*Math.sin(a*13.7+tt*9.2);
+      return 0.15*Math.sin(a*3.1+tt*4.1+dir) + 0.10*Math.sin(a*7.3-tt*6.7) + 0.06*Math.sin(a*13.7+tt*9.2);
+    }
+
+    // 星点余烬场：预生成静态分布，火烧到哪里、哪里的灰烬开始闪烁（参考视频黑区星点）
+    function seedSpecks(){
+      specks.length=0;
+      for(var i=0;i<270;i++){
+        specks.push({ a:Math.random()*Math.PI/2,
+          rf:Math.pow(Math.random(),0.72),
+          r:0.5+Math.random()*1.3,
+          ph:Math.random()*6.28,
+          sp:1.1+Math.random()*2.2,
+          warm:Math.random()<0.68 });
+      }
     }
 
     // 沿前沿迸出：火星（外抛上飘）/ 余烟 / 灰烬（剥落下坠）
     function emit(px, py, a){
       var dx=Math.cos(a), dy=-Math.sin(a);
-      if(embers.length<130 && Math.random()<0.8){
-        embers.push({x:px, y:py, vx:dx*(0.5+Math.random()*1.4), vy:dy*(0.5+Math.random()*1.4)-0.6,
-          life:1, dec:0.012+Math.random()*0.02, r:0.8+Math.random()*1.8, ph:Math.random()*6.28});
+      if(embers.length<130 && Math.random()<0.85){
+        embers.push({x:px, y:py, vx:dx*(0.5+Math.random()*1.6), vy:dy*(0.5+Math.random()*1.6)-0.7,
+          life:1, dec:0.012+Math.random()*0.02, r:0.8+Math.random()*1.9, ph:Math.random()*6.28});
       }
-      if(smoke.length<8 && Math.random()<0.18){
+      if(smoke.length<8 && Math.random()<0.15){
         smoke.push({x:px, y:py, vx:dx*0.15, vy:-(0.25+Math.random()*0.4),
           life:1, dec:0.006+Math.random()*0.008, r:6+Math.random()*12});
       }
-      if(ashes.length<80 && Math.random()<0.55){
+      if(ashes.length<80 && Math.random()<0.5){
         ashes.push({x:px-dx*(8+Math.random()*36), y:py-dy*(8+Math.random()*36),
           vx:(Math.random()-0.5)*0.7, vy:0.4+Math.random()*0.9,
           life:1, dec:0.006+Math.random()*0.012, r:0.6+Math.random()*1.6, rot:Math.random()*6.28});
       }
+    }
+
+    function tracePath(pts){
+      c.beginPath(); c.moveTo(pts[0],pts[1]);
+      for(var i=3;i<pts.length;i+=3) c.lineTo(pts[i],pts[i+1]);
+      c.closePath();
     }
 
     function draw(now){
@@ -500,8 +519,11 @@ body::before{
       var tt=t*6.28;
       var ox=0, oy=H;                       // 点燃点：左页脚
       var maxR=Math.hypot(W,H);
-      var R0=maxR*(1-Math.pow(1-t,1.8))+6;  // 燃烧半径（先快后缓）
+      var R0=maxR*(1-Math.pow(1-t,2))+6;    // 燃烧半径（先快后缓）
       var fl=0.72+0.28*Math.sin(now*0.02);
+      // 燃尽阶段（t>0.80）：焦黑层化灰淡出，新页自灰烬中浮现
+      var dis=t<0.80?1:Math.max(0,1-(t-0.80)/0.20);
+      dis=dis*dis*(3-2*dis);
 
       // —— 前沿采样：自左下角出发的不规则弧线 ——
       var pts=[], N=96;
@@ -511,26 +533,36 @@ body::before{
         pts.push(ox+R*Math.cos(a), oy-R*Math.sin(a), a);
       }
 
-      // —— 已燃区：焦化填充（暗色自点燃点向外加深，不遮挡内容）——
-      c.beginPath(); c.moveTo(ox,oy);
-      for(i=0;i<pts.length;i+=3) c.lineTo(pts[i],pts[i+1]);
-      c.closePath();
+      // —— 已燃区：焦黑吞噬（纸被烧掉，近实心黑，参考视频）——
+      c.globalAlpha=dis;
+      tracePath(pts);
       var grd=c.createRadialGradient(ox,oy,0,ox,oy,Math.max(R0,1));
-      grd.addColorStop(0,'rgba(16,10,6,0.15)');
-      grd.addColorStop(.65,'rgba(14,9,5,0.21)');
-      grd.addColorStop(1,'rgba(8,5,3,0.30)');
+      grd.addColorStop(0,'rgba(7,5,4,0.97)');
+      grd.addColorStop(.7,'rgba(9,6,4,0.95)');
+      grd.addColorStop(1,'rgba(14,9,5,0.93)');
       c.fillStyle=grd; c.fill();
 
-      // —— 灼热焦边 + 外圈余温（叠加发光）——
+      // —— 星点余烬：焦黑区里闪烁的光点（参考视频最标志性的细节）——
+      for(i=0;i<specks.length;i++){
+        var sp=specks[i], d=sp.rf*maxR;
+        if(d>R0-16) continue;
+        var sx=ox+d*Math.cos(sp.a), sy=oy-d*Math.sin(sp.a);
+        var tw=0.5+0.5*Math.sin(now*0.006*sp.sp+sp.ph);
+        var ef=Math.min(1,(R0-d)/70);
+        var al=(0.22+0.78*tw)*ef*dis;
+        if(al<0.03) continue;
+        c.fillStyle=sp.warm?'rgba(255,168,76,'+al.toFixed(3)+')':'rgba(255,238,204,'+al.toFixed(3)+')';
+        c.beginPath(); c.arc(sx,sy,sp.r*(0.6+0.4*tw),0,6.283); c.fill();
+      }
+
+      // —— 灼热焦边：亮橙火线三层（外圈余温 / 主火线 / 白热内线）——
       c.globalCompositeOperation='lighter';
-      c.strokeStyle='rgba(255,120,30,'+(0.10*fl).toFixed(3)+')'; c.lineWidth=14;
-      c.beginPath();
-      for(i=0;i<pts.length;i+=3){ if(i===0)c.moveTo(pts[i],pts[i+1]); else c.lineTo(pts[i],pts[i+1]); }
-      c.stroke();
-      c.strokeStyle='rgba(255,165,55,'+(0.55*fl).toFixed(3)+')'; c.lineWidth=2.6;
-      c.beginPath();
-      for(i=0;i<pts.length;i+=3){ if(i===0)c.moveTo(pts[i],pts[i+1]); else c.lineTo(pts[i],pts[i+1]); }
-      c.stroke();
+      c.strokeStyle='rgba(255,110,20,'+(0.30*fl).toFixed(3)+')'; c.lineWidth=13;
+      tracePath(pts); c.stroke();
+      c.strokeStyle='rgba(255,150,40,'+(0.85*fl).toFixed(3)+')'; c.lineWidth=3;
+      tracePath(pts); c.stroke();
+      c.strokeStyle='rgba(255,228,155,'+(0.9*fl).toFixed(3)+')'; c.lineWidth=1.2;
+      tracePath(pts); c.stroke();
 
       // —— 火舌（沿前沿向外舔，火焰向上偏）——
       for(i=0;i<pts.length;i+=3){
@@ -551,31 +583,36 @@ body::before{
         c.closePath(); c.fill();
       }
 
-      // —— 主火舌（几缕较大的火苗，对应参考视频的火焰柱）——
-      for(var n=0;n<3;n++){
-        var a2=(0.12+0.76*Math.random())*Math.PI/2;
-        var R2=R0*(1+edgeNoise(a2,tt));
-        var px2=ox+R2*Math.cos(a2), py2=oy-R2*Math.sin(a2);
-        if(px2<-60||px2>W+60||py2<-60||py2>H+60) continue;
-        var dx2=Math.cos(a2), dy2=-Math.sin(a2);
-        var L2=(30+55*Math.random())*(0.7+0.5*fl);
-        var tx2=px2+dx2*L2, ty2=py2+dy2*L2-L2*0.4;
-        var g2=c.createLinearGradient(px2,py2,tx2,ty2);
-        g2.addColorStop(0,'rgba(255,205,95,'+(0.55*fl).toFixed(3)+')');
-        g2.addColorStop(.5,'rgba(255,150,50,'+(0.22*fl).toFixed(3)+')');
-        g2.addColorStop(1,'rgba(255,240,200,0)');
-        c.fillStyle=g2; c.beginPath();
-        c.moveTo(px2-dy2*5,py2+dx2*5);
-        c.quadraticCurveTo(tx2+dy2*4,ty2-dx2*4,tx2,ty2);
-        c.quadraticCurveTo(tx2-dy2*4,ty2+dx2*4,px2+dy2*5,py2-dx2*5);
-        c.closePath(); c.fill();
+      // —— 火焰柱（前期几缕较大的火苗，对应参考视频）——
+      if(t<0.72){
+        for(var n=0;n<3;n++){
+          var a2=(0.10+0.8*Math.random())*Math.PI/2;
+          var R2=R0*(1+edgeNoise(a2,tt));
+          var px2=ox+R2*Math.cos(a2), py2=oy-R2*Math.sin(a2);
+          if(px2<-60||px2>W+60||py2<-60||py2>H+60) continue;
+          var dx2=Math.cos(a2), dy2=-Math.sin(a2);
+          var L2=(34+60*Math.random())*(0.7+0.5*fl);
+          var tx2=px2+dx2*L2, ty2=py2+dy2*L2-L2*0.42;
+          var g2=c.createLinearGradient(px2,py2,tx2,ty2);
+          g2.addColorStop(0,'rgba(255,205,95,'+(0.6*fl).toFixed(3)+')');
+          g2.addColorStop(.5,'rgba(255,150,50,'+(0.25*fl).toFixed(3)+')');
+          g2.addColorStop(1,'rgba(255,240,200,0)');
+          c.fillStyle=g2; c.beginPath();
+          c.moveTo(px2-dy2*5,py2+dx2*5);
+          c.quadraticCurveTo(tx2+dy2*4,ty2-dx2*4,tx2,ty2);
+          c.quadraticCurveTo(tx2-dy2*4,ty2+dx2*4,px2+dy2*5,py2-dx2*5);
+          c.closePath(); c.fill();
+        }
       }
+      c.globalCompositeOperation='source-over';
+      c.globalAlpha=1;
 
       // —— 火星 / 余烟 / 灰烬 ——
       for(var s=0;s<4;s++){
         var k=((Math.random()*N)|0)*3;
         emit(pts[k],pts[k+1],pts[k+2]);
       }
+      c.globalCompositeOperation='lighter';
       for(i=embers.length-1;i>=0;i--){ var e=embers[i];
         e.x+=e.vx+Math.sin(now*0.003+e.ph)*0.3; e.y+=e.vy; e.vy-=0.012; e.life-=e.dec;
         if(e.life<=0){ embers.splice(i,1); continue; }
@@ -600,7 +637,7 @@ body::before{
         c.restore();
       }
 
-      if(t>=0.62 && half){ var f=half; half=null; f(); }
+      if(t>=0.64 && half){ var f=half; half=null; f(); }
       if(t>=1){
         running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
         embers.length=0; smoke.length=0; ashes.length=0;
@@ -616,7 +653,8 @@ body::before{
       run:function(direction, done){
         if(!this.available){ if(done) done(); return; }
         dir = direction>0?1:-1; t=0; last=performance.now();
-        cv.style.opacity=1; embers.length=0; smoke.length=0; ashes.length=0; cb=done||null;
+        cv.style.opacity=1; embers.length=0; smoke.length=0; ashes.length=0;
+        seedSpecks(); cb=done||null;
         if(!running){ running=true; requestAnimationFrame(draw); }
       }
     };
