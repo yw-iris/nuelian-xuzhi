@@ -318,6 +318,50 @@ body::before{
   .disc{display:none}
   .cover-title{margin-top:min(5vh,32px)}
 }
+
+/* ————— 手机适配（≤480px 竖屏） ————— */
+@media (max-width:480px){
+  .page{ padding:6px 20px 10px; }
+  .chrome-top{ padding:calc(10px + env(safe-area-inset-top)) 14px 8px; gap:8px; }
+  .chrome-bottom{ padding:8px 14px calc(10px + env(safe-area-inset-bottom)); }
+  .handle{ font-size:12px; }
+  .cover-title{ font-size:clamp(2.1rem,13vmin,3rem); margin-top:min(5vh,42px); }
+  .cover-sub{ letter-spacing:.42em; font-size:11px; }
+  .cover-tagline{ font-size:11px; letter-spacing:.34em; }
+  .cover-note{ font-size:9px; }
+  .vtext{ font-size:10px; top:11vh; right:8px; }
+  .ghost{ font-size:min(38vmin,240px); right:-2vw; }
+  .disc{ width:min(50vmin,320px); height:min(50vmin,320px); right:-22vw; top:-20vh; }
+  .sec-head h2{ font-size:clamp(17px,5.4vmin,22px); gap:9px; }
+  .sec-cap{ font-size:9px; letter-spacing:.3em; }
+  .facts{ margin-top:min(3.6vh,28px); column-gap:min(5vw,24px); }
+  .fact{ padding:max(1.3vh,9px) 2px; }
+  .fact dt{ font-size:11px; letter-spacing:.2em; }
+  .fact dd{ font-size:13px; }
+  .plus-list{ margin-top:min(3.6vh,28px); gap:8px; }
+  .chip{ min-width:0; padding:7px 6px; font-size:11px; letter-spacing:.14em; }
+  .plus-cap{ font-size:11px; letter-spacing:.08em; }
+  .plus-d{ font-size:9.5px; }
+  .neg-grid{ margin-top:min(3.6vh,28px); gap:max(2.2vh,15px) 14px; }
+  .neg-t{ font-size:13px; }
+  .neg-d{ font-size:10.5px; margin-top:4px; }
+  .sec-foot{ margin-top:min(2.2vh,15px); font-size:12px; }
+  .sec-quote{ margin-top:min(2.8vh,20px); font-size:12px; line-height:1.8; }
+  .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; }
+  .quote-mark{ font-size:28px; margin-bottom:6px; }
+  .polaroid-wrap{ width:min(62vmin,250px); }
+  .polaroid figcaption{ font-size:11px; }
+  .sig-line{ margin-top:min(3vh,20px); }
+  .sig-cn{ font-size:19px; }
+  .burn-hint{ font-size:9.5px; margin-top:min(1.6vh,10px); }
+}
+@media (max-width:360px){
+  .page{ padding:6px 16px 8px; }
+  .cover-title{ font-size:clamp(1.9rem,12vmin,2.6rem); }
+  .chip{ font-size:10px; letter-spacing:.08em; }
+  .plus-cap{ font-size:10px; }
+  .neg-t{ font-size:12px; }
+}
 </style>
 </head>
 <body>
@@ -477,7 +521,7 @@ body::before{
     // —— 复用末页拍立得同款逐像素燃烧算法（金橙焦边 + 炭化带 + 火星）——
     var cv = document.getElementById('burnOver');
     var c = cv.getContext('2d');
-    var W=0, H=0, OX=0, OY=0, TX=0, TY=0, MAXD=0, dpr=1;
+    var W=0, H=0, OX=0, OY=0, MAXD=0, dpr=1;
     var bw=0, bh=0, scale=1, bctx=null, bitData=null, buf=null;
     var dist=null, nArr=null, frontLUT=new Float32Array(256), flickLUT=new Float32Array(256);
     var sparks=[], smoke=[];
@@ -511,15 +555,13 @@ body::before{
       G1=makeGrid(10); G2=makeGrid(4);
       dist=new Float32Array(bw*bh); nArr=new Float32Array(bw*bh);
       OX=W*0.5; OY=H*0.99;           // 点燃点：页底中心
-      TX=W*0.5; TY=H*0.01;           // 蔓延终点：最上方
-      var ax=TX-OX, ay=TY-OY, L=Math.hypot(ax,ay), ux=ax/L, uy=ay/L;
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++){
         var px=x*scale, py=y*scale, i=y*bw+x;
-        dist[i]=(px-OX)*ux+(py-OY)*uy;   // 沿页底中心→最上方竖直轴投影：火舌自下而上烧
+        dist[i]=Math.hypot(px-OX,py-OY);   // 自页底中心向外径向扩展
         var n=.62*sample(G1,px,py)+.38*sample(G2,px,py);
         nArr[i]=n<0?0:(n>1?1:n);
       }
-      MAXD=L+46;
+      MAXD=Math.max(Math.hypot(OX,OY),Math.hypot(W-OX,OY),Math.hypot(OX,H-OY),Math.hypot(W-OX,H-OY))+46;
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
