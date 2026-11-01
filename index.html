@@ -9,23 +9,31 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#ffffff;
-  --ink:#111111;
-  --gray-1:#6e6e6e;
-  --gray-2:#a5a5a5;
-  --line:#e6e6e6;
-  --track:#e2e2e2;
+  --paper:#f4f4f2;
+  --card:rgba(255,255,255,.6);
+  --ink:#1a1a1a;
+  --gray-1:#7a7a76;
+  --gray-2:#ababa6;
+  --line:#dcdcd7;
+  --hairline:rgba(26,26,26,.14);
+  --track:#e0e0dc;
   --serif-en:'Cormorant Garamond','Times New Roman',serif;
   --serif-cn:'Noto Serif SC','Songti SC',serif;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{
-  background:var(--paper);color:var(--ink);
+  color:var(--ink);
   font-family:var(--serif-cn);
   -webkit-font-smoothing:antialiased;
   overflow:hidden;
   user-select:none;
+  /* 雾面纸底：左上微亮 → 右下微沉，像隔着纱布看展墙 */
+  background:
+    radial-gradient(120% 90% at 18% 8%, #fafaf8 0%, rgba(250,250,248,0) 55%),
+    radial-gradient(110% 100% at 85% 92%, #e9e9e5 0%, rgba(233,233,229,0) 60%),
+    linear-gradient(155deg,#f3f3f1 0%,#eeeeeb 48%,#f1f1ee 100%);
+  background-attachment:fixed;
 }
 /* 纸张颗粒 */
 body::before{
@@ -46,10 +54,11 @@ body::before{
 }
 .avatar{
   flex:none;width:34px;height:34px;border-radius:50%;
-  background:var(--ink);color:var(--paper);
+  background:rgba(255,255,255,.75);color:var(--ink);
+  border:1px solid rgba(26,26,26,.4);
   display:flex;align-items:center;justify-content:center;
-  font-size:15px;font-weight:700;
-  box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);
+  font-size:13px;font-weight:700;
+  box-shadow:0 2px 8px rgba(60,60,55,.08);
 }
 .handle{font-family:var(--serif-en);font-size:13px;letter-spacing:.14em;font-weight:600}
 .handle span{color:var(--gray-2);font-weight:400;letter-spacing:.1em}
@@ -157,13 +166,14 @@ body::before{
   position:absolute;z-index:0;pointer-events:none;
   font-family:var(--serif-en);font-weight:600;font-style:italic;
   font-size:min(46vmin,340px);line-height:1;
-  color:transparent;-webkit-text-stroke:1.5px rgba(17,17,17,.08);
+  color:transparent;-webkit-text-stroke:1.5px rgba(26,26,26,.06);
   right:2vw;top:50%;transform:translateY(-54%);
 }
 .disc{
   position:absolute;z-index:0;pointer-events:none;
   width:min(52vmin,380px);height:min(52vmin,380px);border-radius:50%;
-  background:radial-gradient(circle at 34% 30%,#2e2e2e,#0c0c0c 70%);
+  background:radial-gradient(circle at 34% 30%,#fdfdfc,#e6e6e2 62%,#dfdfd9 78%,rgba(223,223,217,0) 79%);
+  box-shadow:0 24px 60px rgba(60,60,55,.10);
   right:-14vw;top:-16vh;
 }
 
@@ -219,56 +229,70 @@ body::before{
   color:rgba(17,17,17,.3);font-weight:600;
 }
 
-/* ————— 章节页通用 ————— */
-.sec-head{display:flex;align-items:baseline;gap:12px;position:relative;z-index:1}
-.sec-no{font-family:var(--serif-en);font-weight:600;font-size:15px;color:var(--ink);letter-spacing:.06em}
-.sec-head h2{font-size:clamp(19px,4.6vmin,26px);font-weight:700;letter-spacing:.12em;display:flex;align-items:baseline;gap:11px}
-.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:1.25em;letter-spacing:.01em}
-.sec-line{flex:1;height:1px;background:var(--line)}
+/* ————— 章节页通用：居中馆签式标题 ————— */
+.sec-head{display:flex;align-items:baseline;justify-content:center;gap:12px;position:relative;z-index:1}
+.sec-no{font-family:var(--serif-en);font-weight:500;font-style:italic;font-size:14px;color:var(--gray-2);letter-spacing:.08em}
+.sec-head h2{font-size:clamp(19px,4.6vmin,26px);font-weight:700;letter-spacing:.14em;display:flex;align-items:baseline;gap:10px}
+.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:1.15em;letter-spacing:.01em;color:var(--gray-1)}
+.sec-line{flex:none;width:30px;height:1px;background:linear-gradient(90deg,transparent,var(--hairline))}
 .sec-cap{
-  margin-top:7px;font-family:var(--serif-en);font-size:10px;
+  margin-top:8px;text-align:center;font-family:var(--serif-en);font-size:10px;
   letter-spacing:.4em;color:var(--gray-2);position:relative;z-index:1;
+}
+
+/* 档案卡片：发丝线描边 + 半透明白，像展柜里的一页藏品说明 */
+.facts,.plus-list,.neg-grid{
+  background:var(--card);
+  border:1px solid var(--hairline);
+  border-radius:16px;
+  box-shadow:0 14px 34px rgba(60,60,55,.06),0 2px 6px rgba(60,60,55,.03);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
 }
 
 /* 页 2 · 关于我 */
 .facts{
   margin-top:min(6.5vh,48px);
-  display:grid;grid-template-columns:1fr 1fr;column-gap:min(8vw,56px);
+  display:grid;grid-template-columns:1fr 1fr;column-gap:min(7vw,48px);
+  padding:min(2.6vh,20px) min(6vw,34px);
   position:relative;z-index:1;
 }
 .fact{
   display:flex;justify-content:space-between;align-items:baseline;
-  padding:max(2.4vh,16px) 2px;border-bottom:1px solid var(--line);
+  padding:max(2.4vh,16px) 2px;border-bottom:1px solid rgba(26,26,26,.08);
 }
+.fact:nth-last-child(-n+2){border-bottom:none}
 .fact dt{font-size:12px;letter-spacing:.3em;color:var(--gray-1)}
 .fact dd{font-size:clamp(13px,2.8vmin,16px);font-weight:600;letter-spacing:.1em}
 .fact dd.en{font-family:var(--serif-en);font-weight:500;font-size:1.1em}
 
 /* 页 3 · 加分项：一行两句 */
-.plus-list{margin-top:min(6.5vh,48px);display:grid;grid-template-columns:repeat(2,1fr);gap:max(4.5vh,32px) min(7vw,36px);position:relative;z-index:1}
+.plus-list{margin-top:min(6.5vh,48px);display:grid;grid-template-columns:repeat(2,1fr);gap:max(4.5vh,32px) min(7vw,36px);padding:min(4vh,32px) min(5vw,28px);position:relative;z-index:1}
 .plus{display:flex;flex-direction:column;align-items:center;gap:max(1.8vh,14px)}
 .plus:last-child:nth-child(odd){grid-column:1/-1}
 .plus-cap{font-size:clamp(11px,2.2vmin,13.5px);letter-spacing:.18em;color:var(--gray-1);white-space:nowrap}
 .plus-t{font-size:clamp(14px,3vmin,17px);letter-spacing:.2em;font-weight:600}
 .plus-d{font-family:var(--serif-en);font-style:italic;font-size:12px;color:var(--gray-2);margin-top:4px;letter-spacing:.05em}
+/* 细线胶囊标签（参考展签 tag） */
 .chip{
-  flex:none;background:var(--ink);color:var(--paper);
-  font-size:11.5px;letter-spacing:.32em;text-indent:.32em;
-  padding:8px 13px;min-width:92px;text-align:center;
-  transition:transform .3s,box-shadow .3s;
+  flex:none;background:rgba(255,255,255,.5);color:var(--ink);
+  border:1px solid rgba(26,26,26,.3);border-radius:999px;
+  font-size:11.5px;letter-spacing:.3em;text-indent:.3em;
+  padding:7px 15px;min-width:92px;text-align:center;
+  transition:transform .3s,box-shadow .3s,background .3s;
 }
-.chip:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.chip:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(60,60,55,.12);background:#fff}
 
 /* 页 4 · 负分项：一行一句 */
 .neg-grid{
   margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr;
-  gap:max(3.5vh,26px);position:relative;z-index:1;
+  gap:max(3.5vh,26px);padding:min(4vh,32px) min(6vw,32px);position:relative;z-index:1;
 }
 .neg{position:relative;padding-left:19px}
 .neg::before{
   content:"";position:absolute;left:0;top:8px;
   width:7px;height:7px;transform:rotate(45deg);
-  border:1px solid var(--ink);
+  border:1px solid rgba(26,26,26,.45);
 }
 .neg-t{font-size:clamp(13px,2.9vmin,16px);font-weight:600;letter-spacing:.12em}
 .neg-d{margin-top:6px;font-size:11.5px;color:var(--gray-1);letter-spacing:.08em}
@@ -277,7 +301,7 @@ body::before{
   margin-top:min(5.5vh,38px);
   font-family:var(--serif-en);font-style:italic;
   font-size:clamp(12px,2.4vmin,14px);letter-spacing:.14em;
-  text-align:left;color:#3c3b38;
+  text-align:left;color:#85857f;
 }
 .sec-foot.center{text-align:center}
 .sec-quote{
@@ -285,7 +309,7 @@ body::before{
   margin-top:min(5.5vh,40px);text-align:center;
   font-family:var(--serif-en);font-style:italic;
   font-size:clamp(13px,2.8vmin,16px);letter-spacing:.1em;line-height:1.9;
-  color:#3c3b38;
+  color:#85857f;
 }
 
 /* 页 5 · 独白 */
@@ -419,19 +443,19 @@ body::before{
   .sec-cap{ font-size:9px; letter-spacing:.26em; }
 
   /* 关于我：两列表格行高稍收 */
-  .facts{ margin-top:min(4vh,30px); column-gap:20px; }
+  .facts{ margin-top:min(4vh,30px); column-gap:20px; padding:min(2vh,16px) 18px; }
   .fact{ padding:max(2vh,13px) 2px; }
   .fact dt{ font-size:10.5px; letter-spacing:.16em; }
   .fact dd{ font-size:13.5px; }
 
   /* 加分项：一行两句 */
-  .plus-list{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 24px; padding:0 2px; }
+  .plus-list{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 24px; padding:min(3vh,24px) 16px; }
   .plus{ gap:max(1.6vh,12px); min-width:0; }
   .plus-cap{ font-size:10.5px; letter-spacing:.04em; white-space:nowrap; }
-  .chip{ width:auto; min-width:88px; padding:8px 10px; font-size:11px; letter-spacing:.14em; text-indent:.14em; }
+  .chip{ width:auto; min-width:88px; padding:7px 13px; font-size:11px; letter-spacing:.14em; text-indent:.14em; }
 
   /* 负分项：一行一句 */
-  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.8vh,18px); }
+  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.8vh,18px); padding:min(3vh,24px) 20px; }
   .neg{ padding-left:17px; }
   .neg::before{ top:6px; width:6px; height:6px; }
   .neg-t{ font-size:13px; letter-spacing:.1em; }
@@ -440,7 +464,7 @@ body::before{
   /* 收束句 / 独白 */
   .sec-foot{ margin-top:min(2.6vh,18px); font-size:12px; letter-spacing:.1em; }
   .sec-quote{ margin-top:min(3.6vh,26px); font-size:12px; line-height:1.9; }
-  .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; max-width:32ch; margin-inline:auto; text-wrap:balance; }
+  .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; max-width:42ch; margin-inline:auto; text-wrap:balance; }
 
   /* 收尾：拍立得与签名按屏宽缩放 */
   .polaroid-wrap{ width:min(60vmin,240px); }
@@ -460,7 +484,7 @@ body::before{
   .cover-title{ margin-top:min(3.5vh,26px); }
   .cover-rule{ margin-top:min(2.4vh,16px); }
   .cover-tagline{ margin-top:min(2vh,14px); }
-  .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); }
+  .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); padding:min(1.6vh,12px) 16px; }
   .fact{ padding:max(1.2vh,9px) 2px; }
   .plus{ gap:max(1.1vh,8px); }
   .neg-grid{ gap:max(1.8vh,12px); }
