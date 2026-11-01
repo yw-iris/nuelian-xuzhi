@@ -396,10 +396,10 @@ body::before{
   .cover-title{ font-size:clamp(2.1rem,12.5vmin,3rem); margin-top:min(6vh,46px); letter-spacing:.22em; text-indent:.22em; }
   .cover-sub{ font-size:10.5px; letter-spacing:.36em; text-indent:.36em; margin-top:12px; }
   .cover-rule{ width:118px; margin-top:min(3.6vh,26px); }
-  .cover-tagline{ font-size:11.5px; letter-spacing:.3em; text-indent:.3em; margin-top:min(3vh,22px); }
-  .cover-note{ font-size:9px; letter-spacing:.26em; text-indent:.26em; }
+  .cover-tagline{ font-size:11.5px; letter-spacing:.3em; text-indent:.3em; margin-top:min(3.4vh,26px); }
+  .cover-note{ font-size:9px; letter-spacing:.26em; text-indent:.26em; margin-top:14px; }
   .vtext{ font-size:10px; top:10vh; right:10px; letter-spacing:.4em; }
-  .ghost{ font-size:min(36vmin,220px); right:-4vw; -webkit-text-stroke-width:1px; }
+  .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
   .disc{ width:min(46vmin,300px); height:min(46vmin,300px); right:-24vw; top:-18vh; }
 
   /* 章节头 */
@@ -415,10 +415,10 @@ body::before{
   .fact dd{ font-size:13.5px; }
 
   /* 加分项：三列等分，字距收紧 */
-  .plus-list{ margin-top:min(4.5vh,32px); gap:6px; }
-  .plus{ gap:max(1.6vh,12px); }
-  .plus-cap{ font-size:10.5px; letter-spacing:.04em; }
-  .chip{ padding:8px 6px; font-size:11px; letter-spacing:.14em; text-indent:.14em; min-width:0; }
+  .plus-list{ margin-top:min(4.5vh,32px); gap:4px; padding:0 2px; }
+  .plus{ gap:max(1.6vh,12px); flex:1 1 0; min-width:0; }
+  .plus-cap{ font-size:10px; letter-spacing:.02em; white-space:nowrap; }
+  .chip{ width:100%; max-width:74px; padding:8px 4px; font-size:11px; letter-spacing:.12em; text-indent:.12em; min-width:0; }
 
   /* 负分项 */
   .neg-grid{ margin-top:min(4vh,30px); gap:max(2.4vh,16px) 16px; }
@@ -429,8 +429,8 @@ body::before{
 
   /* 收束句 / 独白 */
   .sec-foot{ margin-top:min(2.6vh,18px); font-size:12px; letter-spacing:.1em; }
-  .sec-quote{ margin-top:min(3vh,22px); font-size:12px; line-height:1.9; }
-  .monologue{ font-size:10.5px; letter-spacing:.16em; line-height:2.3; }
+  .sec-quote{ margin-top:min(3.6vh,26px); font-size:12px; line-height:1.9; }
+  .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; max-width:32ch; margin-inline:auto; text-wrap:balance; }
 
   /* 收尾：拍立得与签名按屏宽缩放 */
   .polaroid-wrap{ width:min(60vmin,240px); }
