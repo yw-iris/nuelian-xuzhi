@@ -233,20 +233,21 @@ body::before{
 /* 页 2 · 关于我 */
 .facts{
   margin-top:min(6.5vh,48px);
-  display:grid;grid-template-columns:1fr 1fr;column-gap:min(6vw,40px);
+  display:grid;grid-template-columns:1fr 1fr;column-gap:min(8vw,56px);
   position:relative;z-index:1;
 }
 .fact{
   display:flex;justify-content:space-between;align-items:baseline;
-  padding:max(1.8vh,12px) 2px;border-bottom:1px solid var(--line);
+  padding:max(2.4vh,16px) 2px;border-bottom:1px solid var(--line);
 }
 .fact dt{font-size:12px;letter-spacing:.3em;color:var(--gray-1)}
 .fact dd{font-size:clamp(13px,2.8vmin,16px);font-weight:600;letter-spacing:.1em}
 .fact dd.en{font-family:var(--serif-en);font-weight:500;font-size:1.1em}
 
-/* 页 3 · 加分项 */
-.plus-list{margin-top:min(6.5vh,48px);display:flex;justify-content:space-between;gap:max(2vh,14px);position:relative;z-index:1}
-.plus{flex:1;display:flex;flex-direction:column;align-items:center;gap:max(1.8vh,14px)}
+/* 页 3 · 加分项：一行两句 */
+.plus-list{margin-top:min(6.5vh,48px);display:grid;grid-template-columns:repeat(2,1fr);gap:max(4.5vh,32px) min(7vw,36px);position:relative;z-index:1}
+.plus{display:flex;flex-direction:column;align-items:center;gap:max(1.8vh,14px)}
+.plus:last-child:nth-child(odd){grid-column:1/-1}
 .plus-cap{font-size:clamp(11px,2.2vmin,13.5px);letter-spacing:.18em;color:var(--gray-1);white-space:nowrap}
 .plus-t{font-size:clamp(14px,3vmin,17px);letter-spacing:.2em;font-weight:600}
 .plus-d{font-family:var(--serif-en);font-style:italic;font-size:12px;color:var(--gray-2);margin-top:4px;letter-spacing:.05em}
@@ -258,10 +259,10 @@ body::before{
 }
 .chip:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
 
-/* 页 4 · 负分项 */
+/* 页 4 · 负分项：一行一句 */
 .neg-grid{
-  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr 1fr;
-  gap:max(3.5vh,26px) min(7vw,36px);position:relative;z-index:1;
+  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr;
+  gap:max(3.5vh,26px);position:relative;z-index:1;
 }
 .neg{position:relative;padding-left:19px}
 .neg::before{
@@ -418,19 +419,19 @@ body::before{
   .sec-cap{ font-size:9px; letter-spacing:.26em; }
 
   /* 关于我：两列表格行高稍收 */
-  .facts{ margin-top:min(4vh,30px); column-gap:18px; }
-  .fact{ padding:max(1.6vh,11px) 2px; }
+  .facts{ margin-top:min(4vh,30px); column-gap:20px; }
+  .fact{ padding:max(2vh,13px) 2px; }
   .fact dt{ font-size:10.5px; letter-spacing:.16em; }
   .fact dd{ font-size:13.5px; }
 
-  /* 加分项：三列等分，字距收紧 */
-  .plus-list{ margin-top:min(4.5vh,32px); gap:4px; padding:0 2px; }
-  .plus{ gap:max(1.6vh,12px); flex:1 1 0; min-width:0; }
-  .plus-cap{ font-size:10px; letter-spacing:.02em; white-space:nowrap; }
-  .chip{ width:100%; max-width:74px; padding:8px 4px; font-size:11px; letter-spacing:.12em; text-indent:.12em; min-width:0; }
+  /* 加分项：一行两句 */
+  .plus-list{ margin-top:min(4.5vh,32px); gap:max(3vh,20px) 24px; padding:0 2px; }
+  .plus{ gap:max(1.6vh,12px); min-width:0; }
+  .plus-cap{ font-size:10.5px; letter-spacing:.04em; white-space:nowrap; }
+  .chip{ width:auto; min-width:88px; padding:8px 10px; font-size:11px; letter-spacing:.14em; text-indent:.14em; }
 
-  /* 负分项 */
-  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.4vh,16px) 16px; }
+  /* 负分项：一行一句 */
+  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.8vh,18px); }
   .neg{ padding-left:17px; }
   .neg::before{ top:6px; width:6px; height:6px; }
   .neg-t{ font-size:13px; letter-spacing:.1em; }
@@ -460,9 +461,9 @@ body::before{
   .cover-rule{ margin-top:min(2.4vh,16px); }
   .cover-tagline{ margin-top:min(2vh,14px); }
   .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); }
-  .fact{ padding:max(1vh,7px) 2px; }
+  .fact{ padding:max(1.2vh,9px) 2px; }
   .plus{ gap:max(1.1vh,8px); }
-  .neg-grid{ gap:max(1.5vh,10px) 14px; }
+  .neg-grid{ gap:max(1.8vh,12px); }
   .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
   .polaroid-wrap{ width:min(52vmin,200px); }
   .sig-line{ margin-top:min(2.2vh,14px); }
