@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>虐恋须知 · 冬</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f3ef;
+  --paper:#fbfaf7;
+  --ink:#141414;
+  --ink-soft:#3c3b38;
+  --gray-1:#6f6d68;
+  --gray-2:#a9a6a0;
+  --line:#dcd8d0;
+  --gold:#b08d4f;
+  --gold-soft:#c9ab72;
+  --gold-bright:#e2c489;
+  --serif-en:'Cormorant Garamond', 'Times New Roman', serif;
+  --serif-cn:'Noto Serif SC', 'Songti SC', serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--serif-cn);
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+  min-height:100vh;
+}
+/* 纸张颗粒 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+/* 背景水印「冬」 */
+.watermark{
+  position:fixed;right:-6vw;top:12vh;z-index:0;
+  font-family:var(--serif-cn);font-weight:900;
+  font-size:min(58vw,640px);line-height:1;
+  color:transparent;-webkit-text-stroke:1px rgba(20,20,20,.06);
+  user-select:none;pointer-events:none;
+}
+.stage{
+  position:relative;z-index:1;
+  max-width:520px;margin:0 auto;
+  padding:clamp(28px,6vw,56px) clamp(22px,6vw,40px) 90px;
+}
+
+/* ————— 入场动效 ————— */
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .9s cubic-bezier(.2,.6,.2,1),transform .9s cubic-bezier(.2,.6,.2,1)}
+.reveal.in{opacity:1;transform:none}
+@media (prefers-reduced-motion: reduce){
+  .reveal{opacity:1;transform:none;transition:none}
+}
+
+/* ————— 页眉 ————— */
+.masthead{position:relative;text-align:center;padding-top:8px}
+.meta-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:11px;letter-spacing:.32em;color:var(--gray-1);
+  border-bottom:1px solid var(--line);padding-bottom:12px;
+}
+.meta-row .en{font-family:var(--serif-en);letter-spacing:.28em;font-size:10px}
+.seal{
+  position:absolute;top:34px;right:2px;
+  width:44px;height:44px;border:1.5px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold);font-weight:700;font-size:20px;
+  transform:rotate(6deg);background:rgba(176,141,79,.05);
+}
+.title{
+  margin-top:44px;
+  font-size:clamp(2.4rem,10vw,3.3rem);
+  font-weight:900;letter-spacing:.3em;text-indent:.3em;
+  color:var(--ink);
+}
+.sub-en{
+  margin-top:14px;
+  font-family:var(--serif-en);font-weight:500;
+  font-size:13px;letter-spacing:.62em;text-indent:.62em;
+  color:var(--gray-1);
+}
+.gold-rule{
+  width:150px;height:1px;margin:26px auto 0;
+  background:linear-gradient(90deg,transparent,var(--gold) 20%,var(--gold) 80%,transparent);
+  position:relative;
+}
+.gold-rule::after{
+  content:"";position:absolute;left:50%;top:50%;
+  width:5px;height:5px;transform:translate(-50%,-50%) rotate(45deg);
+  background:var(--gold);
+}
+.tagline{
+  margin-top:22px;font-size:13.5px;letter-spacing:.42em;text-indent:.42em;
+  color:var(--ink-soft);
+}
+.cover-note{
+  margin-top:14px;text-align:center;
+  font-size:10px;letter-spacing:.34em;text-indent:.34em;color:var(--gray-2);
+}
+.vtext{
+  position:absolute;top:70px;right:clamp(6px,3vw,22px);
+  writing-mode:vertical-rl;
+  font-size:11px;letter-spacing:.5em;
+  color:rgba(20,20,20,.28);font-weight:600;
+}
+
+/* ————— 章节标题 ————— */
+section{margin-top:clamp(64px,12vw,96px)}
+.sec-head{display:flex;align-items:baseline;gap:14px}
+.sec-no{
+  font-family:var(--serif-en);font-weight:600;font-size:15px;
+  color:var(--gold);letter-spacing:.08em;
+}
+.sec-head h2{font-size:22px;font-weight:700;letter-spacing:.14em;display:flex;align-items:baseline;gap:12px}
+.sec-head h2 em{
+  font-family:var(--serif-en);font-style:italic;font-weight:500;
+  font-size:27px;letter-spacing:.02em;color:var(--ink);
+}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+.sec-en-cap{
+  margin-top:8px;font-family:var(--serif-en);font-size:10px;
+  letter-spacing:.4em;color:var(--gray-2);
+}
+
+/* ————— 01 档案 ————— */
+.facts{
+  margin-top:34px;
+  display:grid;grid-template-columns:1fr 1fr;
+  column-gap:34px;row-gap:0;
+}
+.fact{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:15px 2px;border-bottom:1px solid var(--line);
+}
+.fact dt{font-size:12.5px;letter-spacing:.3em;color:var(--gray-1)}
+.fact dd{font-size:15px;font-weight:600;letter-spacing:.12em}
+.fact dd .en{font-family:var(--serif-en);font-weight:500;font-size:16px}
+
+/* ————— 02 加分项 ————— */
+.plus-list{margin-top:36px;display:flex;flex-direction:column;gap:22px}
+.plus{display:flex;align-items:center;gap:16px}
+.plus .mk{flex:none;width:7px;height:7px;transform:rotate(45deg);border:1px solid var(--ink);margin-right:8px}
+.plus-t{font-size:15.5px;letter-spacing:.2em;font-weight:600}
+.plus-d{font-family:var(--serif-en);font-style:italic;font-size:12px;color:var(--gray-2);margin-top:5px;letter-spacing:.06em}
+.chip{
+  flex:none;background:var(--ink);color:var(--paper);
+  font-size:12px;letter-spacing:.34em;text-indent:.34em;
+  padding:8px 14px;min-width:96px;text-align:center;
+  transition:background .35s,color .35s,box-shadow .35s;
+}
+.chip:hover{background:var(--gold);box-shadow:0 6px 18px rgba(176,141,79,.35)}
+
+/* ————— 03 负分项 ————— */
+.neg-grid{
+  margin-top:36px;display:grid;grid-template-columns:1fr 1fr;
+  gap:24px 30px;
+}
+.neg{position:relative;padding-left:20px}
+.neg::before{
+  content:"";position:absolute;left:0;top:8px;
+  width:7px;height:7px;transform:rotate(45deg);
+  border:1px solid var(--gold);
+}
+.neg-t{font-size:14.5px;font-weight:600;letter-spacing:.14em}
+.neg-d{margin-top:6px;font-size:12px;color:var(--gray-1);letter-spacing:.1em}
+.sec-foot{
+  margin-top:30px;font-family:var(--serif-en);font-style:italic;
+  font-size:14px;letter-spacing:.14em;color:var(--ink-soft);
+}
+.sec-foot.center{text-align:center}
+.sec-quote{
+  margin-top:30px;text-align:center;
+  font-family:var(--serif-en);font-style:italic;
+  font-size:16px;letter-spacing:.1em;line-height:1.9;color:var(--ink-soft);
+}
+
+/* ————— 分隔纹样 ————— */
+.orn{display:flex;align-items:center;gap:16px;margin-top:clamp(56px,10vw,80px)}
+.orn .l{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line))}
+.orn .l:last-child{background:linear-gradient(90deg,var(--line),transparent)}
+.orn .d{width:6px;height:6px;transform:rotate(45deg);border:1px solid var(--gold)}
+.orn .w{font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--gray-2);letter-spacing:.2em}
+
+/* ————— 英文独白 ————— */
+.monologue{
+  margin-top:clamp(48px,9vw,72px);text-align:center;
+  font-family:var(--serif-en);font-weight:500;
+  font-size:12.5px;letter-spacing:.24em;line-height:2.4;
+  color:var(--ink-soft);text-transform:uppercase;
+  text-wrap:pretty;
+}
+.monologue .dim{color:var(--gray-2)}
+.quote-mark{
+  font-family:var(--serif-en);font-size:34px;color:var(--gold);
+  display:block;line-height:1;margin-bottom:10px;
+}
+
+/* ————— 签名 ————— */
+.sig{margin-top:clamp(44px,8vw,64px);display:flex;align-items:baseline;gap:12px}
+.sig-cn{font-size:24px;font-weight:900;letter-spacing:.4em}
+.sig-en{font-family:var(--serif-en);font-style:italic;font-size:15px;color:var(--gold);letter-spacing:.18em}
+.sig-rule{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+/* ————— 拍立得与燃烧 ————— */
+.polaroid-stage{
+  margin-top:clamp(48px,9vw,72px);
+  display:flex;justify-content:center;
+  padding:30px 0 40px;
+}
+.polaroid-wrap{position:relative;transition:opacity .9s ease}
+.glow{
+  position:absolute;inset:-40px;z-index:0;pointer-events:none;
+  background:radial-gradient(closest-side at 30% 85%,rgba(224,166,74,.28),transparent 70%);
+  filter:blur(18px);opacity:.5;transition:opacity .4s;
+}
+.polaroid{
+  position:relative;z-index:1;
+  background:var(--paper);
+  padding:13px 13px 54px;
+  box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 18px 45px rgba(20,20,20,.16),0 4px 12px rgba(20,20,20,.08);
+  transform:rotate(-4.5deg);
+  transition:transform .6s cubic-bezier(.2,.6,.2,1);
+  cursor:pointer;
+}
+.polaroid:hover{transform:rotate(-2.5deg) translateY(-4px)}
+.polaroid canvas{display:block;width:100%;height:auto;background:#0b0b0b}
+.polaroid figcaption{
+  position:absolute;left:0;right:0;bottom:0;height:54px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--serif-en);font-style:italic;font-size:13px;color:var(--ink-soft);letter-spacing:.12em;
+}
+.polaroid figcaption .bar{width:26px;height:1px;background:var(--gold)}
+.burn-hint{
+  margin-top:22px;text-align:center;
+  font-size:11px;letter-spacing:.4em;text-indent:.4em;color:var(--gray-2);
+}
+
+/* ————— 页脚 ————— */
+footer{
+  margin-top:clamp(56px,10vw,84px);text-align:center;
+  border-top:1px solid var(--line);padding-top:22px;
+  font-family:var(--serif-en);font-size:10px;letter-spacing:.4em;color:var(--gray-2);
+}
+footer .cn{font-family:var(--serif-cn);letter-spacing:.5em;margin-top:8px;font-size:11px}
+
+@media (max-width:420px){
+  .facts{column-gap:20px}
+  .chip{min-width:84px;padding:7px 10px}
+  .seal{width:38px;height:38px;font-size:17px}
+}
+</style>
+</head>
+<body>
+
+<div class="watermark" aria-hidden="true">冬</div>
+
+<main class="stage">
+
+  <!-- ═══ 页眉 ═══ -->
+  <header class="masthead">
+    <div class="meta-row reveal">
+      <span>A · 赞赏码</span>
+      <span class="en">SERIAL — NO.01</span>
+    </div>
+    <div class="vtext reveal" aria-hidden="true">虎 · 須知 · 恋</div>
+    <div class="seal reveal" aria-hidden="true">冬</div>
+    <h1 class="title reveal">虐恋须知</h1>
+    <p class="sub-en reveal">SUMMER&nbsp;&nbsp;ENROLLMENT</p>
+    <div class="gold-rule reveal"></div>
+    <p class="tagline reveal">从头于始</p>
+    <p class="cover-note reveal">客诉进度为零不必紧张</p>
+  </header>
+
+  <!-- ═══ 01 Meet ═══ -->
+  <section id="meet">
+    <div class="sec-head reveal">
+      <span class="sec-no">01</span>
+      <h2><em>Meet</em>关于我</h2>
+      <span class="sec-line"></span>
+    </div>
+    <p class="sec-en-cap reveal">— BASIC PROFILE —</p>
+    <dl class="facts reveal">
+      <div class="fact"><dt>署名</dt><dd>冬因</dd></div>
+      <div class="fact"><dt>属性</dt><dd class="en">T</dd></div>
+      <div class="fact"><dt>性别</dt><dd>女</dd></div>
+      <div class="fact"><dt>人格</dt><dd class="en">INTP</dd></div>
+      <div class="fact"><dt>火象</dt><dd>白羊</dd></div>
+      <div class="fact"><dt>游戏</dt><dd>仅光遇</dd></div>
+    </dl>
+    <p class="sec-foot reveal">知道是相爱</p>
+  </section>
+
+  <div class="orn reveal"><span class="l"></span><span class="d"></span><span class="w">keep</span><span class="d"></span><span class="l"></span></div>
+
+  <!-- ═══ 02 Predilection ═══ -->
+  <section id="predilection">
+    <div class="sec-head reveal">
+      <span class="sec-no">02</span>
+      <h2><em>Predilection</em>加分项</h2>
+      <span class="sec-line"></span>
+    </div>
+    <p class="sec-en-cap reveal">— WHAT WINS ME OVER —</p>
+    <div class="plus-list reveal">
+      <div class="plus"><span class="mk"></span><span class="plus-t">留话C</span></div>
+      <div class="plus"><span class="mk"></span><span class="plus-t">剖析</span></div>
+      <div class="plus"><span class="mk"></span><span class="plus-t">微文艺</span></div>
+    </div>
+    <p class="sec-quote reveal">如果流水有声音<br>你听到的是结束，还是开始</p>
+  </section>
+
+  <div class="orn reveal"><span class="l"></span><span class="d"></span><span class="w">avoid</span><span class="d"></span><span class="l"></span></div>
+
+  <!-- ═══ 03 Abhor ═══ -->
+  <section id="abhor">
+    <div class="sec-head reveal">
+      <span class="sec-no">03</span>
+      <h2><em>Abhor</em>负分项</h2>
+      <span class="sec-line"></span>
+    </div>
+    <p class="sec-en-cap reveal">— INSTANT DEAL-BREAKERS —</p>
+    <div class="neg-grid reveal">
+      <div class="neg"><p class="neg-t">套公式 / 逻辑混乱</p></div>
+      <div class="neg"><p class="neg-t">没自信 / 胡言乱语</p></div>
+      <div class="neg"><p class="neg-t">打字慢 / 错别字多</p></div>
+      <div class="neg"><p class="neg-t">大众雷 / 浪费时间</p></div>
+    </div>
+    <p class="sec-foot center reveal">你存在的意义只是作为我的镜子</p>
+  </section>
+
+  <!-- ═══ 独白 ═══ -->
+  <div class="monologue reveal">
+    <span class="quote-mark">”</span>
+    I'm like a child. I don't change my nature and play tricks on you.<br>
+    I'll talk about it and push you away.<br>
+    I want to prove that I am still favoured by you.<br>
+    But you follow the situation and retreat to the sea of people.<br>
+    I deserve it. I admit it.
+  </div>
+
+  <div class="sig reveal">
+    <span class="sig-cn">冬因</span><span class="sig-en">YE</span>
+    <span class="sig-rule"></span>
+  </div>
+
+  <!-- ═══ 拍立得 · 燃烧 ═══ -->
+  <div class="polaroid-stage reveal">
+    <div class="polaroid-wrap" id="polaroidWrap">
+      <div class="glow" id="glow"></div>
+      <figure class="polaroid" id="polaroid">
+        <canvas id="burn" width="320" height="360" aria-label="一张正在被火焰慢慢烧毁的拍立得照片"></canvas>
+        <figcaption><span class="bar"></span>winter, still burning<span class="bar"></span></figcaption>
+      </figure>
+    </div>
+  </div>
+  <p class="burn-hint reveal">悬停照片 — 火势会变大</p>
+
+  <footer>
+    WINTER · YE — ALL RIGHTS RESERVED
+    <p class="cn">焚化于心 · 不可回读</p>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  'use strict';
+  var canvas = document.getElementById('burn');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ——— 照片内容：程序化生成的黑白烟雾影像 ——— */
+  var photo = document.createElement('canvas');
+  photo.width = W; photo.height = H;
+  (function drawPhoto(){
+    var c = photo.getContext('2d');
+    var base = c.createLinearGradient(0, 0, W, H);
+    base.addColorStop(0, '#060606');
+    base.addColorStop(.45, '#1b1b1b');
+    base.addColorStop(1, '#0a0a0a');
+    c.fillStyle = base; c.fillRect(0, 0, W, H);
+
+    // 顶部冷光
+    var lg = c.createRadialGradient(W*.72, H*.16, 10, W*.72, H*.16, W*.9);
+    lg.addColorStop(0, 'rgba(255,255,255,.14)');
+    lg.addColorStop(1, 'rgba(255,255,255,0)');
+    c.fillStyle = lg; c.fillRect(0, 0, W, H);
+
+    // 烟雾涡流
+    c.filter = 'blur(9px)';
+    var swirls = [
+      {x:.32,y:.62,r:.30,w:.10},{x:.55,y:.40,r:.26,w:.14},
+      {x:.70,y:.68,r:.22,w:.09},{x:.42,y:.26,r:.20,w:.12}
+    ];
+    swirls.forEach(function(s,i){
+      c.strokeStyle = 'rgba(235,235,235,'+s.w+')';
+      c.lineWidth = 14 + i*6;
+      c.beginPath();
+      c.arc(W*s.x, H*s.y, W*s.r, i*1.3, i*1.3 + 4.2);
+      c.stroke();
+    });
+    // 一缕金线，呼应主色
+    c.strokeStyle = 'rgba(200,160,92,.4)';
+    c.lineWidth = 1.6;
+    c.beginPath();
+    c.moveTo(W*.08, H*.85);
+    c.bezierCurveTo(W*.4, H*.7, W*.55, H*.42, W*.9, H*.3);
+    c.stroke();
+    c.filter = 'none';
+
+    // 颗粒
+    for(var i=0;i<4200;i++){
+      c.fillStyle = Math.random()<.5 ? 'rgba(255,255,255,.03)' : 'rgba(0,0,0,.06)';
+      c.fillRect(Math.random()*W, Math.random()*H, 1, 1);
+    }
+  })();
+
+  /* ——— 噪声场（预计算） ——— */
+  function makeGrid(step){
+    var gw = Math.ceil(W/step)+3, gh = Math.ceil(H/step)+3;
+    var g = new Float32Array(gw*gh);
+    for(var i=0;i<g.length;i++) g[i]=Math.random();
+    return {g:g, gw:gw, gh:gh, step:step};
+  }
+  var G1 = makeGrid(10), G2 = makeGrid(4);
+  function sample(G, x, y){
+    var gx = x/G.step, gy = y/G.step;
+    var x0 = Math.min(Math.floor(gx), G.gw-2), y0 = Math.min(Math.floor(gy), G.gh-2);
+    var fx = gx-x0, fy = gy-y0;
+    var sx = fx*fx*(3-2*fx), sy = fy*fy*(3-2*fy);
+    var a=G.g[y0*G.gw+x0], b=G.g[y0*G.gw+x0+1], cc=G.g[(y0+1)*G.gw+x0], d=G.g[(y0+1)*G.gw+x0+1];
+    return (a+(b-a)*sx)*(1-sy) + (cc+(d-cc)*sx)*sy;
+  }
+
+  var N = W*H;
+  var dist = new Float32Array(N), nArr = new Float32Array(N);
+  var OX = W*0.10, OY = H*0.94;
+  (function precompute(){
+    for(var y=0;y<H;y++) for(var x=0;x<W;x++){
+      var i = y*W+x;
+      dist[i] = Math.hypot(x-OX, y-OY);
+      var n = .62*sample(G1,x,y) + .38*sample(G2,x,y);
+      nArr[i] = n<0?0:(n>1?1:n);
+    }
+  })();
+  var MAXD = Math.hypot(W-OX, H-OY) + 46;
+
+  var frontLUT = new Float32Array(256);
+  var flickLUT = new Float32Array(256);
+  var holeData = ctx.createImageData(W, H);
+  var embeData = ctx.createImageData(W, H);
+
+  function renderFrame(t, burnR){
+    var k, n, kk;
+    for(k=0;k<256;k++){
+      n = k/255;
+      frontLUT[k] = burnR + n*52 + Math.sin(t*2.1 + n*6.283)*3.2;
+      flickLUT[k] = .72 + .28*Math.sin(t*10 + n*40 + Math.sin(t*6 + n*23)*2);
+    }
+    var hole = holeData.data, em = embeData.data;
+    for(var i=0;i<N;i++){
+      var p = i*4;
+      kk = (nArr[i]*255)|0;
+      var v = dist[i] - frontLUT[kk];
+      if(v < 0){                       // 已烧穿
+        hole[p+3] = 255; em[p+3] = 0;
+      } else if(v < 10){               // 火焰边缘（琥珀金）
+        hole[p+3] = 0;
+        var h = 1 - v/10, f = flickLUT[kk];
+        em[p]   = 200 + 55*h;
+        em[p+1] = 86  + 122*h;
+        em[p+2] = 30  + 88*h;
+        var a = h*.95*f;
+        if(v < 1.8){ em[p]=255; em[p+1]=238; em[p+2]=198; a = .95*f; }
+        em[p+3] = a*255;
+      } else if(v < 24){               // 炭化带
+        hole[p+3] = 0;
+        em[p]=16; em[p+1]=11; em[p+2]=8;
+        em[p+3] = (1-(v-10)/14)*220;
+      } else {
+        hole[p+3] = 0; em[p+3] = 0;
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.clearRect(0,0,W,H);
+    ctx.drawImage(photo,0,0);
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.putImageData(holeData,0,0);
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.putImageData(embeData,0,0);
+  }
+
+  /* ——— 火星与烟 ——— */
+  var sparks = [], smoke = [];
+  function spawn(t){
+    for(var s=0;s<26;s++){
+      var x = Math.random()*W, y = Math.random()*H;
+      var i = (y|0)*W + (x|0);
+      var v = dist[i] - frontLUT[(nArr[i]*255)|0];
+      if(v>=0 && v<10 && Math.random()<.3 && sparks.length<160){
+        sparks.push({x:x,y:y,vx:(Math.random()-.5)*.5,vy:-(.5+Math.random()*1.5),
+          life:1,decay:.008+Math.random()*.015,r:.8+Math.random()*1.6,ph:Math.random()*6.28});
+      } else if(v>=10 && v<24 && Math.random()<.06 && smoke.length<14){
+        smoke.push({x:x,y:y,vx:(Math.random()-.5)*.2,vy:-(.25+Math.random()*.4),
+          life:1,decay:.004+Math.random()*.006,r:5+Math.random()*9});
+      }
+    }
+  }
+  function drawParticles(t){
+    var i, s;
+    ctx.globalCompositeOperation = 'lighter';
+    for(i=sparks.length-1;i>=0;i--){
+      s = sparks[i];
+      s.x += s.vx + Math.sin(t*3+s.ph)*.28; s.y += s.vy; s.vy -= .008; s.life -= s.decay;
+      if(s.life<=0 || s.y<-8){ sparks.splice(i,1); continue; }
+      var fl = .55+.45*Math.sin(t*14+s.ph);
+      ctx.fillStyle = 'rgba(232,'+(168+((60*s.life)|0))+',110,'+(s.life*fl).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r*(.5+.5*s.life),0,6.283); ctx.fill();
+    }
+    ctx.globalCompositeOperation = 'source-over';
+    for(i=smoke.length-1;i>=0;i--){
+      s = smoke[i];
+      s.x += s.vx; s.y += s.vy; s.r += .05; s.life -= s.decay;
+      if(s.life<=0 || s.y<-20){ smoke.splice(i,1); continue; }
+      var g = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.r);
+      g.addColorStop(0,'rgba(140,138,134,'+(0.10*s.life).toFixed(3)+')');
+      g.addColorStop(1,'rgba(140,138,134,0)');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ctx.arc(s.x,s.y,s.r,0,6.283); ctx.fill();
+    }
+  }
+
+  /* ——— 状态机：燃烧 → 熄灭淡出 → 重生 ——— */
+  var wrap = document.getElementById('polaroidWrap');
+  var glow = document.getElementById('glow');
+  var polaroid = document.getElementById('polaroid');
+  var state = 'burn', burnR = 0, fadeT0 = 0;
+  var speed = .55, hover = false;
+  polaroid.addEventListener('mouseenter', function(){ hover = true; });
+  polaroid.addEventListener('mouseleave', function(){ hover = false; });
+  polaroid.addEventListener('touchstart', function(){ hover = !hover; }, {passive:true});
+
+  function tick(now){
+    var t = now/1000;
+    if(state === 'burn'){
+      burnR += hover ? 1.7 : speed;
+      renderFrame(t, burnR);
+      spawn(t);
+      drawParticles(t);
+      glow.style.opacity = (.4 + .25*Math.sin(t*7) + .1*Math.sin(t*23)).toFixed(3);
+      if(burnR >= MAXD){ state='fade'; fadeT0 = now; }
+    } else if(state === 'fade'){
+      var p = (now - fadeT0)/1100;
+      drawParticles(t);
+      wrap.style.opacity = Math.max(0, 1-p).toFixed(3);
+      glow.style.opacity = Math.max(0, .5-p).toFixed(3);
+      if(p >= 1){
+        state='rise'; fadeT0 = now; burnR = 0; sparks.length = 0; smoke.length = 0;
+      }
+    } else { // rise
+      var q = (now - fadeT0)/1100;
+      renderFrame(t, 0);
+      wrap.style.opacity = Math.min(1, q).toFixed(3);
+      glow.style.opacity = Math.min(.5, q*.5).toFixed(3);
+      if(q >= 1){ state='burn'; }
+    }
+    requestAnimationFrame(tick);
+  }
+
+  if(reduced){
+    renderFrame(1.7, MAXD*.55);   // 静态：半燃状态
+    glow.style.opacity = '.35';
+  } else {
+    var running = false, rafId = null;
+    function start(){ if(!running){ running = true; rafId = requestAnimationFrame(tick); } }
+    function stop(){ running = false; if(rafId) cancelAnimationFrame(rafId); }
+    new IntersectionObserver(function(es){
+      es.forEach(function(e){ e.isIntersecting ? start() : stop(); });
+    }, {threshold:.05}).observe(polaroid);
+  }
+
+  /* ——— 滚动入场 ——— */
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, {threshold:.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+})();
+</script>
+</body>
+</html>
