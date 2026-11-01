@@ -578,7 +578,7 @@ body::before{
       run:function(direction, done){
         if(!this.available){ if(done) done(); return; }
         dir = direction>0?1:-1; t=0; last=performance.now();
-        cv.style.opacity=1; embers.length=0; smoke.length=0; ashes.length=0; half=null; cb=done||null;
+        cv.style.opacity=1; embers.length=0; smoke.length=0; ashes.length=0; cb=done||null;
         if(!running){ running=true; requestAnimationFrame(draw); }
       }
     };
