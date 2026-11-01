@@ -246,6 +246,11 @@ body::before{
 }
 .polaroid:hover{transform:rotate(-2.5deg) translateY(-4px)}
 .polaroid canvas{display:block;width:100%;height:auto;background:#0b0b0b}
+.reveal-photo{
+  position:absolute;top:11px;left:11px;width:calc(100% - 22px);
+  aspect-ratio:320/360;object-fit:cover;object-position:center;
+  opacity:0;transition:opacity 1.8s ease;z-index:2;pointer-events:none;
+}
 .polaroid figcaption{
   position:absolute;left:0;right:0;bottom:0;height:48px;
   display:flex;align-items:center;justify-content:center;gap:10px;
@@ -450,6 +455,7 @@ body::before{
       <div class="polaroid-wrap" id="polaroidWrap">
         <figure class="polaroid" id="polaroid">
           <canvas id="burn" width="320" height="360" aria-label="一张正在被火焰慢慢烧毁的拍立得照片"></canvas>
+          <img class="reveal-photo" id="revealPhoto" src="reveal.jpg" alt="拍立得燃尽后显现的照片">
           <figcaption><span class="bar"></span>winter, still burning<span class="bar"></span></figcaption>
         </figure>
       </div>
@@ -956,9 +962,13 @@ body::before{
       renderFrame(t,burnR); spawn(); drawParticles(t);
       if(burnR>=MAXD){ state='fade'; fadeT0=now; }
       else if(cycle>=2 && burnR>=MAXD*0.5){
-        // 第二遍烧到一半即截掉，不再重生循环
+        // 第二遍烧到一半即截掉：炭壳淡去，藏着的底片显现
         cut=true;
         if(rafId!==null){ cancelAnimationFrame(rafId); rafId=null; }
+        canvas.style.transition='opacity 1.8s ease';   // 只淡出炭化画布，白框与底片保留
+        canvas.style.opacity=0;
+        var rp=document.getElementById('revealPhoto');
+        if(rp) rp.style.opacity=1;
         return;
       }
     } else if(state==='fade'){
@@ -978,7 +988,13 @@ body::before{
   window.__burnStart = function(){
     if(reduced){ renderFrame(1.7, MAXD*.55); return; }
     cut=false; cycle=1; state='burn'; burnR=0;
-    wrap.style.opacity=1; sparks.length=0; smoke.length=0;
+    wrap.style.opacity=1;
+    canvas.style.transition='none'; canvas.style.opacity=1;
+    polaroid.style.transition='none'; polaroid.style.opacity=1;
+    var rp=document.getElementById('revealPhoto');
+    if(rp){ rp.style.transition='none'; rp.style.opacity=0;
+            requestAnimationFrame(function(){ rp.style.transition=''; }); }
+    sparks.length=0; smoke.length=0;
     if(rafId===null) rafId = requestAnimationFrame(tick);
   };
   window.__burnStop = function(){
