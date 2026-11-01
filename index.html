@@ -379,45 +379,98 @@ body::before{
 
 /* ————— 手机适配（≤480px 竖屏） ————— */
 @media (max-width:480px){
-  .page{ padding:6px 20px 10px; }
-  .chrome-top{ padding:calc(10px + env(safe-area-inset-top)) 14px 8px; gap:8px; }
-  .chrome-bottom{ padding:8px 14px calc(10px + env(safe-area-inset-bottom)); }
+  /* 骨架：留足左右呼吸感，上下收紧 */
+  .page{ padding:10px 24px 14px; }
+  .chrome-top{ padding:calc(10px + env(safe-area-inset-top)) 16px 8px; gap:9px; }
+  .chrome-bottom{ padding:8px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .avatar{ width:30px; height:30px; font-size:13px; }
   .handle{ font-size:12px; }
-  .cover-title{ font-size:clamp(2.1rem,13vmin,3rem); margin-top:min(5vh,42px); }
-  .cover-sub{ letter-spacing:.42em; font-size:11px; }
-  .cover-tagline{ font-size:11px; letter-spacing:.34em; }
-  .cover-note{ font-size:9px; }
-  .vtext{ font-size:10px; top:11vh; right:8px; }
-  .ghost{ font-size:min(38vmin,240px); right:-2vw; }
-  .disc{ width:min(50vmin,320px); height:min(50vmin,320px); right:-22vw; top:-20vh; }
-  .sec-head h2{ font-size:clamp(17px,5.4vmin,22px); gap:9px; }
-  .sec-cap{ font-size:9px; letter-spacing:.3em; }
-  .facts{ margin-top:min(3.6vh,28px); column-gap:min(5vw,24px); }
-  .fact{ padding:max(1.3vh,9px) 2px; }
-  .fact dt{ font-size:11px; letter-spacing:.2em; }
-  .fact dd{ font-size:13px; }
-  .plus-list{ margin-top:min(3.6vh,28px); gap:8px; }
-  .chip{ min-width:0; padding:7px 6px; font-size:11px; letter-spacing:.14em; }
-  .plus-cap{ font-size:11px; letter-spacing:.08em; }
-  .plus-d{ font-size:9.5px; }
-  .neg-grid{ margin-top:min(3.6vh,28px); gap:max(2.2vh,15px) 14px; }
-  .neg-t{ font-size:13px; }
+  .progress{ gap:4px; }
+  .counter{ font-size:11px; min-width:56px; }
+  .nav-btn{ width:38px; height:38px; }
+  .tap-hint{ display:none; }          /* 窄屏隐藏中间提示，底部更清爽 */
+
+  /* 封面：标题收字距防溢出，整体重心略上移 */
+  .cover-meta{ font-size:10px; letter-spacing:.2em; padding-bottom:10px; }
+  .cover-meta .en{ font-size:9px; letter-spacing:.18em; }
+  .seal{ width:36px; height:36px; font-size:16px; top:44px; right:24px; border-width:1.2px; }
+  .cover-title{ font-size:clamp(2.1rem,12.5vmin,3rem); margin-top:min(6vh,46px); letter-spacing:.22em; text-indent:.22em; }
+  .cover-sub{ font-size:10.5px; letter-spacing:.36em; text-indent:.36em; margin-top:12px; }
+  .cover-rule{ width:118px; margin-top:min(3.6vh,26px); }
+  .cover-tagline{ font-size:11.5px; letter-spacing:.3em; text-indent:.3em; margin-top:min(3vh,22px); }
+  .cover-note{ font-size:9px; letter-spacing:.26em; text-indent:.26em; }
+  .vtext{ font-size:10px; top:10vh; right:10px; letter-spacing:.4em; }
+  .ghost{ font-size:min(36vmin,220px); right:-4vw; -webkit-text-stroke-width:1px; }
+  .disc{ width:min(46vmin,300px); height:min(46vmin,300px); right:-24vw; top:-18vh; }
+
+  /* 章节头 */
+  .sec-no{ font-size:13px; }
+  .sec-head{ gap:9px; }
+  .sec-head h2{ font-size:clamp(17px,5.2vmin,21px); gap:8px; }
+  .sec-cap{ font-size:9px; letter-spacing:.26em; }
+
+  /* 关于我：两列表格行高稍收 */
+  .facts{ margin-top:min(4vh,30px); column-gap:18px; }
+  .fact{ padding:max(1.6vh,11px) 2px; }
+  .fact dt{ font-size:10.5px; letter-spacing:.16em; }
+  .fact dd{ font-size:13.5px; }
+
+  /* 加分项：三列等分，字距收紧 */
+  .plus-list{ margin-top:min(4.5vh,32px); gap:6px; }
+  .plus{ gap:max(1.6vh,12px); }
+  .plus-cap{ font-size:10.5px; letter-spacing:.04em; }
+  .chip{ padding:8px 6px; font-size:11px; letter-spacing:.14em; text-indent:.14em; min-width:0; }
+
+  /* 负分项 */
+  .neg-grid{ margin-top:min(4vh,30px); gap:max(2.4vh,16px) 16px; }
+  .neg{ padding-left:17px; }
+  .neg::before{ top:6px; width:6px; height:6px; }
+  .neg-t{ font-size:13px; letter-spacing:.1em; }
   .neg-d{ font-size:10.5px; margin-top:4px; }
-  .sec-foot{ margin-top:min(2.2vh,15px); font-size:12px; }
-  .sec-quote{ margin-top:min(2.8vh,20px); font-size:12px; line-height:1.8; }
-  .monologue{ font-size:10.5px; letter-spacing:.14em; line-height:2.2; }
-  .polaroid-wrap{ width:min(62vmin,250px); }
-  .polaroid figcaption{ font-size:11px; }
-  .sig-line{ margin-top:min(3vh,20px); }
-  .sig-cn{ font-size:19px; }
-  .burn-hint{ font-size:9.5px; margin-top:min(1.6vh,10px); }
+
+  /* 收束句 / 独白 */
+  .sec-foot{ margin-top:min(2.6vh,18px); font-size:12px; letter-spacing:.1em; }
+  .sec-quote{ margin-top:min(3vh,22px); font-size:12px; line-height:1.9; }
+  .monologue{ font-size:10.5px; letter-spacing:.16em; line-height:2.3; }
+
+  /* 收尾：拍立得与签名按屏宽缩放 */
+  .polaroid-wrap{ width:min(60vmin,240px); }
+  .polaroid{ padding:9px 9px 42px; }
+  .reveal-photo{ top:9px; left:9px; width:calc(100% - 18px); }
+  .polaroid figcaption{ height:42px; font-size:11px; }
+  .sig-line{ margin-top:min(3.4vh,24px); }
+  .sig-cn{ font-size:20px; letter-spacing:.32em; }
+  .sig-en{ font-size:13px; }
+  .burn-hint{ font-size:9.5px; margin-top:min(2vh,12px); }
+}
+/* 手机 · 矮屏（准 iPhone SE / 横窗）：进一步压缩纵向节奏，保证不裁切 */
+@media (max-width:480px) and (max-height:660px){
+  .page{ padding:6px 24px 10px; }
+  .seal{ top:38px; }
+  .vtext{ top:15vh; }
+  .cover-title{ margin-top:min(3.5vh,26px); }
+  .cover-rule{ margin-top:min(2.4vh,16px); }
+  .cover-tagline{ margin-top:min(2vh,14px); }
+  .facts,.plus-list,.neg-grid{ margin-top:min(2.4vh,16px); }
+  .fact{ padding:max(1vh,7px) 2px; }
+  .plus{ gap:max(1.1vh,8px); }
+  .neg-grid{ gap:max(1.5vh,10px) 14px; }
+  .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
+  .polaroid-wrap{ width:min(52vmin,200px); }
+  .sig-line{ margin-top:min(2.2vh,14px); }
 }
 @media (max-width:360px){
-  .page{ padding:6px 16px 8px; }
-  .cover-title{ font-size:clamp(1.9rem,12vmin,2.6rem); }
+  .page{ padding:8px 18px 10px; }
+  .vtext{ display:none; }
+  .cover-title{ font-size:clamp(1.85rem,11.5vmin,2.5rem); }
+  .cover-sub{ letter-spacing:.28em; text-indent:.28em; }
+  .cover-tagline{ letter-spacing:.22em; text-indent:.22em; }
   .chip{ font-size:10px; letter-spacing:.08em; }
   .plus-cap{ font-size:10px; }
   .neg-t{ font-size:12px; }
+  .fact dd{ font-size:12.5px; }
+  .monologue{ font-size:10px; letter-spacing:.12em; }
+  .polaroid-wrap{ width:min(64vmin,220px); }
 }
 </style>
 </head>
@@ -691,79 +744,18 @@ body::before{
       c.globalCompositeOperation='source-over';
     }
 
-    // —— 烟绸：页底中心涌出的灰白缎带状烟焰（参考拍立得烧角图）——
-    function vnoise(x){                            // 廉价 1D 值噪声 → [0,1]
-      var xi=Math.floor(x), f=x-xi;
-      var a=Math.sin(xi*127.1+311.7)*43758.5453, b=Math.sin((xi+1)*127.1+311.7)*43758.5453;
-      a=a-Math.floor(a); b=b-Math.floor(b);
-      var u=f*f*(3-2*f);
-      return a+(b-a)*u;
-    }
+    // —— 点燃点余晖：只在页底中心留一团微光，不再有任何飘出的白色绸带 ——
     function drawFlame(tt, grow, frontR){
-      if(grow<=0.01 || frontR<=0) return;
+      if(grow<=0.01) return;
       var fx=OX, fy=OY-6, t=tt*0.001;
       c.save();
       c.globalCompositeOperation='lighter';
       c.filter='blur(2px)';
-      // 绸带长度随火线规模生长，但保持短促
-      var L=(34+Math.min(frontR*0.20,80))*grow;
-      // 单条丝绸：从火线锚点向外（未烧纸面方向）舔出的 S 形卷曲缎带
-      function silk(bx,by,ang,len,wid,ph,curlDir){
-        var ux=Math.cos(ang), uy=Math.sin(ang), nx=-uy, ny=ux;
-        var layers=[
-          [2.4,'rgba(120,118,114,0.20)'],
-          [1.0,'rgba(232,231,228,0.46)'],
-          [0.45,'rgba(255,255,252,0.80)']
-        ];
-        var STEPS=16;
-        for(var li=0;li<layers.length;li++){
-          var lf=layers[li], Lp=[], Rp=[], s;
-          for(s=0;s<=STEPS;s++){
-            var h=s/STEPS;
-            // S 形摆动 + 尖端回卷（参考图烧口处卷曲的绸头）
-            var sway=Math.sin(h*4.6+t*2.8+ph)*(3+16*h)*grow;
-            var loop=Math.pow(Math.max(0,h-0.66)/0.34,2)*12*curlDir*Math.sin(t*2.2+ph)*grow;
-            var d=len*h*(0.88+0.24*vnoise(h*5+ph));
-            var px=bx+ux*d+nx*(sway+loop), py=by+uy*d+ny*(sway+loop);
-            // 宽度：根部收拢→中段丰满→末端收尖；噪声造成缎面褶皱
-            var prof=Math.sin(Math.min(1,h*1.2)*Math.PI)*(1-h*0.35);
-            var hw=wid*lf[0]*prof*(0.72+0.5*vnoise(h*6+ph*2));
-            Lp.push([px-nx*hw,py-ny*hw]); Rp.push([px+nx*hw,py+ny*hw]);
-          }
-          c.beginPath();
-          c.moveTo(Lp[0][0],Lp[0][1]);
-          for(s=1;s<STEPS;s++){
-            var mx=(Lp[s][0]+Lp[s+1][0])/2, my=(Lp[s][1]+Lp[s+1][1])/2;
-            c.quadraticCurveTo(Lp[s][0],Lp[s][1],mx,my);
-          }
-          c.lineTo(Lp[STEPS][0],Lp[STEPS][1]);
-          for(s=STEPS-1;s>0;s--){
-            var mx2=(Rp[s][0]+Rp[s-1][0])/2, my2=(Rp[s][1]+Rp[s-1][1])/2;
-            c.quadraticCurveTo(Rp[s][0],Rp[s][1],mx2,my2);
-          }
-          c.lineTo(Rp[0][0],Rp[0][1]);
-          c.closePath();
-          c.fillStyle=lf[1]; c.fill();
-        }
-      }
-      // 沿火线圆周取 8 个锚点，各自舔出一条丝绸：
-      // 流向沿焦黑边缘切向（略向焦侧倾斜），像参考图里趴在烧口流动的绸
-      for(var k=0;k<8;k++){
-        var a=k*0.7854 + Math.sin(t*0.7+k)*0.18;
-        var r=frontR*(0.84+0.14*vnoise(k*3.7+t*1.4));        // 紧贴焦黑边缘，衬黑显形
-        var bx=OX+Math.cos(a)*r, by=OY+Math.sin(a)*r;
-        var cd=(k%2?1:-1);
-        var tx=-Math.sin(a)*cd, ty=Math.cos(a)*cd;          // 切向
-        var ix=-Math.cos(a), iy=-Math.sin(a);               // 向焦侧（指向燃点）
-        var ang=Math.atan2(ty+iy*0.55, tx+ix*0.55);         // 以切向为主、顺边流动
-        var wd=(7+5*vnoise(k*1.3+t*0.9))*grow;
-        silk(bx,by,ang+Math.sin(t+k*2)*0.3,
-             L*(0.7+0.6*vnoise(k*5.1+t)), wd, k*2.6, cd);
-      }
-      // 点燃点灰白余晖
-      var gr=22*grow+8;
+      // 点燃点灰白余晖（微微呼吸，不脱离火线）
+      var flick=0.85+0.15*Math.sin(t*5.1);
+      var gr=(20+6*Math.sin(t*3.3))*grow+8;
       var gl=c.createRadialGradient(fx,fy,0,fx,fy,gr);
-      gl.addColorStop(0,'rgba(240,240,236,'+(0.30*grow).toFixed(3)+')');
+      gl.addColorStop(0,'rgba(240,240,236,'+(0.26*grow*flick).toFixed(3)+')');
       gl.addColorStop(1,'rgba(240,240,236,0)');
       c.fillStyle=gl; c.beginPath(); c.arc(fx,fy,gr,0,6.283); c.fill();
       c.filter='none';
