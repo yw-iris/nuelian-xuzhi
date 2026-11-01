@@ -648,45 +648,36 @@ body::before{
       var u=f*f*(3-2*f);
       return a+(b-a)*u;
     }
-    function drawFlame(tt, grow){
-      if(grow<=0.01) return;
+    function drawFlame(tt, grow, frontR){
+      if(grow<=0.01 || frontR<=0) return;
       var fx=OX, fy=OY-6, t=tt*0.001;
-      var L=Math.min(H*0.22,200)*grow;            // 绸带长度随生长（更短促）
       c.save();
       c.globalCompositeOperation='lighter';
-      c.filter='blur(2.4px)';
-      // 四条缎带：各自错位/相位/摆速/卷向 → 绸缎叠涌
-      var ribs=[
-        {ox:0,   w:30, ph:0.0, len:1.00, sw:1.00, sp:2.4, curl: 1},
-        {ox:-15, w:23, ph:1.9, len:0.85, sw:1.30, sp:1.9, curl:-1},
-        {ox:14,  w:24, ph:3.4, len:0.92, sw:0.85, sp:2.8, curl: 1},
-        {ox:-5,  w:18, ph:5.0, len:0.68, sw:1.45, sp:3.2, curl:-1}
-      ];
-      var layers=[
-        [2.6,'rgba(120,118,114,0.10)'],
-        [1.6,'rgba(150,148,144,0.16)'],
-        [1.0,'rgba(226,225,222,0.26)'],
-        [0.42,'rgba(255,255,252,0.55)']
-      ];
-      var STEPS=26;
-      for(var li=0;li<layers.length;li++){
-        var lf=layers[li];
-        for(var ri=0;ri<ribs.length;ri++){
-          var rb=ribs[ri], len=L*rb.len, wd=rb.w*lf[0]*grow;
-          var Lp=[], Rp=[], s, h;
+      c.filter='blur(2px)';
+      // 绸带长度随火线规模生长，但保持短促
+      var L=(34+Math.min(frontR*0.20,80))*grow;
+      // 单条丝绸：从火线锚点向外（未烧纸面方向）舔出的 S 形卷曲缎带
+      function silk(bx,by,ang,len,wid,ph,curlDir){
+        var ux=Math.cos(ang), uy=Math.sin(ang), nx=-uy, ny=ux;
+        var layers=[
+          [2.4,'rgba(120,118,114,0.20)'],
+          [1.0,'rgba(232,231,228,0.46)'],
+          [0.45,'rgba(255,255,252,0.80)']
+        ];
+        var STEPS=16;
+        for(var li=0;li<layers.length;li++){
+          var lf=layers[li], Lp=[], Rp=[], s;
           for(s=0;s<=STEPS;s++){
-            h=s/STEPS;
-            // 缓慢飘摆的绸带中心线：两个低频波叠加
-            var sway=Math.sin(h*Math.PI*1.4 + t*rb.sp + rb.ph)*(4+38*h)*rb.sw*grow
-                    + Math.sin(h*Math.PI*2.8 - t*rb.sp*1.6 + rb.ph*2.0)*(2+14*h)*grow;
-            // 尖端回卷：末端横向甩出弧度
-            var tip=Math.pow(Math.max(0,h-0.72)/0.28,2)*30*rb.curl*Math.sin(t*rb.sp*1.2+rb.ph+1)*grow;
-            var cx=fx+rb.ox+sway+tip, cy=fy-h*len;
-            // 宽度：根部收拢→中段丰满→末端收尖；低频噪声造成缎面褶皱
-            var prof=(0.30+0.70*Math.sin(h*Math.PI*0.9))*(1-h*0.45);
-            var fold=0.72+0.5*vnoise(h*4.5 + t*2.4 + ri*2.3);
-            var hw=wd*prof*fold;
-            Lp.push([cx-hw,cy]); Rp.push([cx+hw,cy]);
+            var h=s/STEPS;
+            // S 形摆动 + 尖端回卷（参考图烧口处卷曲的绸头）
+            var sway=Math.sin(h*4.6+t*2.8+ph)*(3+16*h)*grow;
+            var loop=Math.pow(Math.max(0,h-0.66)/0.34,2)*12*curlDir*Math.sin(t*2.2+ph)*grow;
+            var d=len*h*(0.88+0.24*vnoise(h*5+ph));
+            var px=bx+ux*d+nx*(sway+loop), py=by+uy*d+ny*(sway+loop);
+            // 宽度：根部收拢→中段丰满→末端收尖；噪声造成缎面褶皱
+            var prof=Math.sin(Math.min(1,h*1.2)*Math.PI)*(1-h*0.35);
+            var hw=wid*lf[0]*prof*(0.72+0.5*vnoise(h*6+ph*2));
+            Lp.push([px-nx*hw,py-ny*hw]); Rp.push([px+nx*hw,py+ny*hw]);
           }
           c.beginPath();
           c.moveTo(Lp[0][0],Lp[0][1]);
@@ -704,7 +695,21 @@ body::before{
           c.fillStyle=lf[1]; c.fill();
         }
       }
-      // 根部灰白余晖（参考图为纯黑白灰，不再用金色）
+      // 沿火线圆周取 8 个锚点，各自舔出一条丝绸：
+      // 流向沿焦黑边缘切向（略向焦侧倾斜），像参考图里趴在烧口流动的绸
+      for(var k=0;k<8;k++){
+        var a=k*0.7854 + Math.sin(t*0.7+k)*0.18;
+        var r=frontR*(0.84+0.14*vnoise(k*3.7+t*1.4));        // 紧贴焦黑边缘，衬黑显形
+        var bx=OX+Math.cos(a)*r, by=OY+Math.sin(a)*r;
+        var cd=(k%2?1:-1);
+        var tx=-Math.sin(a)*cd, ty=Math.cos(a)*cd;          // 切向
+        var ix=-Math.cos(a), iy=-Math.sin(a);               // 向焦侧（指向燃点）
+        var ang=Math.atan2(ty+iy*0.55, tx+ix*0.55);         // 以切向为主、顺边流动
+        var wd=(7+5*vnoise(k*1.3+t*0.9))*grow;
+        silk(bx,by,ang+Math.sin(t+k*2)*0.3,
+             L*(0.7+0.6*vnoise(k*5.1+t)), wd, k*2.6, cd);
+      }
+      // 点燃点灰白余晖
       var gr=22*grow+8;
       var gl=c.createRadialGradient(fx,fy,0,fx,fy,gr);
       gl.addColorStop(0,'rgba(240,240,236,'+(0.30*grow).toFixed(3)+')');
@@ -719,7 +724,7 @@ body::before{
       t+=dt/dur; if(t>1) t=1;
       var tt=t*6.283;
       var IGN=0.09;                          // 前9%：烟绸快速涌出，焦面几乎未扩散
-      var FADE=0.34;                         // 扩散开始后烟绸再扭几下即淡出（占总时长约30%）
+      var FADE=0.40;                         // 扩散开始后烟绸再扭几下即淡出（约占总时长1/3）
       var SWAP_AT=0.72;
       var burnR, grow;
       if(t<IGN){                             // 相位0：点火——烟绸生长，只有点燃点微焦
@@ -730,13 +735,13 @@ body::before{
         var u=(t-IGN)/(SWAP_AT-IGN);
         burnR=MAXD*(0.1+0.9*u);              // u=1 时整页焦黑
         var fade=Math.max(0,1-u/FADE);       // 烟绸出现→扭动一下→很快退场
-        grow=(1-0.2*u)*fade*fade;
+        grow=fade<=0.04?0:(0.55+0.45*fade);  // 尺寸保底55%，退场靠归零
       } else {
         burnR=MAXD;                          // 整页已焦黑，保持至化灰
         grow=0;
       }
       renderFrame(tt,burnR);
-      drawFlame(now,grow);
+      drawFlame(now,grow,burnR);
       if(t<SWAP_AT) spawn();                 // 仅燃烧阶段迸火星
       drawParticles(tt);
       // 相位B：整层焦黑化灰淡出，新页自灰烬中浮现
