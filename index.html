@@ -634,19 +634,67 @@ body::before{
       c.globalCompositeOperation='source-over';
     }
 
+    // —— 火舌：页底中心先燃起的灰白卷曲火苗（参考拍立得燃烧图）——
+    function drawFlame(tt, grow){
+      if(grow<=0.01) return;
+      var fx=OX, fy=OY-6;
+      var hgt=Math.min(H*0.30,260)*grow;          // 舌高随生长
+      var wid=(30*grow+12);
+      var t=tt*0.001;
+      c.save();
+      c.globalCompositeOperation='lighter';
+      c.filter='blur(2.5px)';                    // 柔化边缘，接近烟火的绵软质感
+      // 三层叠出体积：外层灰烟、中层灰白、内芯亮白；贝塞尔边缘随时间摆动
+      var layers=[
+        [wid*1.7,'rgba(118,116,112,0.22)'],
+        [wid,     'rgba(226,224,219,0.42)'],
+        [wid*0.45,'rgba(255,252,244,0.85)']
+      ];
+      for(var li=0;li<layers.length;li++){
+        var w=layers[li][0], col=layers[li][1];
+        var swy=Math.sin(t*(2.6+li*0.7)+li*1.9)*(12+li*7)*grow;
+        var swy2=Math.sin(t*(4.1+li*0.5)+li*0.8+1.3)*(8+li*5)*grow;
+        var tipx=fx+swy*1.25+swy2*0.5;            // 卷曲的舌尖
+        c.beginPath();
+        c.moveTo(fx-w*0.55, fy);
+        c.bezierCurveTo(fx-w*0.95+swy*0.4, fy-hgt*0.34,
+                        fx-w*0.30+swy,      fy-hgt*0.72, tipx, fy-hgt);
+        c.bezierCurveTo(fx+w*0.34+swy2,     fy-hgt*0.60,
+                        fx+w*0.92+swy2*0.4, fy-hgt*0.28, fx+w*0.55, fy);
+        c.closePath();
+        c.fillStyle=col; c.fill();
+      }
+      // 舌根金色余烬光
+      var gr=26*grow+8;
+      var gl=c.createRadialGradient(fx,fy,0,fx,fy,gr);
+      gl.addColorStop(0,'rgba(255,213,148,'+(0.45*grow).toFixed(3)+')');
+      gl.addColorStop(1,'rgba(255,213,148,0)');
+      c.fillStyle=gl; c.beginPath(); c.arc(fx,fy,gr,0,6.283); c.fill();
+      c.filter='none';
+      c.restore();
+    }
+
     function draw(now){
       var dt=now-last; last=now;
       t+=dt/dur; if(t>1) t=1;
       var tt=t*6.283;
+      var IGN=0.16;                          // 前16%：火舌在页底中心燃起，焦面几乎未扩散
       var SWAP_AT=0.72;
-      var burnR;
-      if(t<=SWAP_AT){                       // 相位A：火舌自页底中心匀速烧到最上方
-        var u=t/SWAP_AT;
-        burnR=MAXD*(0.1+0.9*u);             // 自下而上匀速行进，u=1 时整页焦黑
+      var burnR, grow;
+      if(t<IGN){                             // 相位0：点火——火舌生长，只有点燃点微焦
+        var g0=t/IGN;
+        grow=1-Math.pow(1-g0,2);             // ease-out 生长
+        burnR=10+18*grow;
+      } else if(t<=SWAP_AT){                 // 相位A：焦黑自火舌根部向外径向扩散
+        var u=(t-IGN)/(SWAP_AT-IGN);
+        burnR=MAXD*(0.1+0.9*u);              // u=1 时整页焦黑
+        grow=1-0.45*u;                       // 火舌随火线走远略微收势
       } else {
         burnR=MAXD;                          // 整页已焦黑，保持至化灰
+        grow=0.55;
       }
       renderFrame(tt,burnR);
+      drawFlame(now,grow);
       if(t<SWAP_AT) spawn();                 // 仅燃烧阶段迸火星
       drawParticles(tt);
       // 相位B：整层焦黑化灰淡出，新页自灰烬中浮现
