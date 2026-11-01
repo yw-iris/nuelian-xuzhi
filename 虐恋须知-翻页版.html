@@ -551,59 +551,47 @@ body::before{
         var ef=Math.min(1,(R0-d)/70);
         var al=(0.22+0.78*tw)*ef*dis;
         if(al<0.03) continue;
-        c.fillStyle=sp.warm?'rgba(255,168,76,'+al.toFixed(3)+')':'rgba(255,238,204,'+al.toFixed(3)+')';
+        c.fillStyle=sp.warm?'rgba(240,196,110,'+al.toFixed(3)+')':'rgba(255,238,204,'+al.toFixed(3)+')';
         c.beginPath(); c.arc(sx,sy,sp.r*(0.6+0.4*tw),0,6.283); c.fill();
       }
 
-      // —— 灼热焦边：亮橙火线三层（外圈余温 / 主火线 / 白热内线）——
+      // —— 鎏金焦边：金线三层（外圈余温 / 主金线 / 白金内线）——
       c.globalCompositeOperation='lighter';
-      c.strokeStyle='rgba(255,110,20,'+(0.30*fl).toFixed(3)+')'; c.lineWidth=13;
+      c.strokeStyle='rgba(212,168,84,'+(0.26*fl).toFixed(3)+')'; c.lineWidth=11;
       tracePath(pts); c.stroke();
-      c.strokeStyle='rgba(255,150,40,'+(0.85*fl).toFixed(3)+')'; c.lineWidth=3;
+      c.strokeStyle='rgba(240,200,120,'+(0.80*fl).toFixed(3)+')'; c.lineWidth=2.4;
       tracePath(pts); c.stroke();
-      c.strokeStyle='rgba(255,228,155,'+(0.9*fl).toFixed(3)+')'; c.lineWidth=1.2;
+      c.strokeStyle='rgba(255,242,210,'+(0.85*fl).toFixed(3)+')'; c.lineWidth=1;
       tracePath(pts); c.stroke();
 
-      // —— 火舌（沿前沿向外舔，火焰向上偏）——
+      // —— 金烬纹：沿焦边生长的树枝状金色裂纹与金尘（对应拍立得页的鎏金烬纹）——
       for(i=0;i<pts.length;i+=3){
-        if(Math.random()<0.5) continue;
+        if(Math.random()<0.85) continue;
         var px=pts[i], py=pts[i+1], a=pts[i+2];
-        if(px<-50||px>W+50||py<-50||py>H+50) continue;
-        var dx=Math.cos(a), dy=-Math.sin(a);
-        var L=(12+26*Math.random())*(0.7+0.5*fl);
-        var tx=px+dx*L+(Math.random()-0.5)*8, ty=py+dy*L-L*0.35;
-        var g=c.createLinearGradient(px,py,tx,ty);
-        g.addColorStop(0,'rgba(255,190,80,'+(0.5*fl).toFixed(3)+')');
-        g.addColorStop(1,'rgba(255,240,200,0)');
-        c.fillStyle=g; c.beginPath();
-        c.moveTo(px-dy*2.5,py+dx*2.5);
-        c.lineTo(tx+dy*2,ty-dx*2);
-        c.lineTo(tx,ty);
-        c.lineTo(tx-dy*2,ty+dx*2);
-        c.closePath(); c.fill();
+        if(px<-40||px>W+40||py<-40||py>H+40) continue;
+        var dirx=Math.cos(a), diry=-Math.sin(a);
+        var vx=px, vy=py;
+        c.strokeStyle='rgba(238,198,118,'+(0.70*fl).toFixed(3)+')';
+        c.lineWidth=1.1;
+        c.beginPath(); c.moveTo(px,py);
+        var seg=2+((Math.random()*3)|0);
+        for(var j=0;j<seg;j++){
+          var sl=5+Math.random()*11;
+          vx+=dirx*sl+(Math.random()-0.5)*8;
+          vy+=diry*sl+(Math.random()-0.5)*8-2.5;
+          c.lineTo(vx,vy);
+        }
+        c.stroke();
+        if(Math.random()<0.6){
+          var mx=px+(vx-px)*0.4, my=py+(vy-py)*0.4;
+          c.beginPath(); c.moveTo(mx,my);
+          c.lineTo(mx+(Math.random()-0.5)*14, my+(Math.random()-0.5)*14-4);
+          c.stroke();
+        }
+        c.fillStyle='rgba(255,226,160,'+(0.80*fl).toFixed(3)+')';
+        c.beginPath(); c.arc(vx,vy,0.9+Math.random()*1.1,0,6.283); c.fill();
       }
 
-      // —— 火焰柱（前期几缕较大的火苗，对应参考视频）——
-      if(t<0.72){
-        for(var n=0;n<3;n++){
-          var a2=(0.10+0.8*Math.random())*Math.PI/2;
-          var R2=R0*(1+edgeNoise(a2,tt));
-          var px2=ox+R2*Math.cos(a2), py2=oy-R2*Math.sin(a2);
-          if(px2<-60||px2>W+60||py2<-60||py2>H+60) continue;
-          var dx2=Math.cos(a2), dy2=-Math.sin(a2);
-          var L2=(34+60*Math.random())*(0.7+0.5*fl);
-          var tx2=px2+dx2*L2, ty2=py2+dy2*L2-L2*0.42;
-          var g2=c.createLinearGradient(px2,py2,tx2,ty2);
-          g2.addColorStop(0,'rgba(255,205,95,'+(0.6*fl).toFixed(3)+')');
-          g2.addColorStop(.5,'rgba(255,150,50,'+(0.25*fl).toFixed(3)+')');
-          g2.addColorStop(1,'rgba(255,240,200,0)');
-          c.fillStyle=g2; c.beginPath();
-          c.moveTo(px2-dy2*5,py2+dx2*5);
-          c.quadraticCurveTo(tx2+dy2*4,ty2-dx2*4,tx2,ty2);
-          c.quadraticCurveTo(tx2-dy2*4,ty2+dx2*4,px2+dy2*5,py2-dx2*5);
-          c.closePath(); c.fill();
-        }
-      }
       c.globalCompositeOperation='source-over';
       c.globalAlpha=1;
 
@@ -616,14 +604,14 @@ body::before{
       for(i=embers.length-1;i>=0;i--){ var e=embers[i];
         e.x+=e.vx+Math.sin(now*0.003+e.ph)*0.3; e.y+=e.vy; e.vy-=0.012; e.life-=e.dec;
         if(e.life<=0){ embers.splice(i,1); continue; }
-        c.fillStyle='rgba(232,'+(170+((50*e.life)|0))+',110,'+(e.life*fl).toFixed(3)+')';
+        c.fillStyle='rgba(244,'+(200+((40*e.life)|0))+',130,'+(e.life*fl).toFixed(3)+')';
         c.beginPath(); c.arc(e.x,e.y,e.r*(0.5+0.5*e.life),0,6.283); c.fill();
       }
       for(i=smoke.length-1;i>=0;i--){ var sm=smoke[i];
         sm.x+=sm.vx; sm.y+=sm.vy; sm.r+=0.06; sm.life-=sm.dec;
         if(sm.life<=0){ smoke.splice(i,1); continue; }
         var sg=c.createRadialGradient(sm.x,sm.y,0,sm.x,sm.y,sm.r);
-        sg.addColorStop(0,'rgba(150,148,144,'+(0.10*sm.life).toFixed(3)+')');
+        sg.addColorStop(0,'rgba(160,156,150,'+(0.05*sm.life).toFixed(3)+')');
         sg.addColorStop(1,'rgba(150,148,144,0)');
         c.fillStyle=sg; c.beginPath(); c.arc(sm.x,sm.y,sm.r,0,6.283); c.fill();
       }
