@@ -651,16 +651,16 @@ body::before{
     function drawFlame(tt, grow){
       if(grow<=0.01) return;
       var fx=OX, fy=OY-6, t=tt*0.001;
-      var L=Math.min(H*0.36,320)*grow;            // 绸带长度随生长
+      var L=Math.min(H*0.22,200)*grow;            // 绸带长度随生长（更短促）
       c.save();
       c.globalCompositeOperation='lighter';
       c.filter='blur(2.4px)';
       // 四条缎带：各自错位/相位/摆速/卷向 → 绸缎叠涌
       var ribs=[
-        {ox:0,   w:44, ph:0.0, len:1.00, sw:1.00, sp:2.4, curl: 1},
-        {ox:-22, w:34, ph:1.9, len:0.85, sw:1.30, sp:1.9, curl:-1},
-        {ox:20,  w:36, ph:3.4, len:0.92, sw:0.85, sp:2.8, curl: 1},
-        {ox:-8,  w:26, ph:5.0, len:0.68, sw:1.45, sp:3.2, curl:-1}
+        {ox:0,   w:30, ph:0.0, len:1.00, sw:1.00, sp:2.4, curl: 1},
+        {ox:-15, w:23, ph:1.9, len:0.85, sw:1.30, sp:1.9, curl:-1},
+        {ox:14,  w:24, ph:3.4, len:0.92, sw:0.85, sp:2.8, curl: 1},
+        {ox:-5,  w:18, ph:5.0, len:0.68, sw:1.45, sp:3.2, curl:-1}
       ];
       var layers=[
         [2.6,'rgba(120,118,114,0.10)'],
@@ -705,7 +705,7 @@ body::before{
         }
       }
       // 根部灰白余晖（参考图为纯黑白灰，不再用金色）
-      var gr=30*grow+10;
+      var gr=22*grow+8;
       var gl=c.createRadialGradient(fx,fy,0,fx,fy,gr);
       gl.addColorStop(0,'rgba(240,240,236,'+(0.30*grow).toFixed(3)+')');
       gl.addColorStop(1,'rgba(240,240,236,0)');
