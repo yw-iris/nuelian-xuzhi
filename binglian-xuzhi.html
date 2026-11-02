@@ -717,7 +717,7 @@ body::before{
     var i = ((raw % total) + total) % total;   // 末页下一页→回到第一页，首页上一页→最后一页
     if(i === cur) return;
     var prev = cur;
-    if(reduced || !Burn.available){
+    if(reduced || !Burn.available || !(prev === 0 && i === 1)){
       pages[prev].classList.remove('active','exit-left');
       if(dir < 0) pages[prev].classList.add('exit-left');
       pages[i].classList.add('active');
