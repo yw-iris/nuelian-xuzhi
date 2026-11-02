@@ -666,7 +666,7 @@ body::before{
       cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
       cv.style.width=W+'px'; cv.style.height=H+'px';
       c.setTransform(dpr,0,0,dpr,0,0);
-      scale=Math.max(1,Math.ceil(Math.max(W,H)/700));
+      scale=Math.max(1,Math.ceil(Math.max(W,H)/1100));
       bw=Math.ceil(W/scale); bh=Math.ceil(H/scale);
       buf=document.createElement('canvas'); buf.width=bw; buf.height=bh;
       bctx=buf.getContext('2d'); bitData=bctx.createImageData(bw,bh);
