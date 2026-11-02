@@ -879,23 +879,19 @@ body::before{
         renderPixels();
         spawnFlames(); drawFlames();
         spawnSparks(); drawSparks();
+        var dim=(t-BURN_END*.82)/(BURN_END*.18);          // 烧尽前：焦痕金脉渐冷熄成纯黑
+        if(dim>0){ c.globalAlpha=Math.min(1,dim); c.fillStyle='#000'; c.fillRect(0,0,W,H); c.globalAlpha=1; }
         cv.style.opacity=1;
       } else if(t<DIE_AT){
         FY=-TOP_CLEAR;                                    // 整页烧尽：火焰完全熄灭
-        computeEdge();
-        renderPixels();
-        drawFlames(); drawSparks();
-        spawnEmbers();
+        c.fillStyle='#000'; c.fillRect(0,0,W,H);          // 纯黑幕：不再带金色余烬纹理
         cv.style.opacity=1;
       } else {
         if(!swapped){ swapped=true; if(half) half(); }    // 火焰完全熄灭后才切到新页
         var q=(t-DIE_AT)/(1-DIE_AT);
-        var s2=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;         // 缓入缓出：黑幕退去，新页隐隐浮现
+        var s2=q<.5?2*q*q:1-Math.pow(-2*q+2,2)/2;         // 缓入缓出：黑幕退去，新页从黑中隐隐浮现
+        c.fillStyle='#000'; c.fillRect(0,0,W,H);          // 纯黑幕
         cv.style.opacity=Math.max(0,1-s2);
-        computeEdge();
-        renderPixels();
-        drawFlames(); drawSparks();
-        if(q<.5) spawnEmbers();                           // 浮现段仍有零星余烬（参考视频）
       }
       if(t>=1){
         running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
