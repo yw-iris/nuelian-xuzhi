@@ -203,14 +203,16 @@ body::before{
 .qf-txt{margin-top:10px;font-size:11.5px;letter-spacing:.16em;line-height:2;color:var(--gray-1)}
 .qf-sign{font-family:var(--serif-en);font-size:10px;letter-spacing:.22em;color:var(--gray-1);white-space:nowrap}
 
-/* ————— 竖版水印（页2起 · 参考竖条版式元素） ————— */
+/* ————— 底图水印（页2起 · 用参考黑金流体图做底纹，低透衬于内容下） ————— */
 .wm-v{
-  position:absolute;right:clamp(12px,3.5vw,30px);bottom:0;z-index:0;
-  pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:9px;
+  position:absolute;left:0;right:0;bottom:0;height:min(54vh,440px);
+  z-index:0;pointer-events:none;overflow:hidden;opacity:.15;
 }
-.wm-bar{width:clamp(30px,6.5vw,44px);height:min(19vh,148px);background:rgba(17,17,17,.055)}
-.wm-dot{width:9px;height:9px;background:rgba(17,17,17,.13)}
-.wm-txt{writing-mode:vertical-rl;font-family:var(--serif-en);font-size:9px;letter-spacing:.5em;color:rgba(17,17,17,.2)}
+.wm-v img{
+  position:absolute;right:-4%;bottom:-7%;height:128%;width:auto;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 54%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 54%);
+}
 
 /* ————— 章节页通用 · 留白海报式 ————— */
 .sec-head{display:block;position:relative;z-index:1}
@@ -385,7 +387,7 @@ body::before{
   .qf-credits{ font-size:9.5px; }
   .qf-num{ font-size:11px; gap:4px; }
   .qf-txt{ font-size:10px; letter-spacing:.12em; }
-  .wm-bar{ width:26px; height:min(13vh,96px); }
+  .wm-v{ height:min(40vh,300px); opacity:.14; }
   .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
 
   .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
@@ -481,7 +483,7 @@ body::before{
 
     <!-- 2 · 关于我 -->
     <section class="page" aria-label="关于我">
-      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
       <div class="ghost" aria-hidden="true">01</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
@@ -500,7 +502,7 @@ body::before{
 
     <!-- 3 · 喜点 -->
     <section class="page" aria-label="喜点">
-      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
       <div class="ghost" aria-hidden="true">02</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">02</span><h2><em>Like</em>喜点</h2></div>
@@ -519,7 +521,7 @@ body::before{
 
     <!-- 4 · 雷点 -->
     <section class="page" aria-label="雷点">
-      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
       <div class="ghost" aria-hidden="true">03</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">03</span><h2><em>Dislike</em>雷点</h2></div>
@@ -535,7 +537,7 @@ body::before{
 
     <!-- 5 · 独白 -->
     <section class="page" aria-label="独白">
-      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
       <div class="monologue">
         我像生了场病。<br>
         反复确认你还愿不愿意接住我，<br>
@@ -546,7 +548,7 @@ body::before{
 
     <!-- 6 · 收尾（歌词，无光仔照片） -->
     <section class="page finale" aria-label="收尾">
-      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
       <p class="finale-lyric">我想被抚摸<span class="sub">I want to be touched, to be loved.</span></p>
       <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
       <p class="finale-hint">点 击 左 · 右 翻 页</p>
