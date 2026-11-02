@@ -834,7 +834,7 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
     var c = cv.getContext('2d');
     var W=0,H=0,dpr=1;
     var bw,bh,scale,buf,bctx,bitData;
-    var edge=null, nArr=null;
+    var edge=null, nArr=null, paper=null;
     var flames=[];
     var spGlow=null,spCore=null;
     var rnd1D=null,RN=2048,G=null;
@@ -892,6 +892,10 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
       rnd1D=new Float32Array(RN);
       for(var y2=0;y2<RN;y2++) rnd1D[y2]=Math.random();
       makeSprites();
+      // 纸张矩形：黑底中央竖版纸（过场主体），随视口自适应
+      var ph2=H*0.66, pw2=ph2*0.757;
+      if(pw2>W*0.82){ pw2=W*0.82; ph2=pw2/0.757; }
+      paper={x0:(W-pw2)/2, x1:(W+pw2)/2, y0:H*0.88-ph2, y1:H*0.88};
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
@@ -903,20 +907,41 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
 
     // 逐帧火线：直接取自参考视频（每帧每列的已烧比例），整页沿视频真实路径燃烧
     function setEdgeFromTable(t){
-      var fi=Math.min(NF-1, Math.floor((t/BURN_END)*(NF-1)));
+      var ACTIVE=108;   // 参考视频火活跃帧数（其后为全烧尽拖尾），重映射让火焰铺满整个燃烧段
+      var fi=Math.min(ACTIVE-1, Math.floor((t/BURN_END)*(ACTIVE-1)));
       var row=BURN_FRAMES[fi];
+      var pb=paper.y1, ph=paper.y1-paper.y0;
+      var xi0=Math.max(0,Math.ceil(paper.x0/scale)), xi1=Math.min(bw-1,Math.floor(paper.x1/scale));
       for(var xb=0;xb<bw;xb++){
-        var u=(xb+0.5)/bw, k=u*(NK-1);
+        if(xb<xi0||xb>xi1){ edge[xb]=pb; continue; }
+        var k=((xb+0.5)*scale-paper.x0)/(paper.x1-paper.x0)*(NK-1);
         var k0=k|0, k1=k0<NK-1?k0+1:k0, f=k-k0;
         var bf=(row[k0]*(1-f)+row[k1]*f)/1000;   // 0=未烧  1=烧尽
-        edge[xb]=H*(1-bf);                         // 火线 y（视口像素）
+        edge[xb]=pb-bf*ph;                        // 火线 y：纸底→纸顶
+      }
+    }
+    // 横屏自适应横向平滑：把视频火线铺满宽屏后被放大的锯齿磨平，火舌更连贯自然
+    // 手机竖屏(aspect<0.75)几乎不平滑，保留最高还原度；宽屏逐步加重
+    function smoothEdge(){
+      var aspect=W/H;
+      var passes = aspect<0.75?0 : aspect<1.0?1 : aspect<1.6?2 : 3;
+      var radius = aspect<1.0?2 : aspect<1.6?3 : 4;
+      if(passes<=0) return;
+      var xi0=Math.max(0,Math.ceil(paper.x0/scale)), xi1=Math.min(bw-1,Math.floor(paper.x1/scale));
+      for(var p=0;p<passes;p++){
+        var tmp=edge.slice();
+        for(var x=xi0;x<=xi1;x++){
+          var a=Math.max(xi0,x-radius), b=Math.min(xi1,x+radius), s=0,c=0;
+          for(var i=a;i<=b;i++){ s+=tmp[i]; c++; }
+          edge[x]=s/c;
+        }
       }
     }
     function spawnFlames(){
       var n=2+(Math.random()*3|0);         // 小火苗贴火线，少量升腾
       for(var k=0;k<n;k++){
         if(flames.length>40) break;
-        var x=Math.random()*W;
+        var x=paper.x0+Math.random()*(paper.x1-paper.x0);
         var bx=Math.min(bw-1,(x/scale)|0);
         var ey=edge[bx];
         flames.push({
@@ -950,29 +975,35 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
       c.globalAlpha=1;
       c.globalCompositeOperation='source-over';
     }
-    function renderPixels(){                 // 已燃炭黑 + 火缘焦斑 + 金边（火线上方透明：露出真实页面）
+    function renderPixels(){                 // 黑底 + 中央纸张：火线以下纸被吞噬，以上保留纸面
       var data=bitData.data;
+      var px0=paper.x0, px1=paper.x1, py0=paper.y0, py1=paper.y1;
+      var xi0=Math.max(0,Math.ceil(px0/scale)), xi1=Math.min(bw-1,Math.floor(px1/scale));
       for(var y=0;y<bh;y++){
         var py=y*scale, row=y*bw;
         for(var x=0;x<bw;x++){
           var p=(row+x)*4;
+          var sx=x*scale;
+          if(sx<px0||sx>=px1||py<py0||py>=py1){   // 纸外：纯黑底
+            data[p]=10; data[p+1]=7; data[p+2]=6; data[p+3]=255; continue;
+          }
           var v=py-edge[x];         // >0：火线下方（已燃）
-          if(v>=0){                 // 已燃：纯炭黑焦痕（窄过渡带）
+          if(v>=0){                 // 已燃：纸被吞噬，焦黑渐入黑底
             var d=v;
-            var ch=Math.max(0,1-d/14); ch=ch*ch;
-            var rr=5+ch*40, gg=4+ch*32, bb=4+ch*25;
-            var a=d>12?1:(.55+.45*(d/12));
+            var ch=Math.max(0,1-d/18); ch=ch*ch;
+            var rr=8+ch*50, gg=6+ch*38, bb=5+ch*28;
+            var a=d>13?1:(.55+.45*(d/13));
             data[p]=rr|0; data[p+1]=gg|0; data[p+2]=bb|0; data[p+3]=(a*255)|0;
-          } else {                 // 未燃：火线上方的窄带焦化
-            var dd=-v;
-            if(dd<18){
-              var ch2=1-dd/18, sp=nArr[row+x];
-              var a2=(.4+.6*ch2)*(.55+.45*sp);
-              data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a2*255)|0;
-            } else if(dd<30){
-              var q=1+(dd-18)/12;
-              data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*55)|0;
-            } else { data[p+3]=0; }
+          } else {                  // 未燃：纸面 + 贴火线焦化
+            var dd=-v, sp=nArr[row+x];
+            if(dd<26){
+              var q=dd/26;
+              var vv=22+(246-22)*q+(sp-.5)*16*(1-q);
+              data[p]=vv|0; data[p+1]=(vv*.96)|0; data[p+2]=(vv*.9)|0; data[p+3]=255;
+            } else {
+              var vv2=244+(sp-.5)*10;
+              data[p]=vv2|0; data[p+1]=(vv2*.97)|0; data[p+2]=(vv2*.92)|0; data[p+3]=255;
+            }
           }
         }
       }
@@ -985,14 +1016,14 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
       c.lineJoin='round';
       function strokeEdge(color,w,arr){
         c.beginPath();
-        for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=arr[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
+        for(var x2=xi0;x2<=xi1;x2++){ var sx=x2*scale, sy=arr[x2]; if(x2===xi0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
         c.strokeStyle=color; c.lineWidth=w; c.stroke();
       }
       function strokeFlow(off,color,w,arr){
         c.beginPath();
-        for(var x3=0;x3<bw;x3+=2){
+        for(var x3=xi0;x3<=xi1;x3+=2){
           var sx=x3*scale, sy=arr[x3]+off+Math.sin(x3*.085+T*2.2)*5;
-          if(x3===0)c.moveTo(sx,sy); else c.lineTo(sx,sy);
+          if(x3===xi0)c.moveTo(sx,sy); else c.lineTo(sx,sy);
         }
         c.strokeStyle=color; c.lineWidth=w; c.stroke();
       }
@@ -1014,6 +1045,7 @@ var NF=BURN_FRAMES.length, NK=BURN_FRAMES[0].length;
         var u=t/BURN_END;
         var e=u;                                          // 近匀速上烧（参考视频火线匀速推进）
         setEdgeFromTable(t);     // 火线位置按视频逐帧数据推进
+        smoothEdge();            // 横屏自适应平滑：火舌更连贯自然
         renderPixels();
         spawnFlames(); drawFlames();
         var dim=(t-BURN_END*.82)/(BURN_END*.18);          // 烧尽前：焦痕渐冷熄成纯黑
