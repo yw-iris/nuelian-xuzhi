@@ -654,26 +654,33 @@ body::before{
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
     }
     /* —— 参考图抠出的金流体贴图：火焰形象与原图一模一样 —— */
-    var tex=null, texWins=[];
-    function buildTexWins(){
+    var tex=null, tongues=[];   // 预羽化的火舌精灵（边缘渐隐无硬边）
+    function edgeFade(o,ww,wh,horiz){
+      var g=horiz?o.createLinearGradient(0,0,ww,0):o.createLinearGradient(0,0,0,wh);
+      g.addColorStop(0,'rgba(0,0,0,0)');
+      g.addColorStop(.2,'rgba(0,0,0,1)');
+      g.addColorStop(.8,'rgba(0,0,0,1)');
+      g.addColorStop(1,'rgba(0,0,0,0)');
+      o.globalCompositeOperation='destination-in';
+      o.fillStyle=g; o.fillRect(0,0,ww,wh);
+      o.globalCompositeOperation='source-over';
+    }
+    function buildTongues(){
       if(!tex||!tex.width) return;
-      var oc=document.createElement('canvas'); oc.width=tex.width; oc.height=tex.height;
-      var o=oc.getContext('2d'); o.drawImage(tex,0,0);
-      var d;
-      try{ d=o.getImageData(0,0,oc.width,oc.height).data; }catch(e){ return; }
-      var W2=oc.width,H2=oc.height,tries=0;
-      while(texWins.length<48 && tries<800){
-        tries++;
-        var s=36+(Math.random()*96|0);
-        var x=(Math.random()*(W2-s))|0, y=(Math.random()*(H2-s))|0;
-        var sum=0,cnt=0;
-        for(var yy=y;yy<y+s;yy+=3)for(var xx=x;xx<x+s;xx+=3){ sum+=d[(yy*W2+xx)*4+3]; cnt++; }
-        if(sum/cnt/255>0.24) texWins.push({x:x,y:y,s:s});   // 只取金色浓的窗口
-      }
-      if(!texWins.length) texWins.push({x:0,y:0,s:Math.min(W2,H2)});
+      tongues.length=0;
+      var sw=tex.width, sh=tex.height;
+      BIGWINS.forEach(function(w){
+        var ww=Math.round(w[2]*sw), wh=Math.round(w[3]*sh);
+        var oc=document.createElement('canvas'); oc.width=ww; oc.height=wh;
+        var o=oc.getContext('2d');
+        o.drawImage(tex,Math.round(w[0]*sw),Math.round(w[1]*sh),ww,wh,0,0,ww,wh);
+        edgeFade(o,ww,wh,true);
+        edgeFade(o,ww,wh,false);
+        tongues.push(oc);
+      });
     }
     tex=new Image();
-    tex.onload=buildTexWins;
+    tex.onload=buildTongues;
     tex.src='gold-flame.png';
     function buildGeometry(){
       dpr=Math.min(window.devicePixelRatio||1,1.75);
@@ -716,47 +723,47 @@ body::before{
       }
     }
     function spawnFlames(){
-      var n=2+(Math.random()*3|0);         // 火苗贴火线，少量（蔓延感而非火山）
-      for(var k=0;k<n;k++){
-        if(flames.length>70) break;
-        var x=Math.random()*W;
-        var bx=Math.min(bw-1,(x/scale)|0);
-        var ey=edge[bx];
-        flames.push({
-          x:x+(Math.random()-.5)*8,
-          y:ey-Math.random()*14,
-          vx:(Math.random()-.5)*.5,
-          vy:-(.7+Math.random()*1.6),      // 火苗自火线向上舔
-          r:14+Math.random()*18,           // 金流体火体
-          life:1, decay:.016+Math.random()*.02,
-          ph:Math.random()*6.283,
-          wi:(Math.random()*64)|0,         // 贴图窗口索引（spawn 时 texWins 可能未就绪，绘制时取模）
-          rot:Math.random()*6.283, vr:(Math.random()-.5)*.014
-        });
-      }
+      if(Math.random()<.35 || flames.length>10) return;   // 火舌少量：大而慢（复刻参考图金流体火焰）
+      var x=Math.random()*W;
+      var bx=Math.min(bw-1,(x/scale)|0);
+      var ey=edge[bx];
+      flames.push({
+        x:x+(Math.random()-.5)*10,
+        y:ey-Math.random()*8,
+        vx:(Math.random()-.5)*.4,
+        vy:-(.5+Math.random()*.85),      // 火舌慢速升腾
+        r:34+Math.random()*30,           // 大条金色火舌
+        life:1, decay:.011+Math.random()*.012,
+        ph:Math.random()*6.283,
+        wi:(Math.random()*3)|0,          // 火舌精灵索引
+        rot:(Math.random()-.5)*.5, vr:(Math.random()-.5)*.004
+      });
     }
+    var BIGWINS=[[0,.40,1,.58],[.05,.16,.88,.5],[.03,.55,.94,.45]];   // 贴图三个浓金大区（比例）
     function drawFlames(){
       c.globalCompositeOperation='lighter';
       for(var i=flames.length-1;i>=0;i--){
         var f=flames[i];
-        f.x+=f.vx+Math.sin(T*2.4+f.ph)*.4;
-        f.y+=f.vy; f.vy-=.004;
+        f.x+=f.vx+Math.sin(T*1.6+f.ph)*.5;
+        f.y+=f.vy; f.vy-=.003;
         f.life-=f.decay;
         if(f.life<=0){ flames.splice(i,1); continue; }
-        var fl=.62+.38*Math.sin(T*11+f.ph*3);
+        var fl=.72+.28*Math.sin(T*9+f.ph*3);
         var a=f.life*fl;
-        var R=f.r*(1.8-f.life*.5);
-        c.globalAlpha=a*.9;
-        c.drawImage(spGlow,f.x-R,f.y-R,R*2,R*2);
-        var tw=texWins[f.wi%texWins.length];
-        if(tw && tex && tex.complete && tex.width){   // 抠图精灵：金流体本体
-          var R2=R*1.35;
-          c.save(); c.translate(f.x,f.y); c.rotate(f.rot);
-          c.globalAlpha=a;
-          c.drawImage(tex,tw.x,tw.y,tw.s,tw.s,-R2,-R2,R2*2,R2*2);
+        var R=f.r*(.55+.9*(1-f.life));          // 出生小、升腾长大
+        c.globalAlpha=a*.5;
+        c.drawImage(spGlow,f.x-R,f.y-R*.75,R*2,R*1.5);
+        if(tongues.length){                     // 金色火舌：预羽化精灵（无硬边）
+          var sp=tongues[f.wi%tongues.length];
+          var hR=R*1.15;                        // 火舌半高（纵向拉伸）
+          c.save();
+          c.translate(f.x,f.y);
+          c.rotate(f.rot+Math.sin(T*1.2+f.ph)*.12);   // 轻微摇曳
+          c.globalAlpha=a*.95;
+          c.drawImage(sp,-R,-hR,R*2,hR*2);
           c.restore();
           f.rot+=f.vr;
-        } else {                                      // 贴图未就绪时的兜底
+        } else {                                // 贴图未就绪时的兜底
           var r2=f.r*(.7+.35*(1-f.life));
           c.globalAlpha=a;
           c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
