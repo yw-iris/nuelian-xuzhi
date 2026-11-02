@@ -865,8 +865,9 @@ body::before{
         var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
         var ey=edge[bx];
-        sparks.push({x:x,y:ey-Math.random()*12,
-          vx:(Math.random()-.5)*.8,vy:-(.6+Math.random()*1.6),
+        var sy=ey-Math.random()*10;
+        sparks.push({x:x,y:sy,y0:sy,
+          vx:(Math.random()-.5)*.8,vy:-(.4+Math.random()*.9),
           life:1,decay:.006+Math.random()*.012,
           r:.45+Math.random()*1.05,ph:Math.random()*6.28,big:Math.random()<.05});
       }
@@ -876,8 +877,9 @@ body::before{
       for(var i=sparks.length-1;i>=0;i--){
         var s=sparks[i];
         s.x+=s.vx+Math.sin(T*3.1+s.ph)*.4;
-        s.y+=s.vy; s.vy-=.007;
+        s.y+=s.vy;
         s.life-=s.decay;
+        if(s.y0-s.y>72) s.life-=.06;   // 光点贴近燃烧线：飘离火线上方即快速消散（手机端同样收束）
         if(s.life<=0||s.y<-12){ sparks.splice(i,1); continue; }
         var fl=.5+.5*Math.sin(T*15+s.ph*5);
         var a=s.life*fl;
@@ -897,7 +899,8 @@ body::before{
     }
     function spawnEmbers(){                  // 烧尽后的零星余烬（浮现段的小火星）
       if(Math.random()<.5) return;
-      sparks.push({x:Math.random()*W,y:H*(.25+Math.random()*.7),
+      var ey2=H*(.25+Math.random()*.7);
+      sparks.push({x:Math.random()*W,y:ey2,y0:ey2,
         vx:(Math.random()-.5)*.5,vy:-(.4+Math.random()*1.1),
         life:1,decay:.012+Math.random()*.016,
         r:.45+Math.random()*.9,ph:Math.random()*6.28,big:false});
