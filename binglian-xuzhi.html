@@ -9,20 +9,20 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mrs+Saint+Delafield&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  /* —— 灰 · 白 · 金：金极少，只作点缀 —— */
-  --paper:#f2f0ec;          /* 暖灰白 */
-  --paper-2:#e9e6e1;
-  --card:#fbfaf8;
-  --ink:#2b2824;            /* 炭灰（非纯黑，偏弱“灰”感） */
-  --ink-soft:#413b35;
-  --gray-1:#6e6862;
-  --gray-2:#a59e95;
-  --line:#d9d4cd;
-  --hairline:rgba(43,40,36,.16);
-  --track:#dcd7d0;
-  --gold:#a9823c;           /* 金：稀疏点缀 */
+  /* —— 灰 · 白 · 黑 为主硬朗色调，金仅作描边点缀 —— */
+  --paper:#f5f5f4;          /* 近白浅灰 */
+  --paper-2:#ececeb;
+  --card:#ffffff;
+  --ink:#111111;            /* 黑：主色 */
+  --ink-soft:#2c2c2c;
+  --gray-1:#6e6e6e;
+  --gray-2:#a3a3a3;
+  --line:#dfe0df;
+  --hairline:rgba(17,17,17,.16);
+  --track:#dcdcdb;
+  --gold:#b08d3f;           /* 金：仅作描边 / 边框 */
   --gold-soft:#c9a85f;
-  --gold-line:rgba(169,130,60,.55);
+  --gold-line:rgba(176,141,63,.55);
   --serif-en:'Cormorant Garamond','Times New Roman',serif;
   --serif-cn:'Noto Serif SC','Songti SC',serif;
   --script:'Mrs Saint Delafield',cursive;
@@ -60,8 +60,15 @@ body::before{
   font-size:15px;font-weight:700;
   box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);
 }
-.handle{font-family:var(--serif-en);font-size:13px;letter-spacing:.14em;font-weight:600}
+.handle{font-family:var(--serif-en);font-size:13px;letter-spacing:.14em;font-weight:600;color:inherit;text-decoration:none}
 .handle span{color:var(--gray-2);font-weight:400;letter-spacing:.1em}
+.switcher{
+  font-family:var(--serif-en);font-size:11px;letter-spacing:.16em;font-weight:600;
+  color:var(--gray-1);text-decoration:none;white-space:nowrap;
+  padding:3px 10px;border:1px solid var(--line);border-radius:20px;
+  transition:color .3s,border-color .3s;
+}
+.switcher:hover{color:var(--ink);border-color:var(--ink)}
 .progress{
   flex:1;display:flex;gap:5px;margin-left:8px;max-width:420px;
 }
@@ -71,7 +78,7 @@ body::before{
   transition:background .4s;padding:0;
 }
 .progress button.done{background:var(--ink)}
-.progress button.now{background:var(--gold)}   /* 当前进度用金，稀疏点缀 */
+.progress button.now{background:var(--ink)}   /* 当前进度用黑，金只作描边 */
 
 /* ————— 页面层 ————— */
 .pages{position:relative;flex:1;min-height:0;overflow:hidden}
@@ -158,13 +165,13 @@ body::before{
   position:absolute;z-index:0;pointer-events:none;
   font-family:var(--serif-en);font-weight:600;font-style:italic;
   font-size:min(46vmin,340px);line-height:1;
-  color:transparent;-webkit-text-stroke:1.5px rgba(43,40,36,.08);
+  color:transparent;-webkit-text-stroke:1.5px rgba(17,17,17,.07);
   right:2vw;top:50%;transform:translateY(-54%);
 }
 .disc{
   position:absolute;z-index:0;pointer-events:none;
   width:min(52vmin,380px);height:min(52vmin,380px);border-radius:50%;
-  background:radial-gradient(circle at 34% 30%,#3a3631,#15120f 70%);
+  background:radial-gradient(circle at 34% 30%,#2a2a2a,#0c0c0c 70%);
   right:-14vw;top:-16vh;
 }
 
@@ -195,7 +202,7 @@ body::before{
 }
 .halftone{
   position:absolute;top:-16px;left:-12px;width:118px;height:104px;z-index:0;
-  background-image:radial-gradient(rgba(43,40,36,.55) 1.1px,transparent 1.4px);
+  background-image:radial-gradient(rgba(17,17,17,.55) 1.1px,transparent 1.4px);
   background-size:7px 7px;
   -webkit-mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
   mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
@@ -215,15 +222,15 @@ body::before{
   width:5px;height:5px;background:var(--ink);
 }
 .name-box{
-  flex:none;border:2.5px solid var(--ink);background:rgba(251,250,248,.85);
+  flex:none;border:2px solid var(--gold);background:rgba(255,255,255,.85);
   padding:9px 13px;position:relative;z-index:1;
   font-size:17px;font-weight:900;letter-spacing:.3em;text-indent:.3em;
-  box-shadow:4px 4px 0 rgba(43,40,36,.12);
+  box-shadow:4px 4px 0 rgba(17,17,17,.12);
 }
 .name-box i{font-style:normal;font-size:10px;vertical-align:top;margin-left:2px;letter-spacing:0;text-indent:0}
 .cover-gray{
   position:absolute;left:5%;right:5%;top:41%;bottom:0;z-index:0;
-  background:linear-gradient(180deg,rgba(43,40,36,0) 0%,rgba(43,40,36,.05) 45%,rgba(43,40,36,.14) 100%);
+  background:linear-gradient(180deg,rgba(17,17,17,0) 0%,rgba(17,17,17,.05) 45%,rgba(17,17,17,.14) 100%);
   pointer-events:none;
 }
 .cover-bottom{position:relative;z-index:1;text-align:center;padding-bottom:10px}
@@ -263,7 +270,7 @@ body::before{
   column-gap:min(8vw,56px);row-gap:max(3.5vh,26px);
   position:relative;z-index:1;
 }
-.fact{border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.fact{border:1px solid var(--gold-line);border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
 .fact dt{font-size:10.5px;letter-spacing:.28em;color:var(--gray-1)}
 .fact dd{margin-top:7px;font-size:clamp(14px,3vmin,17px);font-weight:700;letter-spacing:.12em}
 .fact dd.en{font-family:var(--serif-en);font-weight:600;font-size:1.15em}
@@ -274,7 +281,7 @@ body::before{
   column-gap:min(7vw,48px);row-gap:max(3.2vh,22px);position:relative;z-index:1;
 }
 .like{
-  position:relative;border-top:2px solid var(--ink);padding:12px 16px 16px;
+  position:relative;border:1px solid var(--gold-line);border-top:2px solid var(--ink);padding:12px 16px 16px;
   background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35);
 }
 .like .idx{
@@ -290,7 +297,7 @@ body::before{
   margin-top:min(6.5vh,48px);display:flex;flex-direction:column;
   gap:max(3.4vh,26px);position:relative;z-index:1;
 }
-.dislike{width:min(50%,560px);border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.dislike{width:min(50%,560px);border:1px solid var(--gold-line);border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
 .dislike:nth-child(odd){align-self:flex-start}
 .dislike:nth-child(even){align-self:flex-end}
 .dislike .k{font-size:clamp(14px,3vmin,16px);font-weight:700;letter-spacing:.1em}
@@ -324,11 +331,12 @@ body::before{
 .finale-lyric{
   position:relative;z-index:1;
   font-size:clamp(22px,6.4vmin,40px);font-weight:900;letter-spacing:.22em;
-  line-height:1.7;color:var(--gold);                       /* 金 · 歌词点睛 */
+  line-height:1.7;color:var(--ink);                       /* 黑 · 硬朗主色 */
   text-indent:.22em;
-  text-shadow:0 2px 0 rgba(43,40,36,.06);
+  text-shadow:0 2px 0 rgba(17,17,17,.05);
 }
-.finale-lyric .sub{display:block;font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.42em;letter-spacing:.3em;color:var(--gray-1);margin-top:14px}
+.finale-lyric::after{content:"";display:block;width:66px;height:2px;background:var(--gold);margin:16px auto 0}  /* 金 · 描边点睛 */
+.finale-lyric .sub{display:block;font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.42em;letter-spacing:.3em;color:var(--gray-1);margin-top:16px}
 .sig-line{
   margin-top:min(4.5vh,30px);display:flex;align-items:baseline;gap:11px;
   position:relative;z-index:1;
@@ -374,7 +382,7 @@ body::before{
 .bgm-toggle{
   position:fixed;top:calc(env(safe-area-inset-top,0) + 12px);right:14px;
   width:40px;height:40px;border-radius:50%;
-  border:1px solid rgba(43,40,36,.35);background:rgba(251,250,248,.55);
+  border:1px solid rgba(17,17,17,.35);background:rgba(255,255,255,.55);
   color:var(--ink);font-size:17px;line-height:1;cursor:pointer;
   z-index:55;display:flex;align-items:center;justify-content:center;
   backdrop-filter:blur(4px);transition:transform .2s,background .2s,opacity .4s;
@@ -412,12 +420,12 @@ body::before{
   .halftone{ width:92px; height:82px; top:-12px; left:-8px; }
   .cover-left{ gap:min(3.4vh,24px); }
   .cover-list li{ font-size:11px; letter-spacing:.16em; line-height:2.5; }
-  .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(43,40,36,.12); }
+  .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(17,17,17,.12); }
   .cover-gray{ left:12px; right:12px; top:44%; }
   .cover-tagline{ font-size:9.5px; letter-spacing:.14em; }
   .cover-script{ font-size:40px; bottom:44px; }
   .cover-bar{ margin-top:30px; font-size:10px; padding:7px 12px; }
-  .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(43,40,36,.05); }
+  .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
 
   .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
   .sec-head h2{ font-size:clamp(18px,5.4vmin,22px); padding-bottom:7px; border-bottom-width:1.5px; }
@@ -476,8 +484,9 @@ body::before{
 
   <!-- 顶部：头像 + 快拍式进度 -->
   <header class="chrome-top">
-    <div class="avatar" aria-hidden="true">冬因</div>
-    <div class="handle">winter.ye <span>· 病恋须知</span></div>
+    <a class="avatar" href="index.html" title="返回目录">冬因</a>
+    <a class="handle" href="index.html">winter.ye <span>· 病恋须知</span></a>
+    <a class="switcher" href="nuelian-xuzhi.html">虐恋 ↗</a>
     <nav class="progress" id="progress" aria-label="页面进度"></nav>
   </header>
 
