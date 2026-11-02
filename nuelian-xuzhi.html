@@ -360,6 +360,8 @@ body::before{
 .sig-cn{font-size:clamp(19px,4.4vmin,24px);font-weight:900;letter-spacing:.4em}
 .sig-en{font-family:var(--serif-en);font-style:italic;font-size:15px;color:var(--gray-1);letter-spacing:.16em}
 .burn-hint{margin-top:min(2.4vh,16px);font-size:10.5px;letter-spacing:.38em;text-indent:.38em;color:var(--gray-2);position:relative;z-index:1}
+.cross-link{display:inline-block;margin-top:min(3vh,22px);font-family:var(--serif-en);font-size:12px;letter-spacing:.2em;color:var(--ink);text-decoration:none;border:1px solid var(--ink);border-radius:20px;padding:8px 18px;position:relative;z-index:1;transition:background .3s,color .3s,letter-spacing .3s}
+.cross-link:hover{background:var(--ink);color:var(--paper);letter-spacing:.28em}
 
 /* ————— 底部 chrome ————— */
 .chrome-bottom{
@@ -623,6 +625,7 @@ body::before{
       </div>
       <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
       <p class="burn-hint">点 击 照 片 · 显 现</p>
+      <a class="cross-link" href="binglian-xuzhi.html">病恋须知 ↗</a>
     </section>
 
   </main>
@@ -686,17 +689,14 @@ body::before{
     nextBtn.disabled = false;
   }
 
-  /* ═════════ 翻页燃烧过场 v2：逐帧复刻「烧卡」参考——参差火缘·大火舌·白热焰心·焦斑·火星（更大更慢） ═════════ */
+  /* ═════════ 翻页燃烧过场：拍立得火焰蔓延（回最初版 · 加金边） ═════════ */
   var Burn = (function(){
     var cv = document.getElementById('burnOver');
     var c = cv.getContext('2d');
     var W=0,H=0,dpr=1;
-    var bw=0,bh=0,scale=1,buf=null,bctx=null,bitData=null;
-    var edge=null;          // 每列火焰前沿（屏幕坐标，越小越高）
-    var nArr=null;          // 焦斑噪声
-    var tongues=[];         // 活动火舌（局部抬高火线的大火苗）
-    var flames=[];          // 火焰团（沿火缘升腾、渐灭）
-    var sparks=[];          // 火星
+    var bw,bh,scale,buf,bctx,bitData;
+    var edge=null, nArr=null;
+    var flames=[], sparks=[];
     var spGlow=null,spCore=null;
     var rnd1D=null,RN=2048,G=null;
 
@@ -714,25 +714,25 @@ body::before{
       var a=G2.g[y0*G2.gw+x0], b=G2.g[y0*G2.gw+x0+1], cc=G2.g[(y0+1)*G2.gw+x0], d=G2.g[(y0+1)*G2.gw+x0+1];
       return (a+(b-a)*sx)*(1-sy)+(cc+(d-cc)*sx)*sy;
     }
-    function noise1(x){                       // 平滑一维值噪声（火缘轮廓用）
+    function noise1(x){
       var xi=Math.floor(x), f=x-xi;
       var a=rnd1D[xi&(RN-1)], b=rnd1D[(xi+1)&(RN-1)];
       var s=f*f*(3-2*f);
       return a+(b-a)*s;
     }
-    function makeSprites(){                   // 预渲染火焰精灵（焰心/外晕），性能友好
+    function makeSprites(){
       spGlow=document.createElement('canvas'); spGlow.width=spGlow.height=64;
       var g2=spGlow.getContext('2d');
       var g=g2.createRadialGradient(32,32,0,32,32,32);
-      g.addColorStop(0,'rgba(255,152,44,1)');
-      g.addColorStop(.42,'rgba(255,96,12,.6)');
+      g.addColorStop(0,'rgba(255,150,40,1)');
+      g.addColorStop(.42,'rgba(255,96,12,.55)');
       g.addColorStop(1,'rgba(255,56,0,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
       spCore=document.createElement('canvas'); spCore.width=spCore.height=64;
       g2=spCore.getContext('2d');
       g=g2.createRadialGradient(32,32,0,32,32,32);
-      g.addColorStop(0,'rgba(255,250,226,1)');
-      g.addColorStop(.35,'rgba(255,210,116,.92)');
+      g.addColorStop(0,'rgba(255,244,210,1)');
+      g.addColorStop(.35,'rgba(255,200,110,.9)');
       g.addColorStop(1,'rgba(255,150,40,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
     }
@@ -751,70 +751,40 @@ body::before{
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++) nArr[y*bw+x]=sample(G,x*scale,y*scale);
       edge=new Float32Array(bw);
       rnd1D=new Float32Array(RN);
-      for(y=0;y<RN;y++) rnd1D[y]=Math.random();
+      for(var y2=0;y2<RN;y2++) rnd1D[y2]=Math.random();
       makeSprites();
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
-    var running=false,t=0,T=0,dur=5200,last=0,half=null,cb=null,swapped=false,tAcc=0;
-    var SWAP_AT=0.82;                         // 火完全烧满整页后才换页（烧尽全黑→新页浮现）
-    var TOP_CLEAR=310;                        // 顶部余量：让火舌完全越出屏顶
+    var running=false,t=0,T=0,dur=4000,last=0,half=null,cb=null,swapped=false,tAcc=0;
+    var SWAP_AT=0.8;      // 火焰蔓延烧满整页后再换页
+    var TOP_CLEAR=260;    // 火线最终越过屏顶的余量
 
     function computeEdge(front){
-      var x,i;
-      var s1=T*.55, s2=T*1.1+37, s3=T*2.2+81; // 各倍频程随时间横移→轮廓不断蠕动
+      var x;
+      var s1=T*.5, s2=T*1.0+37, s3=T*2.0+81;
       for(x=0;x<bw;x++){
         var px=x*scale;
         edge[x]=front
-          + (noise1(px/150+s1)-.5)*74        // 大起伏（深处 V 型缺口）
-          + (noise1(px/62+s2)-.5)*44         // 中起伏
-          + (noise1(px/23+s3)-.5)*16;        // 细碎撕边
-      }
-      for(i=0;i<tongues.length;i++){          // 火舌：局部把火线大幅抬高
-        var tg=tongues[i];
-        var u=tg.age/tg.dur;
-        var env=u<.28?(u/.28):Math.pow(1-(u-.28)/.72,1.6);   // 快起缓收
-        var x0=(tg.x-tg.r)/scale, x1=(tg.x+tg.r)/scale;
-        var a=Math.max(0,Math.floor(x0)), b=Math.min(bw-1,Math.ceil(x1));
-        for(x=a;x<=b;x++){
-          var q=((x-x0)/Math.max(1,(x1-x0)))*2-1;
-          if(q<-1||q>1) continue;
-          edge[x]-=tg.h*env*Math.pow(Math.cos(q*1.5708),1.4);
-        }
-      }
-    }
-    function spawnTongues(dt){
-      tAcc+=dt;
-      while(tAcc>150){                        // 约每150ms尝试催生一根火舌
-        tAcc-=150;
-        if(tongues.length<9&&Math.random()<.8)
-          tongues.push({x:Math.random()*W, r:34+Math.random()*72,
-            h:100+Math.random()*150, age:0, dur:.8+Math.random()*.9});
-      }
-      for(var i=tongues.length-1;i>=0;i--){
-        tongues[i].age+=dt;
-        if(tongues[i].age>=tongues[i].dur) tongues.splice(i,1);
+          + (noise1(px/170+s1)-.5)*56      // 大起伏：火缘蜿蜒
+          + (noise1(px/70+s2)-.5)*30       // 中起伏
+          + (noise1(px/26+s3)-.5)*12;      // 细撕边
       }
     }
     function spawnFlames(){
-      var n=3+(Math.random()*3|0);
+      var n=2+(Math.random()*3|0);         // 火苗贴火线，少量（蔓延感而非火山）
       for(var k=0;k<n;k++){
-        if(flames.length>80) break;
-        var x;
-        if(tongues.length&&Math.random()<.62){       // 火舌附近火更旺
-          var tg=tongues[(Math.random()*tongues.length)|0];
-          x=tg.x+(Math.random()-.5)*tg.r*1.6;
-        } else { x=Math.random()*W; }
-        x=Math.max(4,Math.min(W-4,x));
+        if(flames.length>46) break;
+        var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
         flames.push({
           x:x+(Math.random()-.5)*8,
-          y:edge[bx]-Math.random()*14,               // 火缘上方升腾
-          vx:(Math.random()-.5)*.6,
-          vy:-(2.2+Math.random()*2.2),               // 快于火线推进→向上舔
-          r:8+Math.random()*14,
-          life:1, decay:.02+Math.random()*.015,
-          ph:Math.random()*6.283, hot:Math.random()<.4
+          y:edge[bx]-Math.random()*16,     // 火缘处
+          vx:(Math.random()-.5)*.5,
+          vy:-(.7+Math.random()*1.6),       // 克制上舔
+          r:7+Math.random()*9,             // 小火苗
+          life:1, decay:.03+Math.random()*.03,
+          ph:Math.random()*6.283
         });
       }
     }
@@ -822,16 +792,16 @@ body::before{
       c.globalCompositeOperation='lighter';
       for(var i=flames.length-1;i>=0;i--){
         var f=flames[i];
-        f.x+=f.vx+Math.sin(T*2.4+f.ph)*.5;
-        f.y+=f.vy; f.vy-=.006;
+        f.x+=f.vx+Math.sin(T*2.4+f.ph)*.4;
+        f.y+=f.vy; f.vy-=.004;
         f.life-=f.decay;
         if(f.life<=0){ flames.splice(i,1); continue; }
         var fl=.62+.38*Math.sin(T*11+f.ph*3);
         var a=f.life*fl;
-        var R=f.r*(1.9-f.life*.5);            // 外晕适度，保持火的形状
+        var R=f.r*(1.8-f.life*.5);
         c.globalAlpha=a;
         c.drawImage(spGlow,f.x-R,f.y-R,R*2,R*2);
-        var r2=f.r*(.7+.35*(1-f.life));       // 焰心收拢变亮
+        var r2=f.r*(.7+.35*(1-f.life));
         c.globalAlpha=a;
         c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
       }
@@ -839,56 +809,56 @@ body::before{
       c.globalCompositeOperation='source-over';
     }
     function spawnSparks(){
-      var n=1+(Math.random()*3|0);
+      var n=1+(Math.random()*2|0);
       for(var k=0;k<n;k++){
-        if(sparks.length>120) break;
+        if(sparks.length>70) break;
         var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
-        sparks.push({x:x,y:edge[bx]+(Math.random()*30-14),
-          vx:(Math.random()-.5)*.9,vy:-(.7+Math.random()*2.1),
-          life:1,decay:.005+Math.random()*.012,
-          r:.8+Math.random()*2,ph:Math.random()*6.28,big:Math.random()<.12});
+        sparks.push({x:x,y:edge[bx]+(Math.random()*24-12),
+          vx:(Math.random()-.5)*.8,vy:-(.6+Math.random()*1.6),
+          life:1,decay:.006+Math.random()*.012,
+          r:.8+Math.random()*1.8,ph:Math.random()*6.28,big:Math.random()<.1});
       }
     }
     function drawSparks(){
       c.globalCompositeOperation='lighter';
       for(var i=sparks.length-1;i>=0;i--){
         var s=sparks[i];
-        s.x+=s.vx+Math.sin(T*3.1+s.ph)*.45;
-        s.y+=s.vy; s.vy-=.008;
+        s.x+=s.vx+Math.sin(T*3.1+s.ph)*.4;
+        s.y+=s.vy; s.vy-=.007;
         s.life-=s.decay;
-        if(s.life<=0||s.y<-14){ sparks.splice(i,1); continue; }
+        if(s.life<=0||s.y<-12){ sparks.splice(i,1); continue; }
         var fl=.5+.5*Math.sin(T*15+s.ph*5);
         var a=s.life*fl;
-        if(s.big){                            // 部分火星带暖光晕
-          var R=s.r*4.2;
+        if(s.big){
+          var R=s.r*3.6;
           var g=c.createRadialGradient(s.x,s.y,0,s.x,s.y,R);
-          g.addColorStop(0,'rgba(255,190,90,'+(.5*a).toFixed(3)+')');
-          g.addColorStop(1,'rgba(255,120,20,0)');
+          g.addColorStop(0,'rgba(255,200,120,'+(.5*a).toFixed(3)+')');
+          g.addColorStop(1,'rgba(255,140,30,0)');
           c.fillStyle=g; c.beginPath(); c.arc(s.x,s.y,R,0,6.283); c.fill();
         }
         c.globalAlpha=Math.min(1,a*1.2);
-        c.fillStyle='rgb(255,'+(190+((50*s.life)|0))+',120)';
+        c.fillStyle='rgb(255,'+(200+((40*s.life)|0))+',130)';
         c.beginPath(); c.arc(s.x,s.y,s.r*(.4+.6*s.life),0,6.283); c.fill();
       }
       c.globalAlpha=1;
       c.globalCompositeOperation='source-over';
     }
-    function renderPixels(){                  // 已燃炭黑 + 火缘上方焦斑/淡烟
+    function renderPixels(){                 // 已燃炭黑 + 火缘上方焦斑/淡烟 + 金边
       var data=bitData.data;
       for(var y=0;y<bh;y++){
         var py=y*scale, row=y*bw;
         for(var x=0;x<bw;x++){
           var p=(row+x)*4;
-          var v=py-edge[x];                   // >0：火线下方（已燃）
+          var v=py-edge[x];
           if(v>=0){ data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=255; }
-          else if(v>-46){                     // 灼焦斑带
-            var ch=1+v/46, sp=nArr[row+x];
-            var a=(.42+.58*ch)*(.55+.45*sp);
-            data[p]=14; data[p+1]=10; data[p+2]=7; data[p+3]=(a*255)|0;
-          } else if(v>-64){                   // 淡烟收边
-            var q=1+(v+46)/18;
-            data[p]=24; data[p+1]=19; data[p+2]=15; data[p+3]=((1-q)*70)|0;
+          else if(v>-40){
+            var ch=1+v/40, sp=nArr[row+x];
+            var a=(.4+.6*ch)*(.55+.45*sp);
+            data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a*255)|0;
+          } else if(v>-58){
+            var q=1+(v+40)/18;
+            data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*60)|0;
           } else { data[p+3]=0; }
         }
       }
@@ -896,18 +866,19 @@ body::before{
       c.clearRect(0,0,W,H);
       c.imageSmoothingEnabled=true;
       c.drawImage(buf,0,0,bw,bh,0,0,W,H);
-      c.globalCompositeOperation='lighter';   // 贴火线的白热亮缘
+      // 金边：火缘描一条金色发光细线 + 内白热
+      c.globalCompositeOperation='lighter';
       c.lineJoin='round';
-      c.beginPath();
-      for(var x2=0;x2<bw;x2++){
-        var sx=x2*scale, sy=edge[x2];
-        if(x2===0) c.moveTo(sx,sy); else c.lineTo(sx,sy);
+      function strokeEdge(color,w){
+        c.beginPath();
+        for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=edge[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
+        c.strokeStyle=color; c.lineWidth=w; c.stroke();
       }
-      c.strokeStyle='rgba(255,214,120,.32)'; c.lineWidth=7; c.stroke();
-      c.strokeStyle='rgba(255,240,198,.6)';  c.lineWidth=2.4; c.stroke();
+      strokeEdge('rgba(201,160,80,.30)',7);    // 外金晕
+      strokeEdge('rgba(244,206,128,.55)',2.4); // 金边
+      strokeEdge('rgba(255,244,214,.5)',1);    // 内白热
       c.globalCompositeOperation='source-over';
     }
-
     function draw(now){
       var dt=Math.min(50,now-last); last=now;
       t+=dt/dur; if(t>1) t=1;
@@ -915,9 +886,8 @@ body::before{
       if(t<SWAP_AT){
         var u=t/SWAP_AT;
         var e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;          // ease-in-out
-        var front=(H+30)+(-(TOP_CLEAR)-H-30)*e;           // 自页底升至顶上310px
+        var front=(H+24)+(-(TOP_CLEAR)-H-24)*e;           // 自页底蔓延至越过屏顶
         computeEdge(front);
-        spawnTongues(dt);
         renderPixels();
         spawnFlames(); drawFlames();
         spawnSparks(); drawSparks();
@@ -926,19 +896,18 @@ body::before{
         if(!swapped){ swapped=true; if(half) half(); }    // 火焰消失后才切到新页
         var q=(t-SWAP_AT)/(1-SWAP_AT);
         cv.style.opacity=Math.max(0,1-q);
-        computeEdge(-340);                                // 维持全屏炭黑，淡出露出新页
+        computeEdge(-300);
         renderPixels();
         drawFlames(); drawSparks();
       }
       if(t>=1){
         running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
-        flames.length=0; sparks.length=0; tongues.length=0; swapped=false;
+        flames.length=0; sparks.length=0; swapped=false;
         if(cb){ var f2=cb; cb=null; f2(); }
         return;
       }
       requestAnimationFrame(draw);
     }
-
     return {
       available: !!(cv && c),
       halfAt:function(fn){ half=fn; },
@@ -946,9 +915,7 @@ body::before{
         if(!this.available){ if(done) done(); return; }
         t=0; T=0; tAcc=0; last=performance.now();
         cv.style.opacity=1;
-        flames.length=0; sparks.length=0; tongues.length=0; swapped=false;
-        tongues.push({x:W*.5,r:64,h:150,age:0,dur:1.15});          // 点火：中央先窜起大火舌
-        tongues.push({x:W*(.28+Math.random()*.44),r:56,h:135,age:-.12,dur:1});
+        flames.length=0; sparks.length=0; swapped=false;
         if(!running){ running=true; requestAnimationFrame(draw); }
       }
     };
