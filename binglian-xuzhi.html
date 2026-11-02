@@ -816,12 +816,10 @@ body::before{
         for(var x=0;x<bw;x++){
           var p=(row+x)*4;
           var v=py-edge[x];         // >0：火线下方（已燃）
-          if(v>=0){                 // 已燃：自页底向上吞噬
+          if(v>=0){                 // 已燃：纯炭黑焦痕（去除暗金点点）
             var d=v;                            // 深入已燃区的距离
-            var vn=nArr2[row+x];                // 金脉噪声（黑底流金纹理）
-            var gl=vn>.56?(vn-.56)/.44:0; gl=gl*gl*(3-2*gl);
-            var mt=Math.max(0,1-d/26); mt*=mt;  // 近火缘熔金带
-            var rr=9+gl*118+mt*128, gg=7+gl*82+mt*90, bb=6+gl*30+mt*36;
+            var ch=Math.max(0,1-d/42); ch=ch*ch; // 近火缘：暖炭灰过渡（非金）
+            var rr=6+ch*42, gg=5+ch*34, bb=4+ch*27;
             var a=d>30?1:(.6+.4*(d/30));
             data[p]=rr|0; data[p+1]=gg|0; data[p+2]=bb|0; data[p+3]=(a*255)|0;
           } else {                 // 未燃：火线上方的窄带焦化
