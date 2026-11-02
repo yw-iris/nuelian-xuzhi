@@ -703,7 +703,7 @@ body::before{
       run:function(direction, doneCb){
         if(!this.available){ if(doneCb) doneCb(); return; }
         done = doneCb; firedHalf = false;
-        v.style.opacity = 1;
+        v.style.opacity = 0.55;
         try{ v.currentTime = 0; }catch(e){}
         var pr = v.play();
         if(pr && pr.catch) pr.catch(finish);
