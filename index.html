@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>两份须知 · 冬因</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20,7 +20,7 @@
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
 body{
-  background:var(--paper);color:var(--ink);
+  background:#000;color:var(--ink);
   font-family:var(--serif-cn);-webkit-font-smoothing:antialiased;
   overflow:hidden;user-select:none;
 }
@@ -30,9 +30,11 @@ body::before{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
 
+/* —— 封面 —— */
 .cover-split{
-  position:relative;z-index:1;height:100dvh;width:100%;
+  position:fixed;inset:0;z-index:5;
   display:flex;
+  transition:opacity .5s ease,visibility .5s;
 }
 .panel{
   flex:1;position:relative;
@@ -43,78 +45,67 @@ body::before{
 }
 .panel.nue{background:var(--ink);color:var(--paper)}
 .panel.bing{background:var(--paper);color:var(--ink);border-left:2px solid var(--ink)}
-
-.panel .serial{
-  font-family:var(--serif-en);font-style:italic;font-weight:500;
-  font-size:15px;letter-spacing:.3em;opacity:.7;
-}
+.panel .serial{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:15px;letter-spacing:.3em;opacity:.7}
 .panel.nue .serial{color:#d8d8d8}
 .panel.bing .serial{color:var(--gray-1)}
-.panel .title{
-  margin-top:14px;
-  font-size:clamp(2.4rem,11vmin,4.4rem);
-  font-weight:900;letter-spacing:.08em;text-indent:.08em;line-height:1.04;
-}
+.panel .title{margin-top:14px;font-size:clamp(2.4rem,11vmin,4.4rem);font-weight:900;letter-spacing:.08em;text-indent:.08em;line-height:1.04}
 .panel .title .dot{color:var(--gray-2)}
-.panel .sub{
-  margin-top:16px;font-family:var(--serif-en);font-style:italic;
-  font-size:clamp(11px,2.4vmin,14px);letter-spacing:.18em;line-height:1.9;
-  text-align:center;opacity:.78;
-}
-.panel .go{
-  margin-top:26px;font-family:var(--serif-en);font-size:12px;letter-spacing:.26em;
-  display:inline-flex;align-items:center;gap:8px;opacity:.85;
-  border:1px solid currentColor;border-radius:20px;padding:7px 16px;
-  transition:opacity .3s,letter-spacing .3s,gap .3s;
-}
+.panel .sub{margin-top:16px;font-family:var(--serif-en);font-style:italic;font-size:clamp(11px,2.4vmin,14px);letter-spacing:.18em;line-height:1.9;text-align:center;opacity:.78}
+.panel .go{margin-top:26px;font-family:var(--serif-en);font-size:12px;letter-spacing:.26em;display:inline-flex;align-items:center;gap:8px;opacity:.85;border:1px solid currentColor;border-radius:20px;padding:7px 16px;transition:opacity .3s,letter-spacing .3s,gap .3s}
 .panel:hover .go{opacity:1;letter-spacing:.34em;gap:12px}
 .panel:active{transform:scale(.985)}
 .panel.nue:hover{filter:brightness(1.12)}
 .panel.bing:hover{filter:opacity(.94)}
-
-/* 封面手写点缀 */
-.panel .script{
-  position:absolute;bottom:7%;left:50%;transform:translateX(-50%) rotate(-5deg);
-  font-family:var(--script);font-size:clamp(38px,8vmin,58px);line-height:1;
-  pointer-events:none;opacity:.5;white-space:nowrap;
-}
+.panel .script{position:absolute;bottom:7%;left:50%;transform:translateX(-50%) rotate(-5deg);font-family:var(--script);font-size:clamp(38px,8vmin,58px);line-height:1;pointer-events:none;opacity:.5;white-space:nowrap}
 .panel.nue .script{color:#cfcfcf}
 .panel.bing .script{color:var(--gray-2)}
-.panel .ghost-no{
-  position:absolute;top:6%;right:8%;
-  font-family:var(--serif-en);font-weight:600;font-style:italic;
-  font-size:min(34vmin,220px);line-height:1;
-  color:transparent;-webkit-text-stroke:1.5px currentColor;opacity:.10;pointer-events:none;
-}
+.panel .ghost-no{position:absolute;top:6%;right:8%;font-family:var(--serif-en);font-weight:600;font-style:italic;font-size:min(34vmin,220px);line-height:1;color:transparent;-webkit-text-stroke:1.5px currentColor;opacity:.10;pointer-events:none}
+.brand{position:fixed;z-index:6;top:calc(env(safe-area-inset-top,0) + 16px);left:50%;transform:translateX(-50%);pointer-events:none;font-family:var(--serif-en);font-size:11px;letter-spacing:.42em;color:var(--gray-1);text-transform:uppercase;mix-blend-mode:difference;transition:opacity .5s}
+.foot-hint{position:fixed;z-index:6;bottom:calc(env(safe-area-inset-bottom,0) + 14px);left:50%;transform:translateX(-50%);pointer-events:none;font-size:10.5px;letter-spacing:.34em;color:var(--gray-2);mix-blend-mode:difference;transition:opacity .5s}
 
-/* 顶部品牌 + 底部提示（不挡点击） */
-.brand{
-  position:fixed;z-index:3;top:calc(env(safe-area-inset-top,0) + 16px);left:50%;
-  transform:translateX(-50%);pointer-events:none;
-  font-family:var(--serif-en);font-size:11px;letter-spacing:.42em;
-  color:var(--gray-1);text-transform:uppercase;mix-blend-mode:difference;
-}
-.foot-hint{
-  position:fixed;z-index:3;bottom:calc(env(safe-area-inset-bottom,0) + 14px);left:50%;
-  transform:translateX(-50%);pointer-events:none;
-  font-size:10.5px;letter-spacing:.34em;color:var(--gray-2);mix-blend-mode:difference;
-}
+/* —— 书（iframe 外壳） —— */
+#book{position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;display:none;z-index:2}
+body.open #book{display:block}
+body.open .cover-split{opacity:0;visibility:hidden;pointer-events:none}
+body.open .brand,body.open .foot-hint{opacity:0}
 
-/* 移动端：竖屏改为上下堆叠（仍是「封面 · 左虐右病」的竖向版） */
-@media (max-width:760px), (max-aspect-ratio:3/4){
+/* —— 全局控件 —— */
+#homeBtn{
+  position:fixed;top:env(safe-area-inset-top,14px);left:14px;z-index:9999;
+  width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.42);color:#f4f1ea;font-size:16px;cursor:pointer;
+  display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);
+}
+body.open #homeBtn{display:flex}
+.bgm-toggle{
+  position:fixed;top:env(safe-area-inset-top,14px);right:14px;z-index:9999;
+  width:42px;height:42px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.42);color:#f4f1ea;
+  font-size:18px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:background .3s,border-color .3s;
+}
+.bgm-toggle.playing{background:rgba(0,0,0,.62);border-color:rgba(255,255,255,.5)}
+.bgm-toggle .wave{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5;transform:scale(.92)}50%{opacity:1;transform:scale(1.08)}}
+
+@media (max-width:760px),(max-aspect-ratio:3/4){
   .cover-split{flex-direction:column}
   .panel.bing{border-left:none;border-top:2px solid var(--ink)}
-  .panel .script{ top:12%; bottom:auto; transform:translateX(-50%) rotate(-5deg); opacity:.32; }
+  .panel .script{top:12%;bottom:auto;transform:translateX(-50%) rotate(-5deg);opacity:.32}
   .panel .ghost-no{top:4%;right:6%;font-size:min(30vmin,180px)}
   .brand{font-size:10px;letter-spacing:.32em}
 }
 </style>
 </head>
 <body>
+  <iframe id="book" frameborder="0" allow="autoplay"></iframe>
+
   <div class="brand">WINTER.YE · 须知</div>
 
-  <main class="cover-split">
-    <a class="panel nue" href="nuelian-xuzhi.html">
+  <main class="cover-split" id="cover">
+    <a class="panel nue" href="nuelian-xuzhi.html" data-book="nuelian-xuzhi.html">
       <span class="ghost-no" aria-hidden="true">A</span>
       <span class="serial">A</span>
       <h1 class="title">虐恋须知</h1>
@@ -122,7 +113,7 @@ body::before{
       <span class="go">翻 开 →</span>
       <span class="script" aria-hidden="true">winter</span>
     </a>
-    <a class="panel bing" href="binglian-xuzhi.html">
+    <a class="panel bing" href="binglian-xuzhi.html" data-book="binglian-xuzhi.html">
       <span class="ghost-no" aria-hidden="true">B</span>
       <span class="serial">B</span>
       <h1 class="title">病恋须知</h1>
@@ -133,5 +124,88 @@ body::before{
   </main>
 
   <div class="foot-hint">点击任意一侧 · 进入翻页</div>
+
+  <button id="homeBtn" aria-label="返回封面" title="返回封面">≡</button>
+  <button id="bgmToggle" class="bgm-toggle" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐">♪</button>
+  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+
+  <script>
+  (function(){
+    var book = document.getElementById('book');
+    var bgm  = document.getElementById('bgm');
+    var btn  = document.getElementById('bgmToggle');
+    var home = document.getElementById('homeBtn');
+
+    bgm.volume = 0.5;
+    var started=false, userOff=false, playing=false;
+
+    function icon(on){
+      playing = on;
+      btn.innerHTML = on ? '<span class="wave">♪</span>' : '♪';
+      btn.classList.toggle('playing', on);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+    function syncChild(){ try{ book.contentWindow && book.contentWindow.postMessage({type:'bgmState', playing:playing}, '*'); }catch(e){} }
+    function tryPlay(){
+      if(userOff) return;
+      bgm.play().then(function(){ started=true; icon(true); }).catch(function(){});
+    }
+    function openBook(src){
+      book.src = src;
+      document.body.classList.add('open');
+      tryPlay();   // 来自用户点击的手势，可起播
+    }
+
+    // 封面点击进入对应书
+    document.querySelectorAll('.panel').forEach(function(p){
+      p.addEventListener('click', function(e){
+        e.preventDefault();
+        openBook(p.getAttribute('data-book'));
+      });
+    });
+
+    // 全局手势起播（封面与书内均可触发）
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){
+      var h = function(e){
+        if(e.target && (e.target.id==='bgmToggle' || e.target.id==='homeBtn')) return;
+        tryPlay();
+        if(started) document.removeEventListener(ev, h, {passive:true});
+      };
+      document.addEventListener(ev, h, {passive:true});
+    });
+
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(bgm.paused){ userOff=false; tryPlay(); } else { bgm.pause(); userOff=true; icon(false); }
+      syncChild();
+    });
+    home.addEventListener('click', function(){
+      document.body.classList.remove('open');   // 回封面，音乐继续
+    });
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) bgm.pause();
+      else if(started && !userOff) tryPlay();
+    });
+
+    // 子页面（iframe 中书）消息
+    window.addEventListener('message', function(e){
+      var d = e.data || {};
+      if(d.type === 'switch'){
+        openBook(d.to);          // 已 open，仅换 iframe，音乐不重载
+      } else if(d.type === 'bgmPlay'){
+        tryPlay();
+      } else if(d.type === 'bgmToggle'){
+        if(bgm.paused){ userOff=false; tryPlay(); } else { bgm.pause(); userOff=true; icon(false); }
+        syncChild();
+      }
+    });
+
+    icon(false);
+
+    // 支持 ?book= 深链直达
+    var b = new URLSearchParams(location.search).get('book');
+    if(b){ openBook(b + '-xuzhi.html'); }
+  })();
+  </script>
 </body>
 </html>
