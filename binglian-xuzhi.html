@@ -125,15 +125,11 @@ body::before{
                  .like,.dislike,.cover-list li){
   animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
 }
-.page.active .cover-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
-.page.active .seal{animation:sealIn .62s cubic-bezier(.25,.6,.25,1) backwards;animation-delay:.10s}
-.page.active .cover-meta{animation-delay:.14s}
-.page.active .cover-title{animation-delay:.16s}
-.page.active .cover-list li:nth-child(1){animation-delay:.28s}
-.page.active .cover-list li:nth-child(2){animation-delay:.36s}
-.page.active .cover-list li:nth-child(3){animation-delay:.42s}
-.page.active .name-box{animation-delay:.46s}
-.page.active .cover-bar{animation-delay:.55s}
+.page.active .qf-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
+.page.active :is(.qf-sub,.qf-mid,.qf-bottom){animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards}
+.page.active .qf-sub{animation-delay:.14s}
+.page.active .qf-mid{animation-delay:.26s}
+.page.active .qf-bottom{animation-delay:.38s}
 .page.active .sec-head{animation-delay:.06s}
 .page.active .sec-cap{animation-delay:.16s}
 .page.active .like:nth-child(1){animation-delay:.22s}
@@ -172,80 +168,49 @@ body::before{
   right:-14vw;top:-16vh;
 }
 
-/* ————— 页 1 · 封面 ————— */
-.cover-meta{
-  display:flex;justify-content:space-between;
-  font-size:11px;letter-spacing:.32em;color:var(--gray-1);
-  border-bottom:1px solid var(--line);padding-bottom:12px;
-  position:relative;z-index:1;
+/* ————— 页 1 · 封面（THE QUIET FLOW 版式） ————— */
+.page.cover{justify-content:space-between;padding:min(6vh,52px) clamp(26px,7vw,72px) min(5vh,40px)}
+.qf-curve{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.qf-head{position:relative;z-index:1}
+.qf-title{
+  font-size:clamp(3rem,17vmin,5.9rem);
+  font-weight:600;letter-spacing:.06em;line-height:1.14;
 }
-.cover-meta .en{font-family:var(--serif-en);font-size:10px;letter-spacing:.26em}
-.seal{
-  position:absolute;right:0;top:52px;z-index:2;
-  width:42px;height:42px;border:1.5px solid var(--ink);   /* 黑 · 印章 */
-  display:flex;align-items:center;justify-content:center;
-  font-size:19px;font-weight:700;color:var(--ink);transform:rotate(6deg);
+.qf-sub{
+  margin-top:14px;font-family:var(--serif-en);
+  font-size:clamp(10px,1.7vmin,12px);letter-spacing:.42em;color:var(--gray-1);
 }
-.page.cover{justify-content:space-between;padding:min(5vh,44px) clamp(26px,7vw,72px) min(4vh,32px)}
-.title-wrap{position:relative;z-index:1}
-.cover-title{
-  font-size:clamp(2.7rem,15.5vmin,5.6rem);
-  font-weight:900;letter-spacing:.05em;text-indent:.05em;
-  line-height:1.05;position:relative;z-index:1;
-}
-.cover-title::after{   /* 极细的金色短下划，稀疏金点 */
-  content:"";position:absolute;left:0;bottom:-12px;
-  width:62px;height:2px;background:var(--ink);
-}
-.halftone{
-  position:absolute;top:-16px;left:-12px;width:118px;height:104px;z-index:0;
-  background-image:radial-gradient(rgba(17,17,17,.55) 1.1px,transparent 1.4px);
+.qf-halftone{
+  position:absolute;right:7%;top:31%;width:150px;height:128px;z-index:0;
+  background-image:radial-gradient(rgba(17,17,17,.6) 1px,transparent 1.3px);
   background-size:7px 7px;
-  -webkit-mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
-  mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
-  opacity:.4;pointer-events:none;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);
+  opacity:.35;pointer-events:none;
 }
-.cover-left{
-  display:flex;flex-direction:column;align-items:flex-start;
-  gap:min(4.4vh,34px);position:relative;z-index:1;
+.qf-script{
+  position:absolute;right:9%;top:36%;z-index:1;pointer-events:none;
+  font-family:var(--script);font-size:clamp(64px,15vmin,108px);line-height:1;
+  color:var(--ink);transform:rotate(-8deg);white-space:nowrap;
 }
-.cover-list{list-style:none}
-.cover-list li{
-  position:relative;padding-left:15px;
-  font-size:12.5px;letter-spacing:.2em;line-height:2.7;color:var(--ink);
+.qf-mid{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end}
+.qf-num{display:flex;flex-direction:column;gap:6px;font-family:var(--serif-en);font-size:13px;letter-spacing:.08em;color:var(--ink)}
+.qf-credits{font-size:10.5px;line-height:1.9;letter-spacing:.12em;color:var(--gray-1)}
+.qf-credits b{font-weight:600;color:var(--ink)}
+.qf-credits p+p{margin-top:12px}
+.qf-bottom{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end}
+.qf-tag{font-family:var(--serif-en);font-style:italic;font-weight:600;font-size:clamp(14px,2.6vmin,18px);letter-spacing:.03em}
+.qf-txt{margin-top:10px;font-size:11.5px;letter-spacing:.16em;line-height:2;color:var(--gray-1)}
+.qf-sign{font-family:var(--serif-en);font-size:10px;letter-spacing:.22em;color:var(--gray-1);white-space:nowrap}
+
+/* ————— 竖版水印（页2起 · 参考竖条版式元素） ————— */
+.wm-v{
+  position:absolute;right:clamp(12px,3.5vw,30px);bottom:0;z-index:0;
+  pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:9px;
 }
-.cover-list li::before{
-  content:"";position:absolute;left:0;top:.72em;
-  width:5px;height:5px;background:var(--ink);
-}
-.name-box{
-  flex:none;border:2px solid var(--ink);background:rgba(255,255,255,.85);
-  padding:9px 13px;position:relative;z-index:1;
-  font-size:17px;font-weight:900;letter-spacing:.3em;text-indent:.3em;
-  box-shadow:4px 4px 0 rgba(17,17,17,.12);
-}
-.name-box i{font-style:normal;font-size:10px;vertical-align:top;margin-left:2px;letter-spacing:0;text-indent:0}
-.cover-gray{
-  position:absolute;left:5%;right:5%;top:41%;bottom:0;z-index:0;
-  background:linear-gradient(180deg,rgba(17,17,17,0) 0%,rgba(17,17,17,.05) 45%,rgba(17,17,17,.14) 100%);
-  pointer-events:none;
-}
-.cover-bottom{position:relative;z-index:1;text-align:center;padding-bottom:10px}
-.cover-tagline{
-  font-family:var(--serif-en);font-size:10.5px;letter-spacing:.18em;
-  color:var(--gray-1);line-height:1.8;
-}
-.cover-script{
-  position:absolute;left:50%;bottom:48px;transform:translateX(-50%) rotate(-6deg);
-  font-family:var(--script);font-size:clamp(42px,9vmin,60px);line-height:1;
-  color:var(--ink-soft);pointer-events:none;white-space:nowrap;
-}
-.cover-bar{
-  margin-top:36px;background:var(--ink);color:#fff;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:8px 14px;font-family:var(--serif-en);font-size:11px;letter-spacing:.22em;
-}
-.cover-bar .ico{font-size:12px}
+.wm-bar{width:clamp(30px,6.5vw,44px);height:min(19vh,148px);background:rgba(17,17,17,.055)}
+.wm-dot{width:9px;height:9px;background:rgba(17,17,17,.13)}
+.wm-txt{writing-mode:vertical-rl;font-family:var(--serif-en);font-size:9px;letter-spacing:.5em;color:rgba(17,17,17,.2)}
 
 /* ————— 章节页通用 · 留白海报式 ————— */
 .sec-head{display:block;position:relative;z-index:1}
@@ -397,7 +362,7 @@ body::before{
 }
 @media (max-height:560px){
   .disc{display:none}
-  .cover-title{margin-top:min(5vh,32px)}
+  .qf-script{display:none}
 }
 
 /* ————— 手机适配（≤480px 竖屏） ————— */
@@ -412,18 +377,15 @@ body::before{
   .nav-btn{ width:38px; height:38px; }
   .tap-hint{ display:none; }
 
-  .cover-meta{ font-size:10px; letter-spacing:.2em; padding-bottom:10px; }
-  .cover-meta .en{ font-size:9px; letter-spacing:.18em; }
   .page.cover{ padding:min(4vh,34px) 24px min(3.5vh,28px); }
-  .cover-title{ font-size:clamp(2.5rem,14.5vmin,3.6rem); letter-spacing:.04em; text-indent:.04em; }
-  .halftone{ width:92px; height:82px; top:-12px; left:-8px; }
-  .cover-left{ gap:min(3.4vh,24px); }
-  .cover-list li{ font-size:11px; letter-spacing:.16em; line-height:2.5; }
-  .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(17,17,17,.12); }
-  .cover-gray{ left:12px; right:12px; top:44%; }
-  .cover-tagline{ font-size:9.5px; letter-spacing:.14em; }
-  .cover-script{ font-size:40px; bottom:44px; }
-  .cover-bar{ margin-top:30px; font-size:10px; padding:7px 12px; }
+  .qf-title{ font-size:clamp(2.6rem,15vmin,3.8rem); }
+  .qf-sub{ letter-spacing:.3em; }
+  .qf-halftone{ width:104px; height:90px; right:4%; top:29%; }
+  .qf-script{ font-size:56px; right:6%; }
+  .qf-credits{ font-size:9.5px; }
+  .qf-num{ font-size:11px; gap:4px; }
+  .qf-txt{ font-size:10px; letter-spacing:.12em; }
+  .wm-bar{ width:26px; height:min(13vh,96px); }
   .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
 
   .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
@@ -459,7 +421,7 @@ body::before{
 @media (max-width:480px) and (max-height:660px){
   .page{ padding:6px 24px 10px; }
   .page.cover{ padding:3vh 24px 2.5vh; }
-  .cover-bar{ margin-top:22px; }
+  .qf-script{ font-size:44px; }
   .facts,.likes,.dislikes{ margin-top:min(2.6vh,18px); }
   .fact{ padding:10px 12px 14px; }
   .like{ padding:9px 12px 12px; }
@@ -468,8 +430,7 @@ body::before{
 }
 @media (max-width:360px){
   .page{ padding:8px 18px 10px; }
-  .cover-title{ font-size:clamp(2.2rem,13vmin,3rem); }
-  .cover-tagline{ letter-spacing:.1em; }
+  .qf-title{ font-size:clamp(2.2rem,13vmin,3rem); }
   .like .c{ font-size:9.5px; }
   .dislike .k{ font-size:12px; }
   .fact dd{ font-size:13px; }
@@ -491,31 +452,36 @@ body::before{
 
   <main class="pages" id="pages">
 
-    <!-- 1 · 封面 -->
+    <!-- 1 · 封面（THE QUIET FLOW 版式） -->
     <section class="page active cover" aria-label="封面">
-      <div class="cover-meta"><span>B · 须知</span><span class="en">SERIAL — NO.02</span></div>
-      <div class="title-wrap">
-        <div class="halftone" aria-hidden="true"></div>
-        <h1 class="cover-title">病恋须知</h1>
+      <svg class="qf-curve" viewBox="0 0 390 780" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M 72 -10 C 154 120 4 214 122 326 C 212 412 324 384 314 504 C 304 616 142 606 172 722 C 192 800 122 838 134 900" fill="none" stroke="rgba(17,17,17,.25)" stroke-width="1"/>
+      </svg>
+      <header class="qf-head">
+        <h1 class="qf-title">病恋<br>须知</h1>
+        <p class="qf-sub">SICK &nbsp;&amp;&nbsp; TENDER</p>
+      </header>
+      <div class="qf-halftone" aria-hidden="true"></div>
+      <p class="qf-script" aria-hidden="true">winter</p>
+      <div class="qf-mid">
+        <div class="qf-num" aria-hidden="true"><span>2</span><span>0</span><span>2</span><span>6</span></div>
+        <div class="qf-credits">
+          <p>written by /<br><b>冬因</b></p>
+          <p>serial /<br><b>NO.02 &middot; B</b></p>
+        </div>
       </div>
-      <div class="cover-left">
-        <div class="name-box">冬因<i aria-hidden="true">✦</i></div>
-        <ul class="cover-list">
-          <li>反复确认</li>
-          <li>患得患失</li>
-          <li>仍然伸手</li>
-        </ul>
-      </div>
-      <div class="cover-gray" aria-hidden="true"></div>
-      <div class="cover-bottom">
-        <p class="cover-tagline">black &amp; white —<br>two sides of the same winter.</p>
-        <p class="cover-script" aria-hidden="true">winter</p>
-        <div class="cover-bar"><span class="ico" aria-hidden="true">☰</span><span class="no">0123&thinsp;▸</span></div>
-      </div>
+      <footer class="qf-bottom">
+        <div>
+          <p class="qf-tag">black &amp; white —</p>
+          <p class="qf-txt">two sides<br>of the same winter.</p>
+        </div>
+        <p class="qf-sign">✦&thinsp;冬因</p>
+      </footer>
     </section>
 
     <!-- 2 · 关于我 -->
     <section class="page" aria-label="关于我">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
       <div class="ghost" aria-hidden="true">01</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
@@ -534,6 +500,7 @@ body::before{
 
     <!-- 3 · 喜点 -->
     <section class="page" aria-label="喜点">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
       <div class="ghost" aria-hidden="true">02</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">02</span><h2><em>Like</em>喜点</h2></div>
@@ -552,6 +519,7 @@ body::before{
 
     <!-- 4 · 雷点 -->
     <section class="page" aria-label="雷点">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
       <div class="ghost" aria-hidden="true">03</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">03</span><h2><em>Dislike</em>雷点</h2></div>
@@ -567,6 +535,7 @@ body::before{
 
     <!-- 5 · 独白 -->
     <section class="page" aria-label="独白">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
       <div class="monologue">
         我像生了场病。<br>
         反复确认你还愿不愿意接住我，<br>
@@ -577,6 +546,7 @@ body::before{
 
     <!-- 6 · 收尾（歌词，无光仔照片） -->
     <section class="page finale" aria-label="收尾">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
       <p class="finale-lyric">我想被抚摸<span class="sub">I want to be touched, to be loved.</span></p>
       <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
       <p class="finale-hint">点 击 左 · 右 翻 页</p>
@@ -649,10 +619,10 @@ body::before{
     var c = cv.getContext('2d');
     var W=0,H=0,dpr=1;
     var bw,bh,scale,buf,bctx,bitData;
-    var edge=null, nArr=null;
+    var edge=null, nArr=null, nArr2=null;
     var flames=[], sparks=[];
     var spGlow=null,spCore=null;
-    var rnd1D=null,RN=2048,G=null;
+    var rnd1D=null,RN=2048,G=null,G2=null;
 
     function makeGrid(step){
       var gw=Math.ceil(W/step)+3, gh=Math.ceil(H/step)+3;
@@ -678,16 +648,16 @@ body::before{
       spGlow=document.createElement('canvas'); spGlow.width=spGlow.height=64;
       var g2=spGlow.getContext('2d');
       var g=g2.createRadialGradient(32,32,0,32,32,32);
-      g.addColorStop(0,'rgba(255,150,40,1)');
-      g.addColorStop(.42,'rgba(255,96,12,.55)');
-      g.addColorStop(1,'rgba(255,56,0,0)');
+      g.addColorStop(0,'rgba(236,196,118,.95)');
+      g.addColorStop(.42,'rgba(166,116,44,.5)');
+      g.addColorStop(1,'rgba(92,58,12,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
       spCore=document.createElement('canvas'); spCore.width=spCore.height=64;
       g2=spCore.getContext('2d');
       g=g2.createRadialGradient(32,32,0,32,32,32);
-      g.addColorStop(0,'rgba(255,244,210,1)');
-      g.addColorStop(.35,'rgba(255,200,110,.9)');
-      g.addColorStop(1,'rgba(255,150,40,0)');
+      g.addColorStop(0,'rgba(255,249,232,1)');
+      g.addColorStop(.38,'rgba(243,212,148,.9)');
+      g.addColorStop(1,'rgba(200,150,70,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
     }
     function buildGeometry(){
@@ -703,6 +673,9 @@ body::before{
       G=makeGrid(9);
       nArr=new Float32Array(bw*bh);
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++) nArr[y*bw+x]=sample(G,x*scale,y*scale);
+      G2=makeGrid(23);
+      nArr2=new Float32Array(bw*bh);
+      for(var y3=0;y3<bh;y3++) for(var x3=0;x3<bw;x3++) nArr2[y3*bw+x3]=sample(G2,x3*scale,y3*scale);
       edgeTop=new Float32Array(bw); edgeBot=new Float32Array(bw);
       rnd1D=new Float32Array(RN);
       for(var y2=0;y2<RN;y2++) rnd1D[y2]=Math.random();
@@ -731,7 +704,7 @@ body::before{
     function spawnFlames(){
       var n=2+(Math.random()*3|0);         // 火苗贴火线，少量（蔓延感而非火山）
       for(var k=0;k<n;k++){
-        if(flames.length>46) break;
+        if(flames.length>70) break;
         var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
         var top=Math.random()<.5;
@@ -741,8 +714,8 @@ body::before{
           y:ey+(top?-Math.random()*16:Math.random()*16),
           vx:(Math.random()-.5)*.5,
           vy:(top?-1:1)*(.7+Math.random()*1.6),   // 上缘上舔 / 下缘下舔
-          r:7+Math.random()*9,             // 小火苗
-          life:1, decay:.03+Math.random()*.03,
+          r:15+Math.random()*19,           // 大团熔金火体（黑金流体质感）
+          life:1, decay:.016+Math.random()*.02,
           ph:Math.random()*6.283
         });
       }
@@ -794,12 +767,12 @@ body::before{
         if(s.big){
           var R=s.r*3.6;
           var g=c.createRadialGradient(s.x,s.y,0,s.x,s.y,R);
-          g.addColorStop(0,'rgba(255,200,120,'+(.5*a).toFixed(3)+')');
-          g.addColorStop(1,'rgba(255,140,30,0)');
+          g.addColorStop(0,'rgba(244,208,130,'+(.5*a).toFixed(3)+')');
+          g.addColorStop(1,'rgba(190,130,40,0)');
           c.fillStyle=g; c.beginPath(); c.arc(s.x,s.y,R,0,6.283); c.fill();
         }
         c.globalAlpha=Math.min(1,a*1.2);
-        c.fillStyle='rgb(255,'+(200+((40*s.life)|0))+',130)';
+        c.fillStyle='rgb(255,'+(222+((26*s.life)|0))+',168)';
         c.beginPath(); c.arc(s.x,s.y,s.r*(.4+.6*s.life),0,6.283); c.fill();
       }
       c.globalAlpha=1;
@@ -815,8 +788,12 @@ body::before{
           var vBot=py-edgeBot[x];   // >0：在火焰下缘之下（已燃）
           if(vTop>=0 || vBot>=0){   // 已燃：拍立得向上下两侧蔓延吞噬
             var d=Math.min(vTop,vBot);          // 深入已燃区的距离
-            if(d>30){ data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=255; }
-            else { var a=.6+.4*(d/30); data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=(a*255)|0; }
+            var vn=nArr2[row+x];                // 金脉噪声（黑底流金纹理）
+            var gl=vn>.56?(vn-.56)/.44:0; gl=gl*gl*(3-2*gl);
+            var mt=Math.max(0,1-d/26); mt*=mt;  // 近火缘熔金带
+            var rr=9+gl*118+mt*128, gg=7+gl*82+mt*90, bb=6+gl*30+mt*36;
+            var a=d>30?1:(.6+.4*(d/30));
+            data[p]=rr|0; data[p+1]=gg|0; data[p+2]=bb|0; data[p+3]=(a*255)|0;
           } else {                 // 未燃：夹在两条火线之间的窄带
             var dd=Math.min(py-edgeTop[x], edgeBot[x]-py);
             if(dd<40){
@@ -834,7 +811,7 @@ body::before{
       c.clearRect(0,0,W,H);
       c.imageSmoothingEnabled=true;
       c.drawImage(buf,0,0,bw,bh,0,0,W,H);
-      // 白边：两条火线各描白色发光细线（病恋去金 · 纯白黑硬朗）
+      // 熔金流纹：火缘多层金线 + 漂移金带（参考黑金流体质感）
       c.globalCompositeOperation='lighter';
       c.lineJoin='round';
       function strokeEdge(color,w,arr){
@@ -842,10 +819,22 @@ body::before{
         for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=arr[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
         c.strokeStyle=color; c.lineWidth=w; c.stroke();
       }
-      strokeEdge('rgba(255,255,255,.16)',7,edgeTop);
-      strokeEdge('rgba(255,255,255,.5)',1.6,edgeTop);
-      strokeEdge('rgba(255,255,255,.16)',7,edgeBot);
-      strokeEdge('rgba(255,255,255,.5)',1.6,edgeBot);
+      function strokeFlow(off,color,w,arr){
+        c.beginPath();
+        for(var x3=0;x3<bw;x3+=2){
+          var sx=x3*scale, sy=arr[x3]+off+Math.sin(x3*.085+T*2.2)*5;
+          if(x3===0)c.moveTo(sx,sy); else c.lineTo(sx,sy);
+        }
+        c.strokeStyle=color; c.lineWidth=w; c.stroke();
+      }
+      [edgeTop,edgeBot].forEach(function(arr){
+        strokeFlow(12,'rgba(196,148,70,.20)',9,arr);   // 漂移金带
+        strokeFlow(26,'rgba(168,120,50,.10)',14,arr);  // 远端淡金
+        strokeEdge('rgba(196,150,74,.16)',18,arr);     // 宽金晕
+        strokeEdge('rgba(216,172,92,.40)',8,arr);      // 金边
+        strokeEdge('rgba(242,210,142,.62)',3,arr);     // 香槟金
+        strokeEdge('rgba(255,246,222,.8)',1.2,arr);    // 白热核心
+      });
       c.globalCompositeOperation='source-over';
     }
     function draw(now){
