@@ -746,9 +746,9 @@ body::before{
     }
     window.addEventListener('resize',buildGeometry); buildGeometry();
 
-    var running=false,t=0,T=0,dur=4200,last=0,half=null,cb=null,swapped=false;
-    var BURN_END=0.60;    // 火线越过屏顶：整页烧尽
-    var DIE_AT=0.74;      // 火焰完全熄灭后才换页
+    var running=false,t=0,T=0,dur=4500,last=0,half=null,cb=null,swapped=false;
+    var BURN_END=0.71;    // 火线越过屏顶：整页烧尽（燃烧放慢）
+    var DIE_AT=0.78;      // 火焰完全熄灭后才换页（黑屏静默缩短）
     var TOP_CLEAR=260;    // 火线最终越过屏顶的余量
     var FY=0;             // 火线基准高度（edge 数组在 buildGeometry 内初始化）
 
