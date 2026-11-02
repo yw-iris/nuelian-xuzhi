@@ -218,15 +218,16 @@ body::before{
 .qf-txt{margin-top:10px;font-size:11.5px;letter-spacing:.16em;line-height:2;color:var(--gray-1)}
 .qf-sign{font-family:var(--serif-en);font-size:10px;letter-spacing:.22em;color:var(--gray-1);white-space:nowrap}
 
-/* ————— 底图水印（页2起 · 用参考黑金流体图做底纹，低透衬于内容下） ————— */
+/* ————— 底图水印（页2起 · 参考装饰英文图 · 竖版贴右缘） ————— */
 .wm-v{
-  position:absolute;left:0;right:0;bottom:0;height:min(54vh,440px);
-  z-index:0;pointer-events:none;overflow:hidden;opacity:.15;
+  position:absolute;right:clamp(6px,2.5vw,22px);top:50%;transform:translateY(-50%);
+  height:88%;z-index:0;pointer-events:none;
+  display:flex;align-items:center;justify-content:center;
 }
 .wm-v img{
-  position:absolute;right:-4%;bottom:-7%;height:128%;width:auto;
-  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 54%);
-  mask-image:linear-gradient(180deg,transparent 0%,#000 54%);
+  height:100%;width:auto;opacity:.11;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0%,#000 7%,#000 93%,transparent 100%);
 }
 
 /* ————— 章节页通用 · 留白海报式：左对齐粗标题＋细下划线 ————— */
@@ -422,7 +423,8 @@ body::before{
   .qf-credits{ font-size:9.5px; }
   .qf-num{ font-size:11px; gap:4px; }
   .qf-txt{ font-size:10px; letter-spacing:.12em; }
-  .wm-v{ height:min(40vh,300px); opacity:.14; }
+  .wm-v{ height:74%; }
+  .wm-v img{ opacity:.09; }
   .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
 
   /* 章节头 · 海报式 */
@@ -533,7 +535,7 @@ body::before{
 
     <!-- 2 · 关于我 -->
     <section class="page" aria-label="关于我">
-      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
+      <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="ghost" aria-hidden="true">01</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
@@ -552,7 +554,7 @@ body::before{
 
     <!-- 3 · 加分项 -->
     <section class="page" aria-label="加分项">
-      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
+      <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="ghost" aria-hidden="true">02</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">02</span><h2><em>Predilection</em>加分项</h2></div>
@@ -568,7 +570,7 @@ body::before{
 
     <!-- 4 · 负分项 -->
     <section class="page" aria-label="负分项">
-      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
+      <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="ghost" aria-hidden="true">03</div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">03</span><h2><em>Abhor</em>负分项</h2></div>
@@ -585,7 +587,7 @@ body::before{
 
     <!-- 5 · 独白 -->
     <section class="page" aria-label="独白">
-      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
+      <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="monologue">
         I'm like a child. I don't change my nature and play tricks on you.<br>
         I'll talk about it and push you away.<br>
@@ -597,7 +599,7 @@ body::before{
 
     <!-- 6 · 收尾 -->
     <section class="page finale" aria-label="收尾">
-      <div class="wm-v" aria-hidden="true"><img src="gold-flame.png" alt=""></div>
+      <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="polaroid-wrap" id="polaroidWrap">
         <figure class="polaroid" id="polaroid" tabindex="0" role="button" aria-label="点击显现拍立得照片">
           <div class="polaroid-frame">
