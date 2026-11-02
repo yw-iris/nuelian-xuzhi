@@ -913,6 +913,7 @@ body::before{
       halfAt:function(fn){ half=fn; },
       run:function(direction, done){
         if(!this.available){ if(done) done(); return; }
+        cb = done;                                // 保存完成回调：t>=1 时复位 animating
         t=0; T=0; tAcc=0; last=performance.now();
         cv.style.opacity=1;
         flames.length=0; sparks.length=0; swapped=false;
