@@ -211,6 +211,57 @@ body::before{
 .qf-txt{margin-top:10px;font-size:11.5px;letter-spacing:.16em;line-height:2;color:var(--gray-1)}
 .qf-sign{font-family:var(--serif-en);font-size:10px;letter-spacing:.22em;color:var(--gray-1);white-space:nowrap}
 
+/* ————— 页 1 · 封面（参考版式：蓝 → 黑灰） ————— */
+.page.cover2{padding:0;background:#151514;overflow:hidden}
+.cv2-panel{
+  position:absolute;
+  left:clamp(58px,16vw,150px); right:clamp(22px,6vw,46px);
+  top:clamp(34px,8vh,70px); bottom:clamp(28px,7vh,56px);
+  background:#fdfdfb; box-shadow:0 26px 70px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:min(5vh,46px) clamp(20px,5vw,52px) min(4vh,34px);
+  z-index:2;
+}
+.cv2-square{
+  position:absolute; left:clamp(10px,3.4vw,28px); top:clamp(18px,4.5vh,38px);
+  width:clamp(96px,24vw,176px); aspect-ratio:4/5; background:#54534f; z-index:1;
+}
+.cv2-line{
+  position:absolute; left:clamp(26px,8vw,64px); top:0;
+  width:2px; height:clamp(188px,40vh,308px); background:#ece9e0; z-index:3;
+}
+.cv2-moons{
+  position:absolute; left:clamp(11px,7.6vw,60px); top:clamp(152px,30vh,250px);
+  width:30px; height:clamp(300px,46vh,430px); z-index:3;
+}
+.cv2-moons svg{width:100%;height:100%;display:block}
+.cv2-moons circle,.cv2-moons path{fill:#eceae3}
+.cv2-splash{
+  position:absolute; left:clamp(8px,3vw,24px); bottom:0;
+  width:clamp(70px,18vw,150px); height:clamp(120px,26vh,210px); z-index:1;
+  background:
+    radial-gradient(circle at 32% 68%, rgba(236,233,224,.55) 0 2px, transparent 3px),
+    radial-gradient(circle at 56% 52%, rgba(236,233,224,.42) 0 3px, transparent 4px),
+    radial-gradient(circle at 42% 30%, rgba(236,233,224,.34) 0 2px, transparent 3px),
+    radial-gradient(circle at 70% 78%, rgba(236,233,224,.30) 0 4px, transparent 5px),
+    radial-gradient(circle at 22% 42%, rgba(236,233,224,.24) 0 2px, transparent 3px);
+  -webkit-mask-image:radial-gradient(circle at 50% 60%,#000,transparent 78%);
+  mask-image:radial-gradient(circle at 50% 60%,#000,transparent 78%);
+}
+.cv2-sq-r{
+  position:absolute; right:clamp(12px,5vw,40px); top:min(7vh,52px);
+  width:clamp(70px,16vw,120px); aspect-ratio:1/1; background:#54534f; z-index:0;
+}
+
+/* ————— 其它页底图（参考三张艺术图 · 极淡灰印） ————— */
+.bg-art{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.bg-art img{
+  width:100%;height:100%;object-fit:cover;
+  opacity:.085;filter:grayscale(1) contrast(1.06) brightness(1.04);
+  -webkit-mask-image:radial-gradient(125% 100% at 50% 42%,#000 52%,transparent 100%);
+  mask-image:radial-gradient(125% 100% at 50% 42%,#000 52%,transparent 100%);
+}
+
 /* ————— 底图水印（页2起 · 参考装饰英文图 · 竖版贴右缘） ————— */
 .wm-v{
   position:absolute;right:clamp(6px,2.5vw,22px);top:50%;transform:translateY(-50%);
@@ -498,35 +549,50 @@ body::before{
 
   <main class="pages" id="pages">
 
-    <!-- 1 · 封面（THE QUIET FLOW 版式） -->
-    <section class="page active cover" aria-label="封面">
-      <svg class="qf-curve" viewBox="0 0 390 780" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M 318 -10 C 236 120 386 214 268 326 C 178 412 66 384 76 504 C 86 616 248 606 218 722 C 198 800 268 838 256 900" fill="none" stroke="rgba(17,17,17,.25)" stroke-width="1"/>
-      </svg>
-      <header class="qf-head">
-        <h1 class="qf-title">虐恋<br>须知</h1>
-        <p class="qf-sub">PAIN &nbsp;&amp;&nbsp; DEVOTION</p>
-      </header>
-      <div class="qf-halftone" aria-hidden="true"></div>
-      <p class="qf-script" aria-hidden="true">winter</p>
-      <div class="qf-mid">
-        <div class="qf-num" aria-hidden="true"><span>2</span><span>0</span><span>2</span><span>6</span></div>
-        <div class="qf-credits">
-          <p>written by /<br><b>冬因</b></p>
-          <p>serial /<br><b>NO.01 &middot; A</b></p>
-        </div>
+    <!-- 1 · 封面（参考版式 · 蓝→黑灰） -->
+    <section class="page active cover cover2" aria-label="封面">
+      <div class="cv2-square" aria-hidden="true"></div>
+      <div class="cv2-line" aria-hidden="true"></div>
+      <div class="cv2-moons" aria-hidden="true">
+        <svg viewBox="0 0 30 420" preserveAspectRatio="xMidYMin meet">
+          <circle cx="15" cy="18" r="3"/>
+          <circle cx="15" cy="66" r="3"/>
+          <path d="M15 103 A11 11 0 1 0 15 125 A13.75 13.75 0 0 1 15 103 Z"/>
+          <path d="M15 151 A11 11 0 1 0 15 173 A13.75 13.75 0 0 1 15 151 Z"/>
+          <circle cx="15" cy="210" r="11"/>
+          <path d="M15 247 A11 11 0 1 1 15 269 A13.75 13.75 0 0 0 15 247 Z"/>
+          <path d="M15 295 A11 11 0 1 1 15 317 A13.75 13.75 0 0 0 15 295 Z"/>
+          <circle cx="15" cy="354" r="3"/>
+          <circle cx="15" cy="402" r="3"/>
+        </svg>
       </div>
-      <footer class="qf-bottom">
-        <div>
-          <p class="qf-tag">No extra colors —</p>
-          <p class="qf-txt">light and shadow<br>is all the romance.</p>
+      <div class="cv2-splash" aria-hidden="true"></div>
+      <div class="cv2-panel">
+        <header class="qf-head">
+          <h1 class="qf-title">虐恋<br>须知</h1>
+          <p class="qf-sub">PAIN &amp; DEVOTION</p>
+        </header>
+        <div class="qf-mid">
+          <div class="qf-num" aria-hidden="true"><span>2</span><span>0</span><span>2</span><span>6</span></div>
+          <div class="qf-credits">
+            <p>written by /<br><b>冬因</b></p>
+            <p>serial /<br><b>NO.01 &middot; A</b></p>
+          </div>
         </div>
-        <p class="qf-sign">✦&thinsp;冬因</p>
-      </footer>
+        <div class="cv2-sq-r" aria-hidden="true"></div>
+        <footer class="qf-bottom">
+          <div>
+            <p class="qf-tag">No extra colors —</p>
+            <p class="qf-txt">light and shadow<br>is all the romance.</p>
+          </div>
+          <p class="qf-sign">✦&thinsp;冬因</p>
+        </footer>
+      </div>
     </section>
 
     <!-- 2 · 关于我 -->
     <section class="page" aria-label="关于我">
+      <div class="bg-art" aria-hidden="true"><img src="bg-art-1.jpg" alt=""></div>
       <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
@@ -545,6 +611,7 @@ body::before{
 
     <!-- 3 · 加分项 -->
     <section class="page" aria-label="加分项">
+      <div class="bg-art" aria-hidden="true"><img src="bg-art-2.jpg" alt=""></div>
       <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">02</span><h2><em>Predilection</em>加分项</h2></div>
@@ -560,6 +627,7 @@ body::before{
 
     <!-- 4 · 负分项 -->
     <section class="page" aria-label="负分项">
+      <div class="bg-art" aria-hidden="true"><img src="bg-art-3.jpg" alt=""></div>
       <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <header class="sec-top">
         <div class="sec-head"><span class="sec-no">03</span><h2><em>Abhor</em>负分项</h2></div>
@@ -576,6 +644,7 @@ body::before{
 
     <!-- 5 · 独白 -->
     <section class="page" aria-label="独白">
+      <div class="bg-art" aria-hidden="true"><img src="bg-art-1.jpg" alt=""></div>
       <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="monologue">
         I'm like a child. I don't change my nature and play tricks on you.<br>
@@ -588,6 +657,7 @@ body::before{
 
     <!-- 6 · 收尾 -->
     <section class="page finale" aria-label="收尾">
+      <div class="bg-art" aria-hidden="true"><img src="bg-art-2.jpg" alt=""></div>
       <div class="wm-v" aria-hidden="true"><img src="wm-deco.png" alt=""></div>
       <div class="polaroid-wrap" id="polaroidWrap">
         <figure class="polaroid" id="polaroid" tabindex="0" role="button" aria-label="点击显现拍立得照片">
@@ -710,35 +780,6 @@ body::before{
       g.addColorStop(1,'rgba(200,150,70,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
     }
-    /* —— 参考图抠出的金流体贴图：火焰形象与原图一模一样 —— */
-    var tex=null, tongues=[];   // 预羽化的火舌精灵（边缘渐隐无硬边）
-    function edgeFade(o,ww,wh,horiz){
-      var g=horiz?o.createLinearGradient(0,0,ww,0):o.createLinearGradient(0,0,0,wh);
-      g.addColorStop(0,'rgba(0,0,0,0)');
-      g.addColorStop(.2,'rgba(0,0,0,1)');
-      g.addColorStop(.8,'rgba(0,0,0,1)');
-      g.addColorStop(1,'rgba(0,0,0,0)');
-      o.globalCompositeOperation='destination-in';
-      o.fillStyle=g; o.fillRect(0,0,ww,wh);
-      o.globalCompositeOperation='source-over';
-    }
-    function buildTongues(){
-      if(!tex||!tex.width) return;
-      tongues.length=0;
-      var sw=tex.width, sh=tex.height;
-      BIGWINS.forEach(function(w){
-        var ww=Math.round(w[2]*sw), wh=Math.round(w[3]*sh);
-        var oc=document.createElement('canvas'); oc.width=ww; oc.height=wh;
-        var o=oc.getContext('2d');
-        o.drawImage(tex,Math.round(w[0]*sw),Math.round(w[1]*sh),ww,wh,0,0,ww,wh);
-        edgeFade(o,ww,wh,true);
-        edgeFade(o,ww,wh,false);
-        tongues.push(oc);
-      });
-    }
-    tex=new Image();
-    tex.onload=buildTongues;
-    tex.src='gold-flame.png';
     function buildGeometry(){
       dpr=Math.min(window.devicePixelRatio||1,1.75);
       W=window.innerWidth; H=window.innerHeight;
@@ -780,51 +821,39 @@ body::before{
       }
     }
     function spawnFlames(){
-      if(Math.random()<.35 || flames.length>10) return;   // 火舌少量：大而慢（复刻参考图金流体火焰）
-      var x=Math.random()*W;
-      var bx=Math.min(bw-1,(x/scale)|0);
-      var ey=edge[bx];
-      flames.push({
-        x:x+(Math.random()-.5)*10,
-        y:ey-Math.random()*8,
-        vx:(Math.random()-.5)*.4,
-        vy:-(.5+Math.random()*.85),      // 火舌慢速升腾
-        r:34+Math.random()*30,           // 大条金色火舌
-        life:1, decay:.011+Math.random()*.012,
-        ph:Math.random()*6.283,
-        wi:(Math.random()*3)|0,          // 火舌精灵索引
-        rot:(Math.random()-.5)*.5, vr:(Math.random()-.5)*.004
-      });
+      var n=2+(Math.random()*3|0);         // 小火苗贴火线，少量升腾
+      for(var k=0;k<n;k++){
+        if(flames.length>40) break;
+        var x=Math.random()*W;
+        var bx=Math.min(bw-1,(x/scale)|0);
+        var ey=edge[bx];
+        flames.push({
+          x:x+(Math.random()-.5)*8,
+          y:ey-Math.random()*10,
+          vx:(Math.random()-.5)*.5,
+          vy:-(.7+Math.random()*1.4),
+          r:10+Math.random()*14,
+          life:1, decay:.02+Math.random()*.025,
+          ph:Math.random()*6.283
+        });
+      }
     }
-    var BIGWINS=[[0,.40,1,.58],[.05,.16,.88,.5],[.03,.55,.94,.45]];   // 贴图三个浓金大区（比例）
     function drawFlames(){
       c.globalCompositeOperation='lighter';
       for(var i=flames.length-1;i>=0;i--){
         var f=flames[i];
-        f.x+=f.vx+Math.sin(T*1.6+f.ph)*.5;
-        f.y+=f.vy; f.vy-=.003;
+        f.x+=f.vx+Math.sin(T*2.4+f.ph)*.4;
+        f.y+=f.vy; f.vy-=.004;
         f.life-=f.decay;
         if(f.life<=0){ flames.splice(i,1); continue; }
-        var fl=.72+.28*Math.sin(T*9+f.ph*3);
+        var fl=.62+.38*Math.sin(T*11+f.ph*3);
         var a=f.life*fl;
-        var R=f.r*(.55+.9*(1-f.life));          // 出生小、升腾长大
-        c.globalAlpha=a*.5;
-        c.drawImage(spGlow,f.x-R,f.y-R*.75,R*2,R*1.5);
-        if(tongues.length){                     // 金色火舌：预羽化精灵（无硬边）
-          var sp=tongues[f.wi%tongues.length];
-          var hR=R*1.15;                        // 火舌半高（纵向拉伸）
-          c.save();
-          c.translate(f.x,f.y);
-          c.rotate(f.rot+Math.sin(T*1.2+f.ph)*.12);   // 轻微摇曳
-          c.globalAlpha=a*.95;
-          c.drawImage(sp,-R,-hR,R*2,hR*2);
-          c.restore();
-          f.rot+=f.vr;
-        } else {                                // 贴图未就绪时的兜底
-          var r2=f.r*(.7+.35*(1-f.life));
-          c.globalAlpha=a;
-          c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
-        }
+        var R=f.r*(1.8-f.life*.5);
+        c.globalAlpha=a*.9;
+        c.drawImage(spGlow,f.x-R,f.y-R,R*2,R*2);
+        var r2=f.r*(.7+.35*(1-f.life));
+        c.globalAlpha=a;
+        c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
       }
       c.globalAlpha=1;
       c.globalCompositeOperation='source-over';
@@ -880,21 +909,21 @@ body::before{
         for(var x=0;x<bw;x++){
           var p=(row+x)*4;
           var v=py-edge[x];         // >0：火线下方（已燃）
-          if(v>=0){                 // 已燃：纯炭黑焦痕（去除暗金点点）
+          if(v>=0){                 // 已燃：纯炭黑焦痕（灰色过渡带收窄）
             var d=v;                            // 深入已燃区的距离
-            var ch=Math.max(0,1-d/42); ch=ch*ch; // 近火缘：暖炭灰过渡（非金）
-            var rr=6+ch*42, gg=5+ch*34, bb=4+ch*27;
-            var a=d>30?1:(.6+.4*(d/30));
+            var ch=Math.max(0,1-d/14); ch=ch*ch; // 近火缘：窄窄一层暖炭灰即转纯黑
+            var rr=5+ch*40, gg=4+ch*32, bb=4+ch*25;
+            var a=d>12?1:(.55+.45*(d/12));
             data[p]=rr|0; data[p+1]=gg|0; data[p+2]=bb|0; data[p+3]=(a*255)|0;
           } else {                 // 未燃：火线上方的窄带焦化
             var dd=-v;
-            if(dd<40){
-              var ch=1-dd/40, sp=nArr[row+x];
+            if(dd<18){
+              var ch=1-dd/18, sp=nArr[row+x];
               var a=(.4+.6*ch)*(.55+.45*sp);
               data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a*255)|0;
-            } else if(dd<58){
-              var q=1+(dd-40)/18;
-              data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*60)|0;
+            } else if(dd<30){
+              var q=1+(dd-18)/12;
+              data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*55)|0;
             } else { data[p+3]=0; }
           }
         }
