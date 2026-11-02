@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>病恋须知 · 冬因</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mrs+Saint+Delafield&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* —— 纯白硬朗，与虐恋一致（无金） —— */
+  --paper:#ffffff;          /* 纯白 */
+  --paper-2:#f3f3f3;
+  --card:#ffffff;
+  --ink:#111111;            /* 黑：主色 */
+  --ink-soft:#2c2c2c;
+  --gray-1:#6e6e6e;
+  --gray-2:#a5a5a5;
+  --line:#e6e6e6;
+  --hairline:rgba(17,17,17,.16);
+  --track:#e2e2e2;
+  --serif-en:'Cormorant Garamond','Times New Roman',serif;
+  --serif-cn:'Noto Serif SC','Songti SC',serif;
+  --script:'Mrs Saint Delafield',cursive;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--serif-cn);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  user-select:none;
+}
+/* 纸张颗粒 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:40;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+.app{
+  position:relative;height:100dvh;width:100%;
+  display:flex;flex-direction:column;
+}
+
+/* ————— 顶部 chrome：头像 + 分段进度 ————— */
+.chrome-top{
+  flex:none;z-index:30;
+  display:flex;align-items:center;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) clamp(16px,4vw,36px) 10px;
+}
+.avatar{
+  flex:none;width:34px;height:34px;border-radius:50%;
+  background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;
+  box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);
+}
+.handle{font-family:var(--serif-en);font-size:13px;letter-spacing:.14em;font-weight:600;color:inherit;text-decoration:none}
+.handle span{color:var(--gray-2);font-weight:400;letter-spacing:.1em}
+.switcher{
+  font-family:var(--serif-en);font-size:11px;letter-spacing:.16em;font-weight:600;
+  color:var(--gray-1);text-decoration:none;white-space:nowrap;
+  padding:3px 10px;border:1px solid var(--line);border-radius:20px;
+  transition:color .3s,border-color .3s;
+}
+.switcher:hover{color:var(--ink);border-color:var(--ink)}
+.progress{
+  flex:1;display:flex;gap:5px;margin-left:8px;max-width:420px;
+}
+.progress button{
+  flex:1;height:3px;border:none;cursor:pointer;
+  background:var(--track);border-radius:2px;
+  transition:background .4s;padding:0;
+}
+.progress button.done{background:var(--ink)}
+.progress button.now{background:var(--ink)}   /* 当前进度用黑，金只作描边 */
+
+/* ————— 页面层 ————— */
+.pages{position:relative;flex:1;min-height:0;overflow:hidden}
+.page{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:8px clamp(26px,7vw,72px) 16px;
+  opacity:0;visibility:hidden;
+  transform:translateX(6vw);
+  transition:opacity .55s cubic-bezier(.3,.7,.3,1),transform .55s cubic-bezier(.3,.7,.3,1),visibility 0s .55s;
+  pointer-events:none;
+}
+.page.active{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .55s cubic-bezier(.3,.7,.3,1),transform .55s cubic-bezier(.3,.7,.3,1);
+  pointer-events:auto;
+}
+.page.exit-left{transform:translateX(-6vw)}
+@media (prefers-reduced-motion:reduce){
+  .page{transition:opacity .2s;transform:none}
+}
+
+/* 页 2·3·4：标题组居上、收束句沉底、中间内容自动铺满整页 */
+.page[aria-label="关于我"],
+.page[aria-label="喜点"],
+.page[aria-label="雷点"]{
+  justify-content:space-between;
+  padding:min(9vh,76px) clamp(26px,7vw,72px) min(6vh,52px);
+}
+.sec-top{position:relative;z-index:1}
+
+/* ————— 文字入场动画：翻到该页时逐个淡入上浮（无模糊） ————— */
+@keyframes txtRise{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes txtTrack{
+  from{opacity:0;letter-spacing:.42em}
+  to{opacity:1}
+}
+@keyframes sealIn{
+  from{opacity:0;transform:rotate(6deg) translateY(10px)}
+  to{opacity:1;transform:rotate(6deg)}
+}
+.page.active :is(.cover-meta,.name-box,.cover-bar,
+                 .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.finale-hint,
+                 .like,.dislike,.cover-list li){
+  animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
+}
+.page.active .qf-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
+.page.active :is(.qf-sub,.qf-mid,.qf-bottom){animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards}
+.page.active .qf-sub{animation-delay:.14s}
+.page.active .qf-mid{animation-delay:.26s}
+.page.active .qf-bottom{animation-delay:.38s}
+.page.active .sec-head{animation-delay:.06s}
+.page.active .sec-cap{animation-delay:.16s}
+.page.active .like:nth-child(1){animation-delay:.22s}
+.page.active .like:nth-child(2){animation-delay:.28s}
+.page.active .like:nth-child(3){animation-delay:.34s}
+.page.active .like:nth-child(4){animation-delay:.40s}
+.page.active .like:nth-child(5){animation-delay:.46s}
+.page.active .like:nth-child(6){animation-delay:.52s}
+.page.active .dislike:nth-child(1){animation-delay:.22s}
+.page.active .dislike:nth-child(2){animation-delay:.30s}
+.page.active .dislike:nth-child(3){animation-delay:.38s}
+.page.active .sec-quote{animation-delay:.34s}
+.page.active .sec-foot{animation-delay:.42s}
+.page.active .monologue{animation-delay:.10s}
+.page.active .sig-line{animation-delay:.16s}
+.page.active .finale-hint{animation-delay:.34s}
+@media (prefers-reduced-motion:reduce){
+  .page.active :is(.cover-meta,.cover-title,.name-box,.cover-bar,
+                   .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.finale-hint,.like,.dislike,.cover-list li){
+    animation:none;
+  }
+}
+
+/* 巨型幽灵编号 / 图形 */
+.ghost{
+  position:absolute;z-index:0;pointer-events:none;
+  font-family:var(--serif-en);font-weight:600;font-style:italic;
+  font-size:min(46vmin,340px);line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px rgba(17,17,17,.07);
+  right:2vw;top:50%;transform:translateY(-54%);
+}
+.disc{
+  position:absolute;z-index:0;pointer-events:none;
+  width:min(52vmin,380px);height:min(52vmin,380px);border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#2a2a2a,#0c0c0c 70%);
+  right:-14vw;top:-16vh;
+}
+
+/* ————— 页 1 · 封面（THE QUIET FLOW 版式） ————— */
+.page.cover{justify-content:space-between;padding:min(6vh,52px) clamp(26px,7vw,72px) min(5vh,40px)}
+.qf-curve{position:absolute;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.qf-head{position:relative;z-index:1}
+.qf-title{
+  font-size:clamp(3rem,17vmin,5.9rem);
+  font-weight:600;letter-spacing:.06em;line-height:1.14;
+}
+.qf-sub{
+  margin-top:14px;font-family:var(--serif-en);
+  font-size:clamp(10px,1.7vmin,12px);letter-spacing:.42em;color:var(--gray-1);
+}
+.qf-halftone{
+  position:absolute;right:7%;top:31%;width:150px;height:128px;z-index:0;
+  background-image:radial-gradient(rgba(17,17,17,.6) 1px,transparent 1.3px);
+  background-size:7px 7px;
+  -webkit-mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);
+  mask-image:radial-gradient(circle at 50% 50%,#000 0%,transparent 70%);
+  opacity:.35;pointer-events:none;
+}
+.qf-script{
+  position:absolute;right:9%;top:36%;z-index:1;pointer-events:none;
+  font-family:var(--script);font-size:clamp(64px,15vmin,108px);line-height:1;
+  color:var(--ink);transform:rotate(-8deg);white-space:nowrap;
+}
+.qf-mid{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end}
+.qf-num{display:flex;flex-direction:column;gap:6px;font-family:var(--serif-en);font-size:13px;letter-spacing:.08em;color:var(--ink)}
+.qf-credits{font-size:10.5px;line-height:1.9;letter-spacing:.12em;color:var(--gray-1)}
+.qf-credits b{font-weight:600;color:var(--ink)}
+.qf-credits p+p{margin-top:12px}
+.qf-bottom{position:relative;z-index:1;display:flex;justify-content:space-between;align-items:flex-end}
+.qf-tag{font-family:var(--serif-en);font-style:italic;font-weight:600;font-size:clamp(14px,2.6vmin,18px);letter-spacing:.03em}
+.qf-txt{margin-top:10px;font-size:11.5px;letter-spacing:.16em;line-height:2;color:var(--gray-1)}
+.qf-sign{font-family:var(--serif-en);font-size:10px;letter-spacing:.22em;color:var(--gray-1);white-space:nowrap}
+
+/* ————— 竖版水印（页2起 · 参考竖条版式元素） ————— */
+.wm-v{
+  position:absolute;right:clamp(12px,3.5vw,30px);bottom:0;z-index:0;
+  pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:9px;
+}
+.wm-bar{width:clamp(30px,6.5vw,44px);height:min(19vh,148px);background:rgba(17,17,17,.055)}
+.wm-dot{width:9px;height:9px;background:rgba(17,17,17,.13)}
+.wm-txt{writing-mode:vertical-rl;font-family:var(--serif-en);font-size:9px;letter-spacing:.5em;color:rgba(17,17,17,.2)}
+
+/* ————— 章节页通用 · 留白海报式 ————— */
+.sec-head{display:block;position:relative;z-index:1}
+.sec-no{display:block;font-family:var(--serif-en);font-weight:600;font-size:11px;letter-spacing:.34em;color:var(--ink);margin-bottom:10px}
+.sec-head h2{
+  display:inline-block;font-size:clamp(20px,4.8vmin,27px);font-weight:900;letter-spacing:.1em;
+  border-bottom:2px solid var(--ink);padding-bottom:9px;
+}
+.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.85em;letter-spacing:.02em;color:var(--gray-1);margin-right:8px}
+.sec-cap{
+  margin-top:10px;font-family:var(--serif-en);font-size:10px;
+  letter-spacing:.34em;color:var(--gray-2);position:relative;z-index:1;
+}
+
+/* 页 2 · 关于我：overline 细线分组块 */
+.facts{
+  margin-top:min(6.5vh,48px);
+  display:grid;grid-template-columns:1fr 1fr;
+  column-gap:min(8vw,56px);row-gap:max(3.5vh,26px);
+  position:relative;z-index:1;
+}
+.fact{border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.fact dt{font-size:10.5px;letter-spacing:.28em;color:var(--gray-1)}
+.fact dd{margin-top:7px;font-size:clamp(14px,3vmin,17px);font-weight:700;letter-spacing:.12em}
+.fact dd.en{font-family:var(--serif-en);font-weight:600;font-size:1.15em}
+
+/* 页 3 · 喜点：双列卡片（灰白为主，金作小序号） */
+.likes{
+  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr 1fr;
+  column-gap:min(7vw,48px);row-gap:max(3.2vh,22px);position:relative;z-index:1;
+}
+.like{
+  position:relative;border-top:2px solid var(--ink);padding:12px 16px 16px;
+  background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35);
+}
+.like .idx{
+  position:absolute;top:-11px;right:14px;
+  font-family:var(--serif-en);font-style:italic;font-size:13px;letter-spacing:.1em;
+  color:var(--gray-1);                     /* 极小序号 */
+}
+.like .k{font-size:clamp(15px,3.2vmin,18px);font-weight:900;letter-spacing:.14em}
+.like .c{margin-top:6px;font-size:11px;color:var(--gray-1);letter-spacing:.06em;line-height:1.6}
+
+/* 页 4 · 雷点：左—右—左 交错阶梯 */
+.dislikes{
+  margin-top:min(6.5vh,48px);display:flex;flex-direction:column;
+  gap:max(3.4vh,26px);position:relative;z-index:1;
+}
+.dislike{width:min(50%,560px);border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.dislike:nth-child(odd){align-self:flex-start}
+.dislike:nth-child(even){align-self:flex-end}
+.dislike .k{font-size:clamp(14px,3vmin,16px);font-weight:700;letter-spacing:.1em}
+.dislike .c{margin-top:6px;font-size:11.5px;color:var(--gray-1);letter-spacing:.08em}
+
+.sec-foot{
+  position:relative;z-index:1;
+  margin-top:min(5.5vh,38px);
+  font-family:var(--serif-en);font-style:italic;
+  font-size:clamp(12px,2.4vmin,14px);letter-spacing:.14em;
+  text-align:left;color:var(--ink-soft);
+}
+.sec-foot.center{text-align:center}
+.sec-quote{
+  position:relative;z-index:1;
+  margin-top:min(5.5vh,40px);text-align:center;
+  font-family:var(--serif-en);font-style:italic;
+  font-size:clamp(13px,2.8vmin,16px);letter-spacing:.1em;line-height:1.9;
+  color:var(--ink-soft);
+}
+
+/* 页 5 · 独白 */
+.monologue{
+  position:relative;z-index:1;text-align:center;
+  font-size:clamp(13px,3vmin,16px);font-weight:600;
+  letter-spacing:.18em;line-height:2.4;color:var(--ink);
+}
+
+/* 页 6 · 收尾（无光仔照片，放歌词） */
+.finale{align-items:center;text-align:center}
+.finale-lyric{
+  position:relative;z-index:1;
+  font-size:clamp(22px,6.4vmin,40px);font-weight:900;letter-spacing:.22em;
+  line-height:1.7;color:var(--ink);                       /* 黑 · 硬朗主色 */
+  text-indent:.22em;
+  text-shadow:0 2px 0 rgba(17,17,17,.05);
+}
+.finale-lyric::after{content:"";display:block;width:66px;height:2px;background:var(--ink);margin:16px auto 0}
+.finale-lyric .sub{display:block;font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.42em;letter-spacing:.3em;color:var(--gray-1);margin-top:16px}
+.sig-line{
+  margin-top:min(4.5vh,30px);display:flex;align-items:baseline;gap:11px;
+  position:relative;z-index:1;
+}
+.sig-cn{font-size:clamp(19px,4.4vmin,24px);font-weight:900;letter-spacing:.4em}
+.sig-en{font-family:var(--serif-en);font-style:italic;font-size:15px;color:var(--gray-1);letter-spacing:.16em}
+.finale-hint{margin-top:min(2.4vh,16px);font-size:10.5px;letter-spacing:.38em;text-indent:.38em;color:var(--gray-2);position:relative;z-index:1}
+.cross-link{display:inline-block;margin-top:min(3vh,22px);font-family:var(--serif-en);font-size:12px;letter-spacing:.2em;color:var(--ink);text-decoration:none;border:1px solid var(--ink);border-radius:20px;padding:8px 18px;position:relative;z-index:1;transition:background .3s,color .3s,letter-spacing .3s}
+.cross-link:hover{background:var(--ink);color:var(--paper);letter-spacing:.28em}
+
+/* ————— 底部 chrome ————— */
+.chrome-bottom{
+  flex:none;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px clamp(16px,4vw,36px) calc(14px + env(safe-area-inset-bottom));
+}
+.counter{font-family:var(--serif-en);font-size:12px;letter-spacing:.3em;color:var(--gray-1);min-width:70px}
+.counter b{color:var(--ink);font-weight:600}
+.nav-btns{display:flex;gap:10px}
+.nav-btn{
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--ink);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .3s,transform .15s;
+}
+.nav-btn svg{width:16px;height:16px;stroke:var(--ink);transition:stroke .3s}
+.nav-btn:hover{background:var(--ink)}
+.nav-btn:hover svg{stroke:var(--paper)}
+.nav-btn:active{transform:scale(.92)}
+.nav-btn[disabled]{opacity:.25;pointer-events:none}
+.tap-hint{font-size:10px;letter-spacing:.3em;color:var(--gray-2);text-align:center}
+
+/* 点击热区 */
+.tap-zone{position:absolute;top:56px;bottom:64px;z-index:20;cursor:pointer}
+.tap-zone.left{left:0;width:24%}
+.tap-zone.right{right:0;width:38%}
+
+.burn-overlay{
+  position:fixed;inset:0;width:100vw;height:100vh;
+  z-index:60;pointer-events:none;opacity:0;
+  transition:opacity .25s ease;
+}
+
+/* 背景音乐开关 */
+.bgm-toggle{
+  position:fixed;top:calc(env(safe-area-inset-top,0) + 12px);right:14px;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(17,17,17,.35);background:rgba(255,255,255,.55);
+  color:var(--ink);font-size:17px;line-height:1;cursor:pointer;
+  z-index:55;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:transform .2s,background .2s,opacity .4s;
+}
+.bgm-toggle:hover{transform:scale(1.08)}
+.bgm-toggle.off{opacity:.45}
+.bgm-toggle.playing{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bgm-toggle .wave{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+@media (max-width:400px){
+  .handle span{display:none}
+}
+@media (max-height:560px){
+  .disc{display:none}
+  .qf-script{display:none}
+}
+
+/* ————— 手机适配（≤480px 竖屏） ————— */
+@media (max-width:480px){
+  .page{ padding:10px 24px 14px; }
+  .chrome-top{ padding:calc(10px + env(safe-area-inset-top)) 16px 8px; gap:9px; }
+  .chrome-bottom{ padding:8px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .avatar{ width:30px; height:30px; font-size:13px; }
+  .handle{ font-size:12px; }
+  .progress{ gap:4px; }
+  .counter{ font-size:11px; min-width:56px; }
+  .nav-btn{ width:38px; height:38px; }
+  .tap-hint{ display:none; }
+
+  .page.cover{ padding:min(4vh,34px) 24px min(3.5vh,28px); }
+  .qf-title{ font-size:clamp(2.6rem,15vmin,3.8rem); }
+  .qf-sub{ letter-spacing:.3em; }
+  .qf-halftone{ width:104px; height:90px; right:4%; top:29%; }
+  .qf-script{ font-size:56px; right:6%; }
+  .qf-credits{ font-size:9.5px; }
+  .qf-num{ font-size:11px; gap:4px; }
+  .qf-txt{ font-size:10px; letter-spacing:.12em; }
+  .wm-bar{ width:26px; height:min(13vh,96px); }
+  .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(17,17,17,.05); }
+
+  .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
+  .sec-head h2{ font-size:clamp(18px,5.4vmin,22px); padding-bottom:7px; border-bottom-width:1.5px; }
+  .sec-cap{ font-size:9px; letter-spacing:.26em; margin-top:8px; }
+
+  .facts{ margin-top:min(4.5vh,34px); column-gap:24px; row-gap:max(2.6vh,18px); }
+  .fact{ padding:10px 14px 14px; }
+  .fact dt{ font-size:10px; letter-spacing:.22em; }
+  .fact dd{ font-size:14px; margin-top:5px; }
+
+  .likes{ margin-top:min(4.5vh,32px); column-gap:22px; row-gap:max(2.4vh,16px); }
+  .like{ padding:10px 13px 13px; }
+  .like .idx{ top:-9px; right:11px; font-size:11px; }
+  .like .k{ font-size:14px; letter-spacing:.1em; }
+  .like .c{ font-size:10px; margin-top:4px; }
+
+  .dislikes{ margin-top:min(4.5vh,32px); gap:max(2.8vh,18px); }
+  .dislike{ width:64%; padding:10px 14px 14px; }
+  .dislike .k{ font-size:13px; letter-spacing:.08em; }
+  .dislike .c{ font-size:10.5px; margin-top:4px; }
+
+  .sec-foot{ margin-top:min(2.6vh,18px); font-size:12px; letter-spacing:.1em; }
+  .sec-quote{ margin-top:min(3.6vh,26px); font-size:12px; line-height:1.9; }
+  .monologue{ font-size:13px; letter-spacing:.12em; line-height:2.2; max-width:42ch; margin-inline:auto; text-wrap:balance; }
+
+  .finale-lyric{ font-size:clamp(20px,7vmin,30px); letter-spacing:.16em; }
+  .sig-line{ margin-top:min(3.4vh,24px); }
+  .sig-cn{ font-size:20px; letter-spacing:.32em; }
+  .sig-en{ font-size:13px; }
+  .finale-hint{ font-size:9.5px; margin-top:min(2vh,12px); }
+}
+@media (max-width:480px) and (max-height:660px){
+  .page{ padding:6px 24px 10px; }
+  .page.cover{ padding:3vh 24px 2.5vh; }
+  .qf-script{ font-size:44px; }
+  .facts,.likes,.dislikes{ margin-top:min(2.6vh,18px); }
+  .fact{ padding:10px 12px 14px; }
+  .like{ padding:9px 12px 12px; }
+  .dislikes{ gap:max(2vh,14px); }
+  .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
+}
+@media (max-width:360px){
+  .page{ padding:8px 18px 10px; }
+  .qf-title{ font-size:clamp(2.2rem,13vmin,3rem); }
+  .like .c{ font-size:9.5px; }
+  .dislike .k{ font-size:12px; }
+  .fact dd{ font-size:13px; }
+  .monologue{ font-size:12px; letter-spacing:.1em; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 顶部：头像 + 快拍式进度 -->
+  <header class="chrome-top">
+    <a class="avatar" href="index.html" title="返回目录">冬因</a>
+    <a class="handle" href="index.html">winter.ye <span>· 病恋须知</span></a>
+    <a class="switcher" href="nuelian-xuzhi.html">虐恋 ↗</a>
+    <nav class="progress" id="progress" aria-label="页面进度"></nav>
+  </header>
+
+  <main class="pages" id="pages">
+
+    <!-- 1 · 封面（THE QUIET FLOW 版式） -->
+    <section class="page active cover" aria-label="封面">
+      <svg class="qf-curve" viewBox="0 0 390 780" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M 72 -10 C 154 120 4 214 122 326 C 212 412 324 384 314 504 C 304 616 142 606 172 722 C 192 800 122 838 134 900" fill="none" stroke="rgba(17,17,17,.25)" stroke-width="1"/>
+      </svg>
+      <header class="qf-head">
+        <h1 class="qf-title">病恋<br>须知</h1>
+        <p class="qf-sub">SICK &nbsp;&amp;&nbsp; TENDER</p>
+      </header>
+      <div class="qf-halftone" aria-hidden="true"></div>
+      <p class="qf-script" aria-hidden="true">winter</p>
+      <div class="qf-mid">
+        <div class="qf-num" aria-hidden="true"><span>2</span><span>0</span><span>2</span><span>6</span></div>
+        <div class="qf-credits">
+          <p>written by /<br><b>冬因</b></p>
+          <p>serial /<br><b>NO.02 &middot; B</b></p>
+        </div>
+      </div>
+      <footer class="qf-bottom">
+        <div>
+          <p class="qf-tag">black &amp; white —</p>
+          <p class="qf-txt">two sides<br>of the same winter.</p>
+        </div>
+        <p class="qf-sign">✦&thinsp;冬因</p>
+      </footer>
+    </section>
+
+    <!-- 2 · 关于我 -->
+    <section class="page" aria-label="关于我">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="ghost" aria-hidden="true">01</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
+        <p class="sec-cap">— BASIC PROFILE —</p>
+      </header>
+      <dl class="facts">
+        <div class="fact"><dt>署名</dt><dd>冬因</dd></div>
+        <div class="fact"><dt>属性</dt><dd class="en">T</dd></div>
+        <div class="fact"><dt>性别</dt><dd>女</dd></div>
+        <div class="fact"><dt>人格</dt><dd class="en">INTP</dd></div>
+        <div class="fact"><dt>火象</dt><dd>白羊</dd></div>
+        <div class="fact"><dt>游戏</dt><dd>仅光遇</dd></div>
+      </dl>
+      <p class="sec-foot">知道是相爱</p>
+    </section>
+
+    <!-- 3 · 喜点 -->
+    <section class="page" aria-label="喜点">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="ghost" aria-hidden="true">02</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">02</span><h2><em>Like</em>喜点</h2></div>
+        <p class="sec-cap">— WHAT MAKES ME STAY —</p>
+      </header>
+      <div class="likes">
+        <div class="like"><span class="idx">a</span><p class="k">剖析</p><p class="c">把情绪拆开看</p></div>
+        <div class="like"><span class="idx">b</span><p class="k">微擦</p><p class="c">恰到好处的分寸</p></div>
+        <div class="like"><span class="idx">c</span><p class="k">精控</p><p class="c">精准到每个细节</p></div>
+        <div class="like"><span class="idx">d</span><p class="k">白话</p><p class="c">说人话，不绕弯</p></div>
+        <div class="like"><span class="idx">e</span><p class="k">小狗</p><p class="c">听话 · 黏人 · 乖</p></div>
+        <div class="like"><span class="idx">f</span><p class="k">引导</p><p class="c">带着我往前走</p></div>
+      </div>
+      <p class="sec-foot center">你存在的意义只是作为我的镜子</p>
+    </section>
+
+    <!-- 4 · 雷点 -->
+    <section class="page" aria-label="雷点">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="ghost" aria-hidden="true">03</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">03</span><h2><em>Dislike</em>雷点</h2></div>
+        <p class="sec-cap">— INSTANT DEAL-BREAKERS —</p>
+      </header>
+      <div class="dislikes">
+        <div class="dislike"><p class="k">高擦</p><p class="c">频繁擦边，尺度失当</p></div>
+        <div class="dislike"><p class="k">dom 逻辑混乱</p><p class="c">当 dom 却没有逻辑</p></div>
+        <div class="dislike"><p class="k">表述不清晰</p><p class="c">说不清楚重点</p></div>
+      </div>
+      <p class="sec-foot center">如果流水有声音<br>你听到的是结束还是开始</p>
+    </section>
+
+    <!-- 5 · 独白 -->
+    <section class="page" aria-label="独白">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <div class="monologue">
+        我像生了场病。<br>
+        反复确认你还愿不愿意接住我，<br>
+        明明知道答案，还是一遍遍伸手。<br>
+        不是不信你，是不信自己值得被留下。
+      </div>
+    </section>
+
+    <!-- 6 · 收尾（歌词，无光仔照片） -->
+    <section class="page finale" aria-label="收尾">
+      <div class="wm-v" aria-hidden="true"><span class="wm-bar"></span><span class="wm-dot"></span><span class="wm-txt">BINGLIAN NOTES</span></div>
+      <p class="finale-lyric">我想被抚摸<span class="sub">I want to be touched, to be loved.</span></p>
+      <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
+      <p class="finale-hint">点 击 左 · 右 翻 页</p>
+      <a class="cross-link" href="nuelian-xuzhi.html">虐恋须知 ↗</a>
+    </section>
+
+  </main>
+
+  <!-- 点击热区（左=上一页 / 右=下一页） -->
+  <div class="tap-zone left" aria-hidden="true"></div>
+  <div class="tap-zone right" aria-hidden="true"></div>
+
+  <!-- 底部：计数 + 方向按钮 -->
+  <footer class="chrome-bottom">
+    <div class="counter"><b id="cur">01</b>&nbsp;—&nbsp;06</div>
+    <div class="tap-hint">点 击 左 · 右 翻 页</div>
+    <div class="nav-btns">
+      <button class="nav-btn prev-btn" id="prev" aria-label="上一页">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="nav-btn next-btn" id="next" aria-label="下一页">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </footer>
+
+  <!-- 翻页燃烧过场（自整页底部向上烧） -->
+  <canvas id="burnOver" class="burn-overlay" aria-hidden="true"></canvas>
+
+  <!-- 背景音乐 -->
+  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+  <button id="bgmToggle" class="bgm-toggle" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐">♪</button>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═════════ 翻页引擎 ═════════ */
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var total = pages.length;
+  var cur = 0, animating = false;
+  var progressEl = document.getElementById('progress');
+  var curEl = document.getElementById('cur');
+  var prevBtn = document.getElementById('prev');
+  var nextBtn = document.getElementById('next');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  pages.forEach(function(_, i){
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', '第 ' + (i+1) + ' 页');
+    b.addEventListener('click', function(){ if(i !== cur) goTo(i); });
+    progressEl.appendChild(b);
+  });
+  var segs = Array.prototype.slice.call(progressEl.children);
+
+  function paint(){
+    segs.forEach(function(s, i){
+      s.className = i < cur ? 'done' : (i === cur ? 'now' : '');
+    });
+    curEl.textContent = String(cur+1).padStart(2,'0');
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+  }
+
+  /* ═════════ 翻页燃烧过场：拍立得火焰蔓延（回最初版 · 加金边） ═════════ */
+  var Burn = (function(){
+    var cv = document.getElementById('burnOver');
+    var c = cv.getContext('2d');
+    var W=0,H=0,dpr=1;
+    var bw,bh,scale,buf,bctx,bitData;
+    var edge=null, nArr=null, nArr2=null;
+    var flames=[], sparks=[];
+    var spGlow=null,spCore=null;
+    var rnd1D=null,RN=2048,G=null,G2=null;
+
+    function makeGrid(step){
+      var gw=Math.ceil(W/step)+3, gh=Math.ceil(H/step)+3;
+      var g=new Float32Array(gw*gh);
+      for(var i=0;i<g.length;i++) g[i]=Math.random();
+      return {g:g,gw:gw,gh:gh,step:step};
+    }
+    function sample(G2,x,y){
+      var gx=x/G2.step, gy=y/G2.step;
+      var x0=Math.min(Math.floor(gx),G2.gw-2), y0=Math.min(Math.floor(gy),G2.gh-2);
+      var fx=gx-x0, fy=gy-y0;
+      var sx=fx*fx*(3-2*fx), sy=fy*fy*(3-2*fy);
+      var a=G2.g[y0*G2.gw+x0], b=G2.g[y0*G2.gw+x0+1], cc=G2.g[(y0+1)*G2.gw+x0], d=G2.g[(y0+1)*G2.gw+x0+1];
+      return (a+(b-a)*sx)*(1-sy)+(cc+(d-cc)*sx)*sy;
+    }
+    function noise1(x){
+      var xi=Math.floor(x), f=x-xi;
+      var a=rnd1D[xi&(RN-1)], b=rnd1D[(xi+1)&(RN-1)];
+      var s=f*f*(3-2*f);
+      return a+(b-a)*s;
+    }
+    function makeSprites(){
+      spGlow=document.createElement('canvas'); spGlow.width=spGlow.height=64;
+      var g2=spGlow.getContext('2d');
+      var g=g2.createRadialGradient(32,32,0,32,32,32);
+      g.addColorStop(0,'rgba(236,196,118,.95)');
+      g.addColorStop(.42,'rgba(166,116,44,.5)');
+      g.addColorStop(1,'rgba(92,58,12,0)');
+      g2.fillStyle=g; g2.fillRect(0,0,64,64);
+      spCore=document.createElement('canvas'); spCore.width=spCore.height=64;
+      g2=spCore.getContext('2d');
+      g=g2.createRadialGradient(32,32,0,32,32,32);
+      g.addColorStop(0,'rgba(255,249,232,1)');
+      g.addColorStop(.38,'rgba(243,212,148,.9)');
+      g.addColorStop(1,'rgba(200,150,70,0)');
+      g2.fillStyle=g; g2.fillRect(0,0,64,64);
+    }
+    /* —— 参考图抠出的金流体贴图：火焰形象与原图一模一样 —— */
+    var tex=null, texWins=[];
+    function buildTexWins(){
+      if(!tex||!tex.width) return;
+      var oc=document.createElement('canvas'); oc.width=tex.width; oc.height=tex.height;
+      var o=oc.getContext('2d'); o.drawImage(tex,0,0);
+      var d;
+      try{ d=o.getImageData(0,0,oc.width,oc.height).data; }catch(e){ return; }
+      var W2=oc.width,H2=oc.height,tries=0;
+      while(texWins.length<48 && tries<800){
+        tries++;
+        var s=36+(Math.random()*96|0);
+        var x=(Math.random()*(W2-s))|0, y=(Math.random()*(H2-s))|0;
+        var sum=0,cnt=0;
+        for(var yy=y;yy<y+s;yy+=3)for(var xx=x;xx<x+s;xx+=3){ sum+=d[(yy*W2+xx)*4+3]; cnt++; }
+        if(sum/cnt/255>0.24) texWins.push({x:x,y:y,s:s});   // 只取金色浓的窗口
+      }
+      if(!texWins.length) texWins.push({x:0,y:0,s:Math.min(W2,H2)});
+    }
+    tex=new Image();
+    tex.onload=buildTexWins;
+    tex.src='gold-flame.png';
+    function buildGeometry(){
+      dpr=Math.min(window.devicePixelRatio||1,1.75);
+      W=window.innerWidth; H=window.innerHeight;
+      cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+      cv.style.width=W+'px'; cv.style.height=H+'px';
+      c.setTransform(dpr,0,0,dpr,0,0);
+      scale=Math.max(1,Math.ceil(Math.max(W,H)/1400));
+      bw=Math.ceil(W/scale); bh=Math.ceil(H/scale);
+      buf=document.createElement('canvas'); buf.width=bw; buf.height=bh;
+      bctx=buf.getContext('2d'); bitData=bctx.createImageData(bw,bh);
+      G=makeGrid(9);
+      nArr=new Float32Array(bw*bh);
+      for(var y=0;y<bh;y++) for(var x=0;x<bw;x++) nArr[y*bw+x]=sample(G,x*scale,y*scale);
+      G2=makeGrid(23);
+      nArr2=new Float32Array(bw*bh);
+      for(var y3=0;y3<bh;y3++) for(var x3=0;x3<bw;x3++) nArr2[y3*bw+x3]=sample(G2,x3*scale,y3*scale);
+      edgeTop=new Float32Array(bw); edgeBot=new Float32Array(bw);
+      rnd1D=new Float32Array(RN);
+      for(var y2=0;y2<RN;y2++) rnd1D[y2]=Math.random();
+      makeSprites();
+    }
+    window.addEventListener('resize',buildGeometry); buildGeometry();
+
+    var running=false,t=0,T=0,dur=4000,last=0,half=null,cb=null,swapped=false,tAcc=0;
+    var SWAP_AT=0.8;      // 火焰蔓延烧满整页后再换页
+    var TOP_CLEAR=260;    // 上线最终越过屏顶的余量
+    var PY=0, S=0, S_MAX=0;            // 拍立得中心高度 + 蔓延半径
+    var edgeTop, edgeBot;              // 上/下两条火线（buildGeometry 内初始化，勿在此赋 null）
+
+    function computeEdge(){
+      var x;
+      var s1=T*.5, s2=T*1.0+37, s3=T*2.0+81;
+      for(x=0;x<bw;x++){
+        var px=x*scale;
+        var n=(noise1(px/170+s1)-.5)*56      // 大起伏：火缘蜿蜒
+          + (noise1(px/70+s2)-.5)*30         // 中起伏
+          + (noise1(px/26+s3)-.5)*12;        // 细撕边
+        edgeTop[x]=PY - S + n;   // 上线：自拍立得向上蔓延
+        edgeBot[x]=PY + S + n;   // 下线：自拍立得向下蔓延
+      }
+    }
+    function spawnFlames(){
+      var n=2+(Math.random()*3|0);         // 火苗贴火线，少量（蔓延感而非火山）
+      for(var k=0;k<n;k++){
+        if(flames.length>70) break;
+        var x=Math.random()*W;
+        var bx=Math.min(bw-1,(x/scale)|0);
+        var top=Math.random()<.5;
+        var ey=top?edgeTop[bx]:edgeBot[bx];
+        flames.push({
+          x:x+(Math.random()-.5)*8,
+          y:ey+(top?-Math.random()*16:Math.random()*16),
+          vx:(Math.random()-.5)*.5,
+          vy:(top?-1:1)*(.7+Math.random()*1.6),   // 上缘上舔 / 下缘下舔
+          r:15+Math.random()*19,           // 大团金流体火体
+          life:1, decay:.016+Math.random()*.02,
+          ph:Math.random()*6.283,
+          wi:(Math.random()*64)|0,         // 贴图窗口索引（spawn 时 texWins 可能未就绪，绘制时取模）
+          rot:Math.random()*6.283, vr:(Math.random()-.5)*.014
+        });
+      }
+    }
+    function drawFlames(){
+      c.globalCompositeOperation='lighter';
+      for(var i=flames.length-1;i>=0;i--){
+        var f=flames[i];
+        f.x+=f.vx+Math.sin(T*2.4+f.ph)*.4;
+        f.y+=f.vy; f.vy-=.004;
+        f.life-=f.decay;
+        if(f.life<=0){ flames.splice(i,1); continue; }
+        var fl=.62+.38*Math.sin(T*11+f.ph*3);
+        var a=f.life*fl;
+        var R=f.r*(1.8-f.life*.5);
+        c.globalAlpha=a*.9;
+        c.drawImage(spGlow,f.x-R,f.y-R,R*2,R*2);
+        var tw=texWins[f.wi%texWins.length];
+        if(tw && tex && tex.complete && tex.width){   // 抠图精灵：金流体本体
+          var R2=R*1.35;
+          c.save(); c.translate(f.x,f.y); c.rotate(f.rot);
+          c.globalAlpha=a;
+          c.drawImage(tex,tw.x,tw.y,tw.s,tw.s,-R2,-R2,R2*2,R2*2);
+          c.restore();
+          f.rot+=f.vr;
+        } else {                                      // 贴图未就绪时的兜底
+          var r2=f.r*(.7+.35*(1-f.life));
+          c.globalAlpha=a;
+          c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
+        }
+      }
+      c.globalAlpha=1;
+      c.globalCompositeOperation='source-over';
+    }
+    function spawnSparks(){
+      var n=1+(Math.random()*2|0);
+      for(var k=0;k<n;k++){
+        if(sparks.length>70) break;
+        var x=Math.random()*W;
+        var bx=Math.min(bw-1,(x/scale)|0);
+        var top=Math.random()<.5;
+        var ey=top?edgeTop[bx]:edgeBot[bx];
+        sparks.push({x:x,y:ey+(top?-Math.random()*12:Math.random()*12),
+          vx:(Math.random()-.5)*.8,vy:(top?-1:1)*(.6+Math.random()*1.6),
+          life:1,decay:.006+Math.random()*.012,
+          r:.8+Math.random()*1.8,ph:Math.random()*6.28,big:Math.random()<.1});
+      }
+    }
+    function drawSparks(){
+      c.globalCompositeOperation='lighter';
+      for(var i=sparks.length-1;i>=0;i--){
+        var s=sparks[i];
+        s.x+=s.vx+Math.sin(T*3.1+s.ph)*.4;
+        s.y+=s.vy; s.vy-=.007;
+        s.life-=s.decay;
+        if(s.life<=0||s.y<-12){ sparks.splice(i,1); continue; }
+        var fl=.5+.5*Math.sin(T*15+s.ph*5);
+        var a=s.life*fl;
+        if(s.big){
+          var R=s.r*3.6;
+          var g=c.createRadialGradient(s.x,s.y,0,s.x,s.y,R);
+          g.addColorStop(0,'rgba(244,208,130,'+(.5*a).toFixed(3)+')');
+          g.addColorStop(1,'rgba(190,130,40,0)');
+          c.fillStyle=g; c.beginPath(); c.arc(s.x,s.y,R,0,6.283); c.fill();
+        }
+        c.globalAlpha=Math.min(1,a*1.2);
+        c.fillStyle='rgb(255,'+(222+((26*s.life)|0))+',168)';
+        c.beginPath(); c.arc(s.x,s.y,s.r*(.4+.6*s.life),0,6.283); c.fill();
+      }
+      c.globalAlpha=1;
+      c.globalCompositeOperation='source-over';
+    }
+    function renderPixels(){                 // 已燃炭黑 + 火缘焦斑/淡烟（双火线 · 白边）
+      var data=bitData.data;
+      for(var y=0;y<bh;y++){
+        var py=y*scale, row=y*bw;
+        for(var x=0;x<bw;x++){
+          var p=(row+x)*4;
+          var vTop=edgeTop[x]-py;   // >0：在火焰上缘之上（已燃）
+          var vBot=py-edgeBot[x];   // >0：在火焰下缘之下（已燃）
+          if(vTop>=0 || vBot>=0){   // 已燃：拍立得向上下两侧蔓延吞噬
+            var d=Math.min(vTop,vBot);          // 深入已燃区的距离
+            var vn=nArr2[row+x];                // 金脉噪声（黑底流金纹理）
+            var gl=vn>.56?(vn-.56)/.44:0; gl=gl*gl*(3-2*gl);
+            var mt=Math.max(0,1-d/26); mt*=mt;  // 近火缘熔金带
+            var rr=9+gl*118+mt*128, gg=7+gl*82+mt*90, bb=6+gl*30+mt*36;
+            var a=d>30?1:(.6+.4*(d/30));
+            data[p]=rr|0; data[p+1]=gg|0; data[p+2]=bb|0; data[p+3]=(a*255)|0;
+          } else {                 // 未燃：夹在两条火线之间的窄带
+            var dd=Math.min(py-edgeTop[x], edgeBot[x]-py);
+            if(dd<40){
+              var ch=1-dd/40, sp=nArr[row+x];
+              var a=(.4+.6*ch)*(.55+.45*sp);
+              data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a*255)|0;
+            } else if(dd<58){
+              var q=1+(dd-40)/18;
+              data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*60)|0;
+            } else { data[p+3]=0; }
+          }
+        }
+      }
+      bctx.putImageData(bitData,0,0);
+      c.clearRect(0,0,W,H);
+      c.imageSmoothingEnabled=true;
+      c.drawImage(buf,0,0,bw,bh,0,0,W,H);
+      // 熔金流纹：火缘多层金线 + 漂移金带（参考黑金流体质感）
+      c.globalCompositeOperation='lighter';
+      c.lineJoin='round';
+      function strokeEdge(color,w,arr){
+        c.beginPath();
+        for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=arr[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
+        c.strokeStyle=color; c.lineWidth=w; c.stroke();
+      }
+      function strokeFlow(off,color,w,arr){
+        c.beginPath();
+        for(var x3=0;x3<bw;x3+=2){
+          var sx=x3*scale, sy=arr[x3]+off+Math.sin(x3*.085+T*2.2)*5;
+          if(x3===0)c.moveTo(sx,sy); else c.lineTo(sx,sy);
+        }
+        c.strokeStyle=color; c.lineWidth=w; c.stroke();
+      }
+      [edgeTop,edgeBot].forEach(function(arr){
+        strokeFlow(12,'rgba(196,148,70,.20)',9,arr);   // 漂移金带
+        strokeFlow(26,'rgba(168,120,50,.10)',14,arr);  // 远端淡金
+        strokeEdge('rgba(196,150,74,.16)',18,arr);     // 宽金晕
+        strokeEdge('rgba(216,172,92,.40)',8,arr);      // 金边
+        strokeEdge('rgba(242,210,142,.62)',3,arr);     // 香槟金
+        strokeEdge('rgba(255,246,222,.8)',1.2,arr);    // 白热核心
+      });
+      c.globalCompositeOperation='source-over';
+    }
+    function draw(now){
+      var dt=Math.min(50,now-last); last=now;
+      t+=dt/dur; if(t>1) t=1;
+      T+=dt/1000;
+      PY=H*0.46;                                          // 拍立得中心高度（屏幕中部偏上）
+      S_MAX=Math.max(PY+TOP_CLEAR, (H+24)-PY);            // 确保蔓延烧满全屏
+      if(t<SWAP_AT){
+        var u=t/SWAP_AT;
+        var e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;          // ease-in-out
+        S=S_MAX*e;                                        // 自拍立得向上下蔓延
+        computeEdge();
+        renderPixels();
+        spawnFlames(); drawFlames();
+        spawnSparks(); drawSparks();
+        cv.style.opacity=1;
+      } else {
+        if(!swapped){ swapped=true; if(half) half(); }    // 火焰消失后才切到新页
+        var q=(t-SWAP_AT)/(1-SWAP_AT);
+        cv.style.opacity=Math.max(0,1-q);
+        S=S_MAX;                                          // 保持全屏已燃
+        computeEdge();
+        renderPixels();
+        drawFlames(); drawSparks();
+      }
+      if(t>=1){
+        running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
+        flames.length=0; sparks.length=0; swapped=false;
+        if(cb){ var f2=cb; cb=null; f2(); }
+        return;
+      }
+      requestAnimationFrame(draw);
+    }
+    return {
+      available: !!(cv && c),
+      halfAt:function(fn){ half=fn; },
+      run:function(direction, done){
+        if(!this.available){ if(done) done(); return; }
+        cb = done;                                // 保存完成回调：t>=1 时复位 animating
+        t=0; T=0; tAcc=0; last=performance.now();
+        cv.style.opacity=1;
+        flames.length=0; sparks.length=0; swapped=false;
+        if(!running){ running=true; requestAnimationFrame(draw); }
+      }
+    };
+  })();
+
+  function goTo(raw){
+    if(animating) return;
+    var dir = (raw > cur) ? 1 : -1;            // 方向按原始意图（末页→首页仍是向前）
+    var i = ((raw % total) + total) % total;   // 末页下一页→回到第一页，首页上一页→最后一页
+    if(i === cur) return;
+    var prev = cur;
+    if(reduced || !Burn.available){
+      pages[prev].classList.remove('active','exit-left');
+      if(dir < 0) pages[prev].classList.add('exit-left');
+      pages[i].classList.add('active');
+      onLeave(prev); onEnter(i);
+      cur = i; paint();
+      return;
+    }
+    animating = true;
+    Burn.halfAt(function(){
+      pages[prev].classList.remove('active','exit-left');
+      if(dir < 0) pages[prev].classList.add('exit-left');
+      pages[i].classList.add('active');
+      onLeave(prev); onEnter(i);
+      cur = i; paint();
+    });
+    Burn.run(dir, function(){ animating = false; });
+  }
+
+  nextBtn.addEventListener('click', function(){ goTo(cur+1); });
+  prevBtn.addEventListener('click', function(){ goTo(cur-1); });
+
+  document.querySelector('.tap-zone.right').addEventListener('click', function(){ goTo(cur+1); });
+  document.querySelector('.tap-zone.left').addEventListener('click', function(){ goTo(cur-1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') goTo(cur+1);
+    if(e.key === 'ArrowLeft'  || e.key === 'PageUp')  goTo(cur-1);
+  });
+
+  /* 轻量滑动（触屏） */
+  var tx = null;
+  document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if(Math.abs(dx) > 60) goTo(cur + (dx < 0 ? 1 : -1));
+  }, {passive:true});
+
+  paint();
+
+  /* 页面激活联动（病恋须知无拍立得燃烧，留空钩子） */
+  function onEnter(i){}
+  function onLeave(i){}
+
+  /* ═════════ 背景音乐 ═════════ */
+  (function(){
+    var bgm = document.getElementById('bgm');
+    var btn = document.getElementById('bgmToggle');
+    if(!bgm || !btn) return;
+    var started=false, userOff=false;
+    bgm.volume=0.5;
+    function icon(on){ btn.innerHTML = on ? '<span class="wave">♪</span>' : '♪'; btn.classList.toggle('playing', on); btn.setAttribute('aria-pressed', on?'true':'false'); }
+    function tryPlay(){
+      if(userOff) return;
+      bgm.play().then(function(){ started=true; icon(true); }).catch(function(){ /* 等用户手势 */ });
+    }
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){
+      var handler = function(e){
+        if(e.target && e.target.id==='bgmToggle') return;
+        tryPlay();
+        if(started) document.removeEventListener(ev, handler, {passive:true});
+      };
+      document.addEventListener(ev, handler, {passive:true});
+    });
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(bgm.paused){ userOff=false; tryPlay(); }
+      else { bgm.pause(); userOff=true; icon(false); }
+    });
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) bgm.pause();
+      else if(started && !userOff) tryPlay();
+    });
+    icon(false);
+  })();
+})();
+</script>
+</body>
+</html>
