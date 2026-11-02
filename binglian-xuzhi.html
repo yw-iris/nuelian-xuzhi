@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>病恋须知 · 冬因</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mrs+Saint+Delafield&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* —— 灰 · 白 · 金：金极少，只作点缀 —— */
+  --paper:#f2f0ec;          /* 暖灰白 */
+  --paper-2:#e9e6e1;
+  --card:#fbfaf8;
+  --ink:#2b2824;            /* 炭灰（非纯黑，偏弱“灰”感） */
+  --ink-soft:#413b35;
+  --gray-1:#6e6862;
+  --gray-2:#a59e95;
+  --line:#d9d4cd;
+  --hairline:rgba(43,40,36,.16);
+  --track:#dcd7d0;
+  --gold:#a9823c;           /* 金：稀疏点缀 */
+  --gold-soft:#c9a85f;
+  --gold-line:rgba(169,130,60,.55);
+  --serif-en:'Cormorant Garamond','Times New Roman',serif;
+  --serif-cn:'Noto Serif SC','Songti SC',serif;
+  --script:'Mrs Saint Delafield',cursive;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%}
+body{
+  background:var(--paper);color:var(--ink);
+  font-family:var(--serif-cn);
+  -webkit-font-smoothing:antialiased;
+  overflow:hidden;
+  user-select:none;
+}
+/* 纸张颗粒 */
+body::before{
+  content:"";position:fixed;inset:0;z-index:40;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+.app{
+  position:relative;height:100dvh;width:100%;
+  display:flex;flex-direction:column;
+}
+
+/* ————— 顶部 chrome：头像 + 分段进度 ————— */
+.chrome-top{
+  flex:none;z-index:30;
+  display:flex;align-items:center;gap:12px;
+  padding:calc(14px + env(safe-area-inset-top)) clamp(16px,4vw,36px) 10px;
+}
+.avatar{
+  flex:none;width:34px;height:34px;border-radius:50%;
+  background:var(--ink);color:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  font-size:15px;font-weight:700;
+  box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink);
+}
+.handle{font-family:var(--serif-en);font-size:13px;letter-spacing:.14em;font-weight:600}
+.handle span{color:var(--gray-2);font-weight:400;letter-spacing:.1em}
+.progress{
+  flex:1;display:flex;gap:5px;margin-left:8px;max-width:420px;
+}
+.progress button{
+  flex:1;height:3px;border:none;cursor:pointer;
+  background:var(--track);border-radius:2px;
+  transition:background .4s;padding:0;
+}
+.progress button.done{background:var(--ink)}
+.progress button.now{background:var(--gold)}   /* 当前进度用金，稀疏点缀 */
+
+/* ————— 页面层 ————— */
+.pages{position:relative;flex:1;min-height:0;overflow:hidden}
+.page{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:8px clamp(26px,7vw,72px) 16px;
+  opacity:0;visibility:hidden;
+  transform:translateX(6vw);
+  transition:opacity .55s cubic-bezier(.3,.7,.3,1),transform .55s cubic-bezier(.3,.7,.3,1),visibility 0s .55s;
+  pointer-events:none;
+}
+.page.active{
+  opacity:1;visibility:visible;transform:none;
+  transition:opacity .55s cubic-bezier(.3,.7,.3,1),transform .55s cubic-bezier(.3,.7,.3,1);
+  pointer-events:auto;
+}
+.page.exit-left{transform:translateX(-6vw)}
+@media (prefers-reduced-motion:reduce){
+  .page{transition:opacity .2s;transform:none}
+}
+
+/* 页 2·3·4：标题组居上、收束句沉底、中间内容自动铺满整页 */
+.page[aria-label="关于我"],
+.page[aria-label="喜点"],
+.page[aria-label="雷点"]{
+  justify-content:space-between;
+  padding:min(9vh,76px) clamp(26px,7vw,72px) min(6vh,52px);
+}
+.sec-top{position:relative;z-index:1}
+
+/* ————— 文字入场动画：翻到该页时逐个淡入上浮（无模糊） ————— */
+@keyframes txtRise{
+  from{opacity:0;transform:translateY(16px)}
+  to{opacity:1;transform:none}
+}
+@keyframes txtTrack{
+  from{opacity:0;letter-spacing:.42em}
+  to{opacity:1}
+}
+@keyframes sealIn{
+  from{opacity:0;transform:rotate(6deg) translateY(10px)}
+  to{opacity:1;transform:rotate(6deg)}
+}
+.page.active :is(.cover-meta,.name-box,.cover-bar,
+                 .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.finale-hint,
+                 .like,.dislike,.cover-list li){
+  animation:txtRise .62s cubic-bezier(.25,.6,.25,1) backwards;
+}
+.page.active .cover-title{animation:txtTrack .8s cubic-bezier(.22,.6,.25,1) backwards}
+.page.active .seal{animation:sealIn .62s cubic-bezier(.25,.6,.25,1) backwards;animation-delay:.10s}
+.page.active .cover-meta{animation-delay:.14s}
+.page.active .cover-title{animation-delay:.16s}
+.page.active .cover-list li:nth-child(1){animation-delay:.28s}
+.page.active .cover-list li:nth-child(2){animation-delay:.36s}
+.page.active .cover-list li:nth-child(3){animation-delay:.42s}
+.page.active .name-box{animation-delay:.46s}
+.page.active .cover-bar{animation-delay:.55s}
+.page.active .sec-head{animation-delay:.06s}
+.page.active .sec-cap{animation-delay:.16s}
+.page.active .like:nth-child(1){animation-delay:.22s}
+.page.active .like:nth-child(2){animation-delay:.28s}
+.page.active .like:nth-child(3){animation-delay:.34s}
+.page.active .like:nth-child(4){animation-delay:.40s}
+.page.active .like:nth-child(5){animation-delay:.46s}
+.page.active .like:nth-child(6){animation-delay:.52s}
+.page.active .dislike:nth-child(1){animation-delay:.22s}
+.page.active .dislike:nth-child(2){animation-delay:.30s}
+.page.active .dislike:nth-child(3){animation-delay:.38s}
+.page.active .sec-quote{animation-delay:.34s}
+.page.active .sec-foot{animation-delay:.42s}
+.page.active .monologue{animation-delay:.10s}
+.page.active .sig-line{animation-delay:.16s}
+.page.active .finale-hint{animation-delay:.34s}
+@media (prefers-reduced-motion:reduce){
+  .page.active :is(.cover-meta,.cover-title,.name-box,.cover-bar,
+                   .sec-head,.sec-cap,.sec-quote,.sec-foot,.monologue,.sig-line,.finale-hint,.like,.dislike,.cover-list li){
+    animation:none;
+  }
+}
+
+/* 巨型幽灵编号 / 图形 */
+.ghost{
+  position:absolute;z-index:0;pointer-events:none;
+  font-family:var(--serif-en);font-weight:600;font-style:italic;
+  font-size:min(46vmin,340px);line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px rgba(43,40,36,.08);
+  right:2vw;top:50%;transform:translateY(-54%);
+}
+.disc{
+  position:absolute;z-index:0;pointer-events:none;
+  width:min(52vmin,380px);height:min(52vmin,380px);border-radius:50%;
+  background:radial-gradient(circle at 34% 30%,#3a3631,#15120f 70%);
+  right:-14vw;top:-16vh;
+}
+
+/* ————— 页 1 · 封面 ————— */
+.cover-meta{
+  display:flex;justify-content:space-between;
+  font-size:11px;letter-spacing:.32em;color:var(--gray-1);
+  border-bottom:1px solid var(--line);padding-bottom:12px;
+  position:relative;z-index:1;
+}
+.cover-meta .en{font-family:var(--serif-en);font-size:10px;letter-spacing:.26em}
+.seal{
+  position:absolute;right:0;top:52px;z-index:2;
+  width:42px;height:42px;border:1.5px solid var(--gold);   /* 金 · 印章 */
+  display:flex;align-items:center;justify-content:center;
+  font-size:19px;font-weight:700;color:var(--gold);transform:rotate(6deg);
+}
+.page.cover{justify-content:space-between;padding:min(5vh,44px) clamp(26px,7vw,72px) min(4vh,32px)}
+.title-wrap{position:relative;z-index:1}
+.cover-title{
+  font-size:clamp(2.7rem,15.5vmin,5.6rem);
+  font-weight:900;letter-spacing:.05em;text-indent:.05em;
+  line-height:1.05;position:relative;z-index:1;
+}
+.cover-title::after{   /* 极细的金色短下划，稀疏金点 */
+  content:"";position:absolute;left:0;bottom:-12px;
+  width:62px;height:2px;background:var(--gold);
+}
+.halftone{
+  position:absolute;top:-16px;left:-12px;width:118px;height:104px;z-index:0;
+  background-image:radial-gradient(rgba(43,40,36,.55) 1.1px,transparent 1.4px);
+  background-size:7px 7px;
+  -webkit-mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
+  mask-image:radial-gradient(circle at 32% 32%,#000 0%,transparent 72%);
+  opacity:.4;pointer-events:none;
+}
+.cover-left{
+  display:flex;flex-direction:column;align-items:flex-start;
+  gap:min(4.4vh,34px);position:relative;z-index:1;
+}
+.cover-list{list-style:none}
+.cover-list li{
+  position:relative;padding-left:15px;
+  font-size:12.5px;letter-spacing:.2em;line-height:2.7;color:var(--ink);
+}
+.cover-list li::before{
+  content:"";position:absolute;left:0;top:.72em;
+  width:5px;height:5px;background:var(--ink);
+}
+.name-box{
+  flex:none;border:2.5px solid var(--ink);background:rgba(251,250,248,.85);
+  padding:9px 13px;position:relative;z-index:1;
+  font-size:17px;font-weight:900;letter-spacing:.3em;text-indent:.3em;
+  box-shadow:4px 4px 0 rgba(43,40,36,.12);
+}
+.name-box i{font-style:normal;font-size:10px;vertical-align:top;margin-left:2px;letter-spacing:0;text-indent:0}
+.cover-gray{
+  position:absolute;left:5%;right:5%;top:41%;bottom:0;z-index:0;
+  background:linear-gradient(180deg,rgba(43,40,36,0) 0%,rgba(43,40,36,.05) 45%,rgba(43,40,36,.14) 100%);
+  pointer-events:none;
+}
+.cover-bottom{position:relative;z-index:1;text-align:center;padding-bottom:10px}
+.cover-tagline{
+  font-family:var(--serif-en);font-size:10.5px;letter-spacing:.18em;
+  color:var(--gray-1);line-height:1.8;
+}
+.cover-script{
+  position:absolute;left:50%;bottom:48px;transform:translateX(-50%) rotate(-6deg);
+  font-family:var(--script);font-size:clamp(42px,9vmin,60px);line-height:1;
+  color:var(--ink-soft);pointer-events:none;white-space:nowrap;
+}
+.cover-bar{
+  margin-top:36px;background:var(--ink);color:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 14px;font-family:var(--serif-en);font-size:11px;letter-spacing:.22em;
+}
+.cover-bar .ico{font-size:12px}
+
+/* ————— 章节页通用 · 留白海报式 ————— */
+.sec-head{display:block;position:relative;z-index:1}
+.sec-no{display:block;font-family:var(--serif-en);font-weight:600;font-size:11px;letter-spacing:.34em;color:var(--gold);margin-bottom:10px}  /* 金 · 章节序号 */
+.sec-head h2{
+  display:inline-block;font-size:clamp(20px,4.8vmin,27px);font-weight:900;letter-spacing:.1em;
+  border-bottom:2px solid var(--ink);padding-bottom:9px;
+}
+.sec-head h2 em{font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.85em;letter-spacing:.02em;color:var(--gray-1);margin-right:8px}
+.sec-cap{
+  margin-top:10px;font-family:var(--serif-en);font-size:10px;
+  letter-spacing:.34em;color:var(--gray-2);position:relative;z-index:1;
+}
+
+/* 页 2 · 关于我：overline 细线分组块 */
+.facts{
+  margin-top:min(6.5vh,48px);
+  display:grid;grid-template-columns:1fr 1fr;
+  column-gap:min(8vw,56px);row-gap:max(3.5vh,26px);
+  position:relative;z-index:1;
+}
+.fact{border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.fact dt{font-size:10.5px;letter-spacing:.28em;color:var(--gray-1)}
+.fact dd{margin-top:7px;font-size:clamp(14px,3vmin,17px);font-weight:700;letter-spacing:.12em}
+.fact dd.en{font-family:var(--serif-en);font-weight:600;font-size:1.15em}
+
+/* 页 3 · 喜点：双列卡片（灰白为主，金作小序号） */
+.likes{
+  margin-top:min(6.5vh,48px);display:grid;grid-template-columns:1fr 1fr;
+  column-gap:min(7vw,48px);row-gap:max(3.2vh,22px);position:relative;z-index:1;
+}
+.like{
+  position:relative;border-top:2px solid var(--ink);padding:12px 16px 16px;
+  background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35);
+}
+.like .idx{
+  position:absolute;top:-11px;right:14px;
+  font-family:var(--serif-en);font-style:italic;font-size:13px;letter-spacing:.1em;
+  color:var(--gold);                       /* 金 · 极小序号 */
+}
+.like .k{font-size:clamp(15px,3.2vmin,18px);font-weight:900;letter-spacing:.14em}
+.like .c{margin-top:6px;font-size:11px;color:var(--gray-1);letter-spacing:.06em;line-height:1.6}
+
+/* 页 4 · 雷点：左—右—左 交错阶梯 */
+.dislikes{
+  margin-top:min(6.5vh,48px);display:flex;flex-direction:column;
+  gap:max(3.4vh,26px);position:relative;z-index:1;
+}
+.dislike{width:min(50%,560px);border-top:2px solid var(--ink);padding:14px 16px 18px;background:var(--card);border-radius:3px;box-shadow:0 14px 26px -16px rgba(0,0,0,.35)}
+.dislike:nth-child(odd){align-self:flex-start}
+.dislike:nth-child(even){align-self:flex-end}
+.dislike .k{font-size:clamp(14px,3vmin,16px);font-weight:700;letter-spacing:.1em}
+.dislike .c{margin-top:6px;font-size:11.5px;color:var(--gray-1);letter-spacing:.08em}
+
+.sec-foot{
+  position:relative;z-index:1;
+  margin-top:min(5.5vh,38px);
+  font-family:var(--serif-en);font-style:italic;
+  font-size:clamp(12px,2.4vmin,14px);letter-spacing:.14em;
+  text-align:left;color:var(--ink-soft);
+}
+.sec-foot.center{text-align:center}
+.sec-quote{
+  position:relative;z-index:1;
+  margin-top:min(5.5vh,40px);text-align:center;
+  font-family:var(--serif-en);font-style:italic;
+  font-size:clamp(13px,2.8vmin,16px);letter-spacing:.1em;line-height:1.9;
+  color:var(--ink-soft);
+}
+
+/* 页 5 · 独白 */
+.monologue{
+  position:relative;z-index:1;text-align:center;
+  font-size:clamp(13px,3vmin,16px);font-weight:600;
+  letter-spacing:.18em;line-height:2.4;color:var(--ink);
+}
+
+/* 页 6 · 收尾（无光仔照片，放歌词） */
+.finale{align-items:center;text-align:center}
+.finale-lyric{
+  position:relative;z-index:1;
+  font-size:clamp(22px,6.4vmin,40px);font-weight:900;letter-spacing:.22em;
+  line-height:1.7;color:var(--gold);                       /* 金 · 歌词点睛 */
+  text-indent:.22em;
+  text-shadow:0 2px 0 rgba(43,40,36,.06);
+}
+.finale-lyric .sub{display:block;font-family:var(--serif-en);font-style:italic;font-weight:500;font-size:.42em;letter-spacing:.3em;color:var(--gray-1);margin-top:14px}
+.sig-line{
+  margin-top:min(4.5vh,30px);display:flex;align-items:baseline;gap:11px;
+  position:relative;z-index:1;
+}
+.sig-cn{font-size:clamp(19px,4.4vmin,24px);font-weight:900;letter-spacing:.4em}
+.sig-en{font-family:var(--serif-en);font-style:italic;font-size:15px;color:var(--gray-1);letter-spacing:.16em}
+.finale-hint{margin-top:min(2.4vh,16px);font-size:10.5px;letter-spacing:.38em;text-indent:.38em;color:var(--gray-2);position:relative;z-index:1}
+
+/* ————— 底部 chrome ————— */
+.chrome-bottom{
+  flex:none;z-index:30;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px clamp(16px,4vw,36px) calc(14px + env(safe-area-inset-bottom));
+}
+.counter{font-family:var(--serif-en);font-size:12px;letter-spacing:.3em;color:var(--gray-1);min-width:70px}
+.counter b{color:var(--ink);font-weight:600}
+.nav-btns{display:flex;gap:10px}
+.nav-btn{
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid var(--ink);background:var(--paper);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .3s,transform .15s;
+}
+.nav-btn svg{width:16px;height:16px;stroke:var(--ink);transition:stroke .3s}
+.nav-btn:hover{background:var(--ink)}
+.nav-btn:hover svg{stroke:var(--paper)}
+.nav-btn:active{transform:scale(.92)}
+.nav-btn[disabled]{opacity:.25;pointer-events:none}
+.tap-hint{font-size:10px;letter-spacing:.3em;color:var(--gray-2);text-align:center}
+
+/* 点击热区 */
+.tap-zone{position:absolute;top:56px;bottom:64px;z-index:20;cursor:pointer}
+.tap-zone.left{left:0;width:24%}
+.tap-zone.right{right:0;width:38%}
+
+.burn-overlay{
+  position:fixed;inset:0;width:100vw;height:100vh;
+  z-index:60;pointer-events:none;opacity:0;
+  transition:opacity .25s ease;
+}
+
+/* 背景音乐开关 */
+.bgm-toggle{
+  position:fixed;top:calc(env(safe-area-inset-top,0) + 12px);right:14px;
+  width:40px;height:40px;border-radius:50%;
+  border:1px solid rgba(43,40,36,.35);background:rgba(251,250,248,.55);
+  color:var(--ink);font-size:17px;line-height:1;cursor:pointer;
+  z-index:55;display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);transition:transform .2s,background .2s,opacity .4s;
+}
+.bgm-toggle:hover{transform:scale(1.08)}
+.bgm-toggle.off{opacity:.45}
+.bgm-toggle.playing{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bgm-toggle .wave{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+@media (max-width:400px){
+  .handle span{display:none}
+}
+@media (max-height:560px){
+  .disc{display:none}
+  .cover-title{margin-top:min(5vh,32px)}
+}
+
+/* ————— 手机适配（≤480px 竖屏） ————— */
+@media (max-width:480px){
+  .page{ padding:10px 24px 14px; }
+  .chrome-top{ padding:calc(10px + env(safe-area-inset-top)) 16px 8px; gap:9px; }
+  .chrome-bottom{ padding:8px 16px calc(10px + env(safe-area-inset-bottom)); }
+  .avatar{ width:30px; height:30px; font-size:13px; }
+  .handle{ font-size:12px; }
+  .progress{ gap:4px; }
+  .counter{ font-size:11px; min-width:56px; }
+  .nav-btn{ width:38px; height:38px; }
+  .tap-hint{ display:none; }
+
+  .cover-meta{ font-size:10px; letter-spacing:.2em; padding-bottom:10px; }
+  .cover-meta .en{ font-size:9px; letter-spacing:.18em; }
+  .page.cover{ padding:min(4vh,34px) 24px min(3.5vh,28px); }
+  .cover-title{ font-size:clamp(2.5rem,14.5vmin,3.6rem); letter-spacing:.04em; text-indent:.04em; }
+  .halftone{ width:92px; height:82px; top:-12px; left:-8px; }
+  .cover-left{ gap:min(3.4vh,24px); }
+  .cover-list li{ font-size:11px; letter-spacing:.16em; line-height:2.5; }
+  .name-box{ font-size:14px; padding:7px 10px; border-width:2px; box-shadow:3px 3px 0 rgba(43,40,36,.12); }
+  .cover-gray{ left:12px; right:12px; top:44%; }
+  .cover-tagline{ font-size:9.5px; letter-spacing:.14em; }
+  .cover-script{ font-size:40px; bottom:44px; }
+  .cover-bar{ margin-top:30px; font-size:10px; padding:7px 12px; }
+  .ghost{ font-size:min(34vmin,200px); right:-14vw; top:44%; -webkit-text-stroke:1px rgba(43,40,36,.05); }
+
+  .sec-no{ font-size:10px; letter-spacing:.28em; margin-bottom:7px; }
+  .sec-head h2{ font-size:clamp(18px,5.4vmin,22px); padding-bottom:7px; border-bottom-width:1.5px; }
+  .sec-cap{ font-size:9px; letter-spacing:.26em; margin-top:8px; }
+
+  .facts{ margin-top:min(4.5vh,34px); column-gap:24px; row-gap:max(2.6vh,18px); }
+  .fact{ padding:10px 14px 14px; }
+  .fact dt{ font-size:10px; letter-spacing:.22em; }
+  .fact dd{ font-size:14px; margin-top:5px; }
+
+  .likes{ margin-top:min(4.5vh,32px); column-gap:22px; row-gap:max(2.4vh,16px); }
+  .like{ padding:10px 13px 13px; }
+  .like .idx{ top:-9px; right:11px; font-size:11px; }
+  .like .k{ font-size:14px; letter-spacing:.1em; }
+  .like .c{ font-size:10px; margin-top:4px; }
+
+  .dislikes{ margin-top:min(4.5vh,32px); gap:max(2.8vh,18px); }
+  .dislike{ width:64%; padding:10px 14px 14px; }
+  .dislike .k{ font-size:13px; letter-spacing:.08em; }
+  .dislike .c{ font-size:10.5px; margin-top:4px; }
+
+  .sec-foot{ margin-top:min(2.6vh,18px); font-size:12px; letter-spacing:.1em; }
+  .sec-quote{ margin-top:min(3.6vh,26px); font-size:12px; line-height:1.9; }
+  .monologue{ font-size:13px; letter-spacing:.12em; line-height:2.2; max-width:42ch; margin-inline:auto; text-wrap:balance; }
+
+  .finale-lyric{ font-size:clamp(20px,7vmin,30px); letter-spacing:.16em; }
+  .sig-line{ margin-top:min(3.4vh,24px); }
+  .sig-cn{ font-size:20px; letter-spacing:.32em; }
+  .sig-en{ font-size:13px; }
+  .finale-hint{ font-size:9.5px; margin-top:min(2vh,12px); }
+}
+@media (max-width:480px) and (max-height:660px){
+  .page{ padding:6px 24px 10px; }
+  .page.cover{ padding:3vh 24px 2.5vh; }
+  .cover-bar{ margin-top:22px; }
+  .facts,.likes,.dislikes{ margin-top:min(2.6vh,18px); }
+  .fact{ padding:10px 12px 14px; }
+  .like{ padding:9px 12px 12px; }
+  .dislikes{ gap:max(2vh,14px); }
+  .sec-foot,.sec-quote{ margin-top:min(1.8vh,12px); }
+}
+@media (max-width:360px){
+  .page{ padding:8px 18px 10px; }
+  .cover-title{ font-size:clamp(2.2rem,13vmin,3rem); }
+  .cover-tagline{ letter-spacing:.1em; }
+  .like .c{ font-size:9.5px; }
+  .dislike .k{ font-size:12px; }
+  .fact dd{ font-size:13px; }
+  .monologue{ font-size:12px; letter-spacing:.1em; }
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- 顶部：头像 + 快拍式进度 -->
+  <header class="chrome-top">
+    <div class="avatar" aria-hidden="true">冬因</div>
+    <div class="handle">winter.ye <span>· 病恋须知</span></div>
+    <nav class="progress" id="progress" aria-label="页面进度"></nav>
+  </header>
+
+  <main class="pages" id="pages">
+
+    <!-- 1 · 封面 -->
+    <section class="page active cover" aria-label="封面">
+      <div class="cover-meta"><span>B · 须知</span><span class="en">SERIAL — NO.02</span></div>
+      <div class="title-wrap">
+        <div class="halftone" aria-hidden="true"></div>
+        <h1 class="cover-title">病恋须知</h1>
+      </div>
+      <div class="cover-left">
+        <div class="name-box">冬因<i aria-hidden="true">✦</i></div>
+        <ul class="cover-list">
+          <li>反复确认</li>
+          <li>患得患失</li>
+          <li>仍然伸手</li>
+        </ul>
+      </div>
+      <div class="cover-gray" aria-hidden="true"></div>
+      <div class="cover-bottom">
+        <p class="cover-tagline">grey · white · gold —<br>a quieter kind of romance.</p>
+        <p class="cover-script" aria-hidden="true">winter</p>
+        <div class="cover-bar"><span class="ico" aria-hidden="true">☰</span><span class="no">0123&thinsp;▸</span></div>
+      </div>
+    </section>
+
+    <!-- 2 · 关于我 -->
+    <section class="page" aria-label="关于我">
+      <div class="ghost" aria-hidden="true">01</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">01</span><h2><em>Meet</em>关于我</h2></div>
+        <p class="sec-cap">— BASIC PROFILE —</p>
+      </header>
+      <dl class="facts">
+        <div class="fact"><dt>署名</dt><dd>冬因</dd></div>
+        <div class="fact"><dt>属性</dt><dd class="en">T</dd></div>
+        <div class="fact"><dt>性别</dt><dd>女</dd></div>
+        <div class="fact"><dt>人格</dt><dd class="en">INTP</dd></div>
+        <div class="fact"><dt>火象</dt><dd>白羊</dd></div>
+        <div class="fact"><dt>游戏</dt><dd>仅光遇</dd></div>
+      </dl>
+      <p class="sec-foot">知道是相爱</p>
+    </section>
+
+    <!-- 3 · 喜点 -->
+    <section class="page" aria-label="喜点">
+      <div class="ghost" aria-hidden="true">02</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">02</span><h2><em>Like</em>喜点</h2></div>
+        <p class="sec-cap">— WHAT MAKES ME STAY —</p>
+      </header>
+      <div class="likes">
+        <div class="like"><span class="idx">a</span><p class="k">剖析</p><p class="c">把情绪拆开看</p></div>
+        <div class="like"><span class="idx">b</span><p class="k">微擦</p><p class="c">恰到好处的分寸</p></div>
+        <div class="like"><span class="idx">c</span><p class="k">精控</p><p class="c">精准到每个细节</p></div>
+        <div class="like"><span class="idx">d</span><p class="k">白话</p><p class="c">说人话，不绕弯</p></div>
+        <div class="like"><span class="idx">e</span><p class="k">小狗</p><p class="c">听话 · 黏人 · 乖</p></div>
+        <div class="like"><span class="idx">f</span><p class="k">引导</p><p class="c">带着我往前走</p></div>
+      </div>
+      <p class="sec-foot center">你存在的意义只是作为我的镜子</p>
+    </section>
+
+    <!-- 4 · 雷点 -->
+    <section class="page" aria-label="雷点">
+      <div class="ghost" aria-hidden="true">03</div>
+      <header class="sec-top">
+        <div class="sec-head"><span class="sec-no">03</span><h2><em>Dislike</em>雷点</h2></div>
+        <p class="sec-cap">— INSTANT DEAL-BREAKERS —</p>
+      </header>
+      <div class="dislikes">
+        <div class="dislike"><p class="k">高擦</p><p class="c">频繁擦边，尺度失当</p></div>
+        <div class="dislike"><p class="k">dom 逻辑混乱</p><p class="c">当 dom 却没有逻辑</p></div>
+        <div class="dislike"><p class="k">表述不清晰</p><p class="c">说不清楚重点</p></div>
+      </div>
+      <p class="sec-foot center">如果流水有声音<br>你听到的是结束还是开始</p>
+    </section>
+
+    <!-- 5 · 独白 -->
+    <section class="page" aria-label="独白">
+      <div class="monologue">
+        我像生了场病。<br>
+        反复确认你还愿不愿意接住我，<br>
+        明明知道答案，还是一遍遍伸手。<br>
+        不是不信你，是不信自己值得被留下。
+      </div>
+    </section>
+
+    <!-- 6 · 收尾（歌词，无光仔照片） -->
+    <section class="page finale" aria-label="收尾">
+      <p class="finale-lyric">我想被抚摸<span class="sub">I want to be touched, to be loved.</span></p>
+      <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
+      <p class="finale-hint">点 击 左 · 右 翻 页</p>
+    </section>
+
+  </main>
+
+  <!-- 点击热区（左=上一页 / 右=下一页） -->
+  <div class="tap-zone left" aria-hidden="true"></div>
+  <div class="tap-zone right" aria-hidden="true"></div>
+
+  <!-- 底部：计数 + 方向按钮 -->
+  <footer class="chrome-bottom">
+    <div class="counter"><b id="cur">01</b>&nbsp;—&nbsp;06</div>
+    <div class="tap-hint">点 击 左 · 右 翻 页</div>
+    <div class="nav-btns">
+      <button class="nav-btn prev-btn" id="prev" aria-label="上一页">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="nav-btn next-btn" id="next" aria-label="下一页">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </footer>
+
+  <!-- 翻页燃烧过场（自整页底部向上烧） -->
+  <canvas id="burnOver" class="burn-overlay" aria-hidden="true"></canvas>
+
+  <!-- 背景音乐 -->
+  <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
+  <button id="bgmToggle" class="bgm-toggle" aria-label="背景音乐开关" aria-pressed="false" title="背景音乐">♪</button>
+
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ═════════ 翻页引擎 ═════════ */
+  var pages = Array.prototype.slice.call(document.querySelectorAll('.page'));
+  var total = pages.length;
+  var cur = 0, animating = false;
+  var progressEl = document.getElementById('progress');
+  var curEl = document.getElementById('cur');
+  var prevBtn = document.getElementById('prev');
+  var nextBtn = document.getElementById('next');
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  pages.forEach(function(_, i){
+    var b = document.createElement('button');
+    b.setAttribute('aria-label', '第 ' + (i+1) + ' 页');
+    b.addEventListener('click', function(){ if(i !== cur) goTo(i); });
+    progressEl.appendChild(b);
+  });
+  var segs = Array.prototype.slice.call(progressEl.children);
+
+  function paint(){
+    segs.forEach(function(s, i){
+      s.className = i < cur ? 'done' : (i === cur ? 'now' : '');
+    });
+    curEl.textContent = String(cur+1).padStart(2,'0');
+    prevBtn.disabled = false;
+    nextBtn.disabled = false;
+  }
+
+  /* ═════════ 翻页燃烧过场：自整页底部向上烧，更大更慢，火焰消失后内容才浮现 ═════════ */
+  var Burn = (function(){
+    var cv = document.getElementById('burnOver');
+    var c = cv.getContext('2d');
+    var W=0,H=0,dpr=1;
+    var bw=0,bh=0,scale=1,bctx=null,bitData=null,buf=null;
+    var dist=null,nArr=null;
+    var G1=null,G2=null;
+    var sparks=[];
+    var FB=86;                              // 火带宽度（更大）
+    var frontLUT=new Float32Array(256), flickLUT=new Float32Array(256);
+
+    function makeGrid(step){
+      var gw=Math.ceil(W/step)+3, gh=Math.ceil(H/step)+3;
+      var g=new Float32Array(gw*gh);
+      for(var i=0;i<g.length;i++) g[i]=Math.random();
+      return {g:g,gw:gw,gh:gh,step:step};
+    }
+    function sample(G,x,y){
+      var gx=x/G.step, gy=y/G.step;
+      var x0=Math.min(Math.floor(gx),G.gw-2), y0=Math.min(Math.floor(gy),G.gh-2);
+      var fx=gx-x0, fy=gy-y0;
+      var sx=fx*fx*(3-2*fx), sy=fy*fy*(3-2*fy);
+      var a=G.g[y0*G.gw+x0], b=G.g[y0*G.gw+x0+1], cc=G.g[(y0+1)*G.gw+x0], d=G.g[(y0+1)*G.gw+x0+1];
+      return (a+(b-a)*sx)*(1-sy)+(cc+(d-cc)*sx)*sy;
+    }
+    function buildGeometry(){
+      dpr=Math.min(window.devicePixelRatio||1,1.75);
+      W=window.innerWidth; H=window.innerHeight;
+      cv.width=Math.round(W*dpr); cv.height=Math.round(H*dpr);
+      cv.style.width=W+'px'; cv.style.height=H+'px';
+      c.setTransform(dpr,0,0,dpr,0,0);
+      scale=Math.max(1,Math.ceil(Math.max(W,H)/700));
+      bw=Math.ceil(W/scale); bh=Math.ceil(H/scale);
+      buf=document.createElement('canvas'); buf.width=bw; buf.height=bh;
+      bctx=buf.getContext('2d'); bitData=bctx.createImageData(bw,bh);
+      G1=makeGrid(13); G2=makeGrid(5);
+      dist=new Float32Array(bw*bh); nArr=new Float32Array(bw*bh);
+      for(var y=0;y<bh;y++) for(var x=0;x<bw;x++){
+        var px=x*scale, py=y*scale, i=y*bw+x;
+        dist[i]=H-py;                        // 距页底距离：火自整页底部横向一线向上烧
+        var n=.62*sample(G1,px,py)+.38*sample(G2,px,py);
+        nArr[i]=n<0?0:(n>1?1:n);
+      }
+    }
+    window.addEventListener('resize',buildGeometry); buildGeometry();
+
+    var running=false,t=0,dur=3600,last=0,half=null,cb=null,swapped=false;  // dur 更长 = 更慢
+
+    function renderFrame(tt, front){
+      var k,n;
+      for(k=0;k<256;k++){
+        n=k/255;
+        frontLUT[k]=front + n*50 + Math.sin(tt*2.0 + n*6.283)*4.6;
+        flickLUT[k]=.70+.30*Math.sin(tt*9 + n*36 + Math.sin(tt*5+n*20)*2);
+      }
+      var data=bitData.data, i, p;
+      for(i=0;i<bw*bh;i++){
+        p=i*4; var kk=(nArr[i]*255)|0;
+        var v=dist[i]-frontLUT[kk];
+        if(v<0){ data[p]=33; data[p+1]=30; data[p+2]=27; data[p+3]=255; }       // 已燃：炭黑（盖住旧页）
+        else if(v<FB){
+          var h=1-v/FB, f=flickLUT[kk];
+          var r,g,b,a;
+          if(v<FB*0.20){ r=255; g=238; b=196; a=.97*f; }                      // 白金焰心
+          else if(v<FB*0.50){ r=255; g=180+50*h; b=70+70*h; a=(.40+.55*h)*f; } // 金橙
+          else { r=226; g=92+58*h; b=34+40*h; a=(.12+.42*h)*f; }               // 暗红收边
+          data[p]=r; data[p+1]=g; data[p+2]=b; data[p+3]=a*255;
+        } else if(v<FB+26){
+          data[p]=30; data[p+1]=24; data[p+2]=20; data[p+3]=(1-(v-FB)/26)*200;  // 烟熏淡边
+        } else { data[p+3]=0; }
+      }
+      bctx.putImageData(bitData,0,0);
+      c.clearRect(0,0,W,H);
+      c.imageSmoothingEnabled=true;
+      c.drawImage(buf,0,0,bw,bh,0,0,W,H);
+    }
+
+    function spawn(front){
+      for(var s=0;s<30;s++){
+        var x=Math.random()*W, y=front + (Math.random()*FB);
+        var bx=Math.min(bw-1,(x/scale)|0), by=Math.min(bh-1,(y/scale)|0);
+        var i=by*bw+bx;
+        var v=dist[i]-frontLUT[(nArr[i]*255)|0];
+        if(v>=0&&v<FB&&Math.random()<.34&&sparks.length<200){
+          sparks.push({x:x,y:y,vx:(Math.random()-.5)*.6,vy:-(.6+Math.random()*1.8),
+            life:1,decay:.006+Math.random()*.013,r:1+Math.random()*2,ph:Math.random()*6.28});
+        }
+      }
+    }
+    function drawParticles(tt){
+      var i,s;
+      c.globalCompositeOperation='lighter';
+      for(i=sparks.length-1;i>=0;i--){
+        s=sparks[i];
+        s.x+=s.vx+Math.sin(tt*3+s.ph)*.3; s.y+=s.vy; s.vy-=.01; s.life-=s.decay;
+        if(s.life<=0||s.y<-10){ sparks.splice(i,1); continue; }
+        var fl=.55+.45*Math.sin(tt*14+s.ph);
+        c.fillStyle='rgba(235,'+(170+((60*s.life)|0))+',110,'+(s.life*fl).toFixed(3)+')';  // 金橙火星
+        c.beginPath(); c.arc(s.x,s.y,s.r*(.5+.5*s.life),0,6.283); c.fill();
+      }
+      c.globalCompositeOperation='source-over';
+    }
+
+    function draw(now){
+      var dt=now-last; last=now;
+      t+=dt/dur; if(t>1) t=1;
+      var tt=t*6.283;
+      var SWAP_AT=0.82;                       // 火完全烧满整页后才换页
+      if(t<SWAP_AT){
+        var u=t/SWAP_AT;
+        var e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;        // ease-in-out
+        var front=-FB + (H+FB*2)*e;                      // 自页底(-FB)升至顶(H+FB)
+        renderFrame(tt,front);
+        spawn(front);
+        drawParticles(tt);
+        cv.style.opacity=1;
+      } else {
+        if(!swapped){ swapped=true; if(half) half(); }   // 火焰消失后才切到新页
+        var q=(t-SWAP_AT)/(1-SWAP_AT);
+        cv.style.opacity=Math.max(0,1-q);
+        renderFrame(tt,H+FB*2);                          // 维持全屏炭黑，淡出露出新页
+        drawParticles(tt);
+      }
+      if(t>=1){
+        running=false; c.clearRect(0,0,W,H); cv.style.opacity=0;
+        sparks.length=0; swapped=false;
+        if(cb){ var f2=cb; cb=null; f2(); }
+        return;
+      }
+      requestAnimationFrame(draw);
+    }
+
+    return {
+      available: !!(cv && c),
+      halfAt:function(fn){ half=fn; },
+      run:function(direction, done){
+        if(!this.available){ if(done) done(); return; }
+        t=0; last=performance.now();
+        cv.style.opacity=1; sparks.length=0; swapped=false; cb=done||null;
+        if(!running){ running=true; requestAnimationFrame(draw); }
+      }
+    };
+  })();
+
+  function goTo(raw){
+    if(animating) return;
+    var dir = (raw > cur) ? 1 : -1;            // 方向按原始意图（末页→首页仍是向前）
+    var i = ((raw % total) + total) % total;   // 末页下一页→回到第一页，首页上一页→最后一页
+    if(i === cur) return;
+    var prev = cur;
+    if(reduced || !Burn.available){
+      pages[prev].classList.remove('active','exit-left');
+      if(dir < 0) pages[prev].classList.add('exit-left');
+      pages[i].classList.add('active');
+      onLeave(prev); onEnter(i);
+      cur = i; paint();
+      return;
+    }
+    animating = true;
+    Burn.halfAt(function(){
+      pages[prev].classList.remove('active','exit-left');
+      if(dir < 0) pages[prev].classList.add('exit-left');
+      pages[i].classList.add('active');
+      onLeave(prev); onEnter(i);
+      cur = i; paint();
+    });
+    Burn.run(dir, function(){ animating = false; });
+  }
+
+  nextBtn.addEventListener('click', function(){ goTo(cur+1); });
+  prevBtn.addEventListener('click', function(){ goTo(cur-1); });
+
+  document.querySelector('.tap-zone.right').addEventListener('click', function(){ goTo(cur+1); });
+  document.querySelector('.tap-zone.left').addEventListener('click', function(){ goTo(cur-1); });
+
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') goTo(cur+1);
+    if(e.key === 'ArrowLeft'  || e.key === 'PageUp')  goTo(cur-1);
+  });
+
+  /* 轻量滑动（触屏） */
+  var tx = null;
+  document.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, {passive:true});
+  document.addEventListener('touchend', function(e){
+    if(tx === null) return;
+    var dx = e.changedTouches[0].clientX - tx; tx = null;
+    if(Math.abs(dx) > 60) goTo(cur + (dx < 0 ? 1 : -1));
+  }, {passive:true});
+
+  paint();
+
+  /* 页面激活联动（病恋须知无拍立得燃烧，留空钩子） */
+  function onEnter(i){}
+  function onLeave(i){}
+
+  /* ═════════ 背景音乐 ═════════ */
+  (function(){
+    var bgm = document.getElementById('bgm');
+    var btn = document.getElementById('bgmToggle');
+    if(!bgm || !btn) return;
+    var started=false, userOff=false;
+    bgm.volume=0.5;
+    function icon(on){ btn.innerHTML = on ? '<span class="wave">♪</span>' : '♪'; btn.classList.toggle('playing', on); btn.setAttribute('aria-pressed', on?'true':'false'); }
+    function tryPlay(){
+      if(userOff) return;
+      bgm.play().then(function(){ started=true; icon(true); }).catch(function(){ /* 等用户手势 */ });
+    }
+    ['pointerdown','keydown','touchstart'].forEach(function(ev){
+      var handler = function(e){
+        if(e.target && e.target.id==='bgmToggle') return;
+        tryPlay();
+        if(started) document.removeEventListener(ev, handler, {passive:true});
+      };
+      document.addEventListener(ev, handler, {passive:true});
+    });
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(bgm.paused){ userOff=false; tryPlay(); }
+      else { bgm.pause(); userOff=true; icon(false); }
+    });
+    document.addEventListener('visibilitychange', function(){
+      if(document.hidden) bgm.pause();
+      else if(started && !userOff) tryPlay();
+    });
+    icon(false);
+  })();
+})();
+</script>
+</body>
+</html>
