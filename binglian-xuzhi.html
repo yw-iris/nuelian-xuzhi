@@ -660,6 +660,28 @@ body::before{
       g.addColorStop(1,'rgba(200,150,70,0)');
       g2.fillStyle=g; g2.fillRect(0,0,64,64);
     }
+    /* —— 参考图抠出的金流体贴图：火焰形象与原图一模一样 —— */
+    var tex=null, texWins=[];
+    function buildTexWins(){
+      if(!tex||!tex.width) return;
+      var oc=document.createElement('canvas'); oc.width=tex.width; oc.height=tex.height;
+      var o=oc.getContext('2d'); o.drawImage(tex,0,0);
+      var d;
+      try{ d=o.getImageData(0,0,oc.width,oc.height).data; }catch(e){ return; }
+      var W2=oc.width,H2=oc.height,tries=0;
+      while(texWins.length<48 && tries<800){
+        tries++;
+        var s=36+(Math.random()*96|0);
+        var x=(Math.random()*(W2-s))|0, y=(Math.random()*(H2-s))|0;
+        var sum=0,cnt=0;
+        for(var yy=y;yy<y+s;yy+=3)for(var xx=x;xx<x+s;xx+=3){ sum+=d[(yy*W2+xx)*4+3]; cnt++; }
+        if(sum/cnt/255>0.24) texWins.push({x:x,y:y,s:s});   // 只取金色浓的窗口
+      }
+      if(!texWins.length) texWins.push({x:0,y:0,s:Math.min(W2,H2)});
+    }
+    tex=new Image();
+    tex.onload=buildTexWins;
+    tex.src='gold-flame.png';
     function buildGeometry(){
       dpr=Math.min(window.devicePixelRatio||1,1.75);
       W=window.innerWidth; H=window.innerHeight;
@@ -714,9 +736,11 @@ body::before{
           y:ey+(top?-Math.random()*16:Math.random()*16),
           vx:(Math.random()-.5)*.5,
           vy:(top?-1:1)*(.7+Math.random()*1.6),   // 上缘上舔 / 下缘下舔
-          r:15+Math.random()*19,           // 大团熔金火体（黑金流体质感）
+          r:15+Math.random()*19,           // 大团金流体火体
           life:1, decay:.016+Math.random()*.02,
-          ph:Math.random()*6.283
+          ph:Math.random()*6.283,
+          wi:(Math.random()*64)|0,         // 贴图窗口索引（spawn 时 texWins 可能未就绪，绘制时取模）
+          rot:Math.random()*6.283, vr:(Math.random()-.5)*.014
         });
       }
     }
@@ -731,11 +755,21 @@ body::before{
         var fl=.62+.38*Math.sin(T*11+f.ph*3);
         var a=f.life*fl;
         var R=f.r*(1.8-f.life*.5);
-        c.globalAlpha=a;
+        c.globalAlpha=a*.9;
         c.drawImage(spGlow,f.x-R,f.y-R,R*2,R*2);
-        var r2=f.r*(.7+.35*(1-f.life));
-        c.globalAlpha=a;
-        c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
+        var tw=texWins[f.wi%texWins.length];
+        if(tw && tex && tex.complete && tex.width){   // 抠图精灵：金流体本体
+          var R2=R*1.35;
+          c.save(); c.translate(f.x,f.y); c.rotate(f.rot);
+          c.globalAlpha=a;
+          c.drawImage(tex,tw.x,tw.y,tw.s,tw.s,-R2,-R2,R2*2,R2*2);
+          c.restore();
+          f.rot+=f.vr;
+        } else {                                      // 贴图未就绪时的兜底
+          var r2=f.r*(.7+.35*(1-f.life));
+          c.globalAlpha=a;
+          c.drawImage(spCore,f.x-r2,f.y-r2,r2*2,r2*2);
+        }
       }
       c.globalAlpha=1;
       c.globalCompositeOperation='source-over';
