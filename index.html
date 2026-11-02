@@ -9,15 +9,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Mrs+Saint+Delafield&family=Noto+Serif+SC:wght@400;600;700;900&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#f5f5f4;
-  --card:#ffffff;
   --ink:#111111;
-  --ink-soft:#2c2c2c;
+  --paper:#ffffff;
   --gray-1:#6e6e6e;
-  --gray-2:#a3a3a3;
-  --line:#dfe0df;
-  --gold:#b08d3f;
-  --gold-line:rgba(176,141,63,.55);
+  --gray-2:#a5a5a5;
   --serif-en:'Cormorant Garamond','Times New Roman',serif;
   --serif-cn:'Noto Serif SC','Songti SC',serif;
   --script:'Mrs Saint Delafield',cursive;
@@ -29,103 +24,114 @@ body{
   font-family:var(--serif-cn);-webkit-font-smoothing:antialiased;
   overflow:hidden;user-select:none;
 }
+/* 纸张颗粒 */
 body::before{
   content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
 }
-.hub{
+
+.cover-split{
   position:relative;z-index:1;height:100dvh;width:100%;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:calc(28px + env(safe-area-inset-top)) 22px calc(24px + env(safe-area-inset-bottom));
-  text-align:center;
+  display:flex;
 }
-.hub-kicker{
-  font-family:var(--serif-en);font-size:12px;letter-spacing:.42em;
-  color:var(--gray-1);text-transform:uppercase;
+.panel{
+  flex:1;position:relative;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-decoration:none;overflow:hidden;
+  transition:transform .35s cubic-bezier(.2,.6,.2,1),filter .35s;
+  padding:calc(20px + env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom));
 }
-.hub-title{
-  margin-top:14px;font-size:clamp(2.6rem,11vmin,4.6rem);
-  font-weight:900;letter-spacing:.06em;text-indent:.06em;line-height:1.05;
-  position:relative;display:inline-block;
-}
-.hub-title::after{
-  content:"";position:absolute;left:50%;transform:translateX(-50%);bottom:-12px;
-  width:64px;height:2px;background:var(--gold);
-}
-.hub-sub{
-  margin-top:26px;font-family:var(--serif-en);font-style:italic;
-  font-size:clamp(13px,2.6vmin,16px);letter-spacing:.12em;line-height:1.9;
-  color:var(--gray-1);
-}
-.hub-modules{
-  margin-top:min(7vh,56px);width:100%;max-width:560px;
-  display:flex;flex-direction:column;gap:18px;
-}
-.module-card{
-  position:relative;text-decoration:none;color:var(--ink);
-  background:var(--card);border:1.5px solid var(--ink);
-  padding:22px 24px 20px;text-align:left;
-  box-shadow:5px 5px 0 rgba(17,17,17,.10);
-  transition:transform .25s cubic-bezier(.2,.6,.2,1),box-shadow .25s;
-  overflow:hidden;
-}
-.module-card::before{
-  content:"";position:absolute;left:0;top:0;width:100%;height:3px;background:var(--gold);
-}
-.module-card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 rgba(17,17,17,.14)}
-.module-card:active{transform:translate(1px,1px);box-shadow:3px 3px 0 rgba(17,17,17,.12)}
-.m-serial{
+.panel.nue{background:var(--ink);color:var(--paper)}
+.panel.bing{background:var(--paper);color:var(--ink);border-left:2px solid var(--ink)}
+
+.panel .serial{
   font-family:var(--serif-en);font-style:italic;font-weight:500;
-  font-size:14px;letter-spacing:.2em;color:var(--gold);
+  font-size:15px;letter-spacing:.3em;opacity:.7;
 }
-.m-title{
-  margin-top:8px;font-size:clamp(1.5rem,6.4vmin,2.1rem);
-  font-weight:900;letter-spacing:.16em;text-indent:.16em;
+.panel.nue .serial{color:#d8d8d8}
+.panel.bing .serial{color:var(--gray-1)}
+.panel .title{
+  margin-top:14px;
+  font-size:clamp(2.4rem,11vmin,4.4rem);
+  font-weight:900;letter-spacing:.08em;text-indent:.08em;line-height:1.04;
 }
-.m-desc{
-  margin-top:8px;font-family:var(--serif-en);font-size:12px;
-  letter-spacing:.18em;color:var(--gray-1);
+.panel .title .dot{color:var(--gray-2)}
+.panel .sub{
+  margin-top:16px;font-family:var(--serif-en);font-style:italic;
+  font-size:clamp(11px,2.4vmin,14px);letter-spacing:.18em;line-height:1.9;
+  text-align:center;opacity:.78;
 }
-.m-go{
-  position:absolute;right:22px;top:50%;transform:translateY(-50%);
-  font-family:var(--serif-en);font-size:13px;letter-spacing:.2em;
-  color:var(--ink);opacity:.65;transition:opacity .25s,transform .25s;
+.panel .go{
+  margin-top:26px;font-family:var(--serif-en);font-size:12px;letter-spacing:.26em;
+  display:inline-flex;align-items:center;gap:8px;opacity:.85;
+  border:1px solid currentColor;border-radius:20px;padding:7px 16px;
+  transition:opacity .3s,letter-spacing .3s,gap .3s;
 }
-.module-card:hover .m-go{opacity:1;transform:translateY(-50%) translateX(4px)}
-.hub-foot{
-  margin-top:min(6vh,44px);font-size:11px;letter-spacing:.34em;
-  color:var(--gray-2);
+.panel:hover .go{opacity:1;letter-spacing:.34em;gap:12px}
+.panel:active{transform:scale(.985)}
+.panel.nue:hover{filter:brightness(1.12)}
+.panel.bing:hover{filter:opacity(.94)}
+
+/* 封面手写点缀 */
+.panel .script{
+  position:absolute;bottom:7%;left:50%;transform:translateX(-50%) rotate(-5deg);
+  font-family:var(--script);font-size:clamp(38px,8vmin,58px);line-height:1;
+  pointer-events:none;opacity:.5;white-space:nowrap;
 }
-@media (max-width:480px){
-  .hub-modules{gap:14px}
-  .module-card{padding:18px 18px 16px}
-  .m-go{right:16px}
-  .m-desc{font-size:11px}
+.panel.nue .script{color:#cfcfcf}
+.panel.bing .script{color:var(--gray-2)}
+.panel .ghost-no{
+  position:absolute;top:6%;right:8%;
+  font-family:var(--serif-en);font-weight:600;font-style:italic;
+  font-size:min(34vmin,220px);line-height:1;
+  color:transparent;-webkit-text-stroke:1.5px currentColor;opacity:.10;pointer-events:none;
+}
+
+/* 顶部品牌 + 底部提示（不挡点击） */
+.brand{
+  position:fixed;z-index:3;top:calc(env(safe-area-inset-top,0) + 16px);left:50%;
+  transform:translateX(-50%);pointer-events:none;
+  font-family:var(--serif-en);font-size:11px;letter-spacing:.42em;
+  color:var(--gray-1);text-transform:uppercase;mix-blend-mode:difference;
+}
+.foot-hint{
+  position:fixed;z-index:3;bottom:calc(env(safe-area-inset-bottom,0) + 14px);left:50%;
+  transform:translateX(-50%);pointer-events:none;
+  font-size:10.5px;letter-spacing:.34em;color:var(--gray-2);mix-blend-mode:difference;
+}
+
+/* 移动端：竖屏改为上下堆叠（仍是「封面 · 左虐右病」的竖向版） */
+@media (max-width:760px), (max-aspect-ratio:3/4){
+  .cover-split{flex-direction:column}
+  .panel.bing{border-left:none;border-top:2px solid var(--ink)}
+  .panel .script{bottom:auto;top:50%;transform:translate(-50%,-50%) rotate(-5deg)}
+  .panel .ghost-no{top:4%;right:6%;font-size:min(30vmin,180px)}
+  .brand{font-size:10px;letter-spacing:.32em}
 }
 </style>
 </head>
 <body>
-  <main class="hub">
-    <div class="hub-kicker">WINTER.YE · 须知</div>
-    <h1 class="hub-title">两份须知</h1>
-    <p class="hub-sub">两种关系，两种姿态。<br>选一份，翻下去。</p>
+  <div class="brand">WINTER.YE · 须知</div>
 
-    <nav class="hub-modules">
-      <a class="module-card" href="nuelian-xuzhi.html">
-        <span class="m-serial">A</span>
-        <div class="m-title">虐恋须知</div>
-        <div class="m-desc">BLACK &amp; WHITE — 火焰翻页</div>
-        <span class="m-go">翻 开 →</span>
-      </a>
-      <a class="module-card" href="binglian-xuzhi.html">
-        <span class="m-serial">B</span>
-        <div class="m-title">病恋须知</div>
-        <div class="m-desc">GREY · WHITE · BLACK — 金描边</div>
-        <span class="m-go">翻 开 →</span>
-      </a>
-    </nav>
-
-    <p class="hub-foot">点击任意一份 · 进入翻页</p>
+  <main class="cover-split">
+    <a class="panel nue" href="nuelian-xuzhi.html">
+      <span class="ghost-no" aria-hidden="true">A</span>
+      <span class="serial">A</span>
+      <h1 class="title">虐恋须知</h1>
+      <p class="sub">BLACK &amp; WHITE<br>flames turn the page</p>
+      <span class="go">翻 开 →</span>
+      <span class="script" aria-hidden="true">winter</span>
+    </a>
+    <a class="panel bing" href="binglian-xuzhi.html">
+      <span class="ghost-no" aria-hidden="true">B</span>
+      <span class="serial">B</span>
+      <h1 class="title">病恋须知</h1>
+      <p class="sub">SAME INK, QUIETER<br>two sides of me</p>
+      <span class="go">翻 开 →</span>
+      <span class="script" aria-hidden="true">still winter</span>
+    </a>
   </main>
+
+  <div class="foot-hint">点击任意一侧 · 进入翻页</div>
 </body>
 </html>
