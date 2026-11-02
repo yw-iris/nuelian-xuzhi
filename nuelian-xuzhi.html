@@ -416,11 +416,10 @@ body::before{
 .nav-btn:hover{background:var(--ink)}
 
 .burn-overlay{
-  position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);
-  width:min(72vw,360px);aspect-ratio:289/478;
+  position:fixed;inset:0;width:100vw;height:100vh;
   z-index:60;pointer-events:none;opacity:0;
   transition:opacity .25s ease;
-  background:transparent;object-fit:contain;
+  background:#000;object-fit:cover;
 }
 
 /* 背景音乐开关 */
@@ -695,7 +694,7 @@ body::before{
   </footer>
 
   <!-- 翻页燃烧过场（自整页底部向上烧） -->
-  <video id="burnOver" class="burn-overlay" muted playsinline preload="auto" src="burn-final.webm" aria-hidden="true"></video>
+  <video id="burnOver" class="burn-overlay" muted playsinline preload="auto" src="burn-final.mp4" aria-hidden="true"></video>
 
   <!-- 背景音乐（来自网盘视频音频轨） -->
   <audio id="bgm" src="bgm.mp3" loop preload="auto"></audio>
@@ -756,7 +755,7 @@ body::before{
     }
     if(v){ v.addEventListener('ended', function(){ if(raf) finish(); }); }
     return {
-      available: !!(v && v.play && v.canPlayType && v.canPlayType('video/webm; codecs="vp9"')),
+      available: !!(v && v.play && v.canPlayType && v.canPlayType('video/mp4; codecs="avc1.42E01E"')),
       halfAt:function(fn){ half = fn; },
       run:function(direction, doneCb){
         if(!this.available){ if(doneCb) doneCb(); return; }
