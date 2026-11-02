@@ -749,8 +749,8 @@ body::before{
     function tick(){
       if(!v.duration){ raf = requestAnimationFrame(tick); return; }
       var p = v.currentTime / v.duration;
-      if(!firedHalf && p >= .70){ firedHalf = true; if(half) half(); }
-      if(p >= .84){ finish(); return; }
+      if(!firedHalf && p >= .82){ firedHalf = true; if(half) half(); }
+      if(p >= .97){ finish(); return; }
       raf = requestAnimationFrame(tick);
     }
     if(v){ v.addEventListener('ended', function(){ if(raf) finish(); }); }
