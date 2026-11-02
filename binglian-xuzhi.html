@@ -714,7 +714,7 @@ body::before{
     var SWAP_AT=0.8;      // 火焰蔓延烧满整页后再换页
     var TOP_CLEAR=260;    // 上线最终越过屏顶的余量
     var PY=0, S=0, S_MAX=0;            // 拍立得中心高度 + 蔓延半径
-    var edgeTop=null, edgeBot=null;    // 上/下两条火线（拍立得向上下蔓延）
+    var edgeTop, edgeBot;              // 上/下两条火线（buildGeometry 内初始化，勿在此赋 null）
 
     function computeEdge(){
       var x;
