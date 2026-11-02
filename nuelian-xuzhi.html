@@ -433,6 +433,7 @@ body::before{
 }
 .bgm-toggle:hover{transform:scale(1.08)}
 .bgm-toggle.off{opacity:.45}
+html.embedded #bgmToggle{display:none}
 .bgm-toggle.playing{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .bgm-toggle .wave{display:inline-block;animation:pulse 1.2s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
@@ -544,7 +545,7 @@ body::before{
   <header class="chrome-top">
     <a class="avatar" href="index.html" title="返回目录">冬因</a>
     <a class="handle" href="index.html">winter.ye <span>· 虐恋须知</span></a>
-    <a class="switcher" href="binglian-xuzhi.html">病恋 ↗</a>
+    <a class="switcher xbook" data-book="binglian-xuzhi.html" href="binglian-xuzhi.html">病恋 ↗</a>
     <nav class="progress" id="progress" aria-label="页面进度"></nav>
   </header>
 
@@ -670,7 +671,7 @@ body::before{
       </div>
       <div class="sig-line"><span class="sig-cn">冬因</span><span class="sig-en">YE</span></div>
       <p class="burn-hint">点 击 照 片 · 显 现</p>
-      <a class="cross-link" href="binglian-xuzhi.html">病恋须知 ↗</a>
+      <a class="cross-link xbook" data-book="binglian-xuzhi.html" href="binglian-xuzhi.html">病恋须知 ↗</a>
     </section>
 
   </main>
@@ -835,6 +836,33 @@ body::before{
     var bgm = document.getElementById('bgm');
     var btn = document.getElementById('bgmToggle');
     if(!bgm || !btn) return;
+    if(window.self !== window.top){
+      // 嵌入外壳：音乐由父页面常驻控制，本页只转发事件
+      try{ bgm.pause(); bgm.removeAttribute('src'); bgm.load(); }catch(e){}
+      document.documentElement.classList.add('embedded');
+      function __post(m){ try{ parent.postMessage(m,'*'); }catch(e){} }
+      var __links = document.querySelectorAll('a.xbook');
+      for(var __i=0;__i<__links.length;__i++){
+        __links[__i].addEventListener('click', function(e){
+          e.preventDefault();
+          __post({type:'switch', to:this.getAttribute('data-book')});
+        });
+      }
+      ['pointerdown','keydown','touchstart'].forEach(function(ev){
+        document.addEventListener(ev, function(){ __post({type:'bgmPlay'}); }, {passive:true});
+      });
+      btn.addEventListener('click', function(e){ e.stopPropagation(); __post({type:'bgmToggle'}); });
+      window.addEventListener('message', function(e2){
+        var d=e2.data||{};
+        if(d.type==='bgmState'){
+          btn.innerHTML = d.playing?'<span class="wave">♪</span>':'♪';
+          btn.classList.toggle('playing', !!d.playing);
+          btn.setAttribute('aria-pressed', d.playing?'true':'false');
+        }
+      });
+      btn.classList.remove('off');
+      return;
+    }
     var started=false, userOff=false;
     bgm.volume=0.5;
     function icon(on){ btn.innerHTML = on ? '<span class="wave">♪</span>' : '♪'; btn.classList.toggle('playing', on); btn.setAttribute('aria-pressed', on?'true':'false'); }
