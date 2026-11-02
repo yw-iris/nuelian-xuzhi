@@ -749,7 +749,7 @@ body::before{
       G=makeGrid(9);
       nArr=new Float32Array(bw*bh);
       for(var y=0;y<bh;y++) for(var x=0;x<bw;x++) nArr[y*bw+x]=sample(G,x*scale,y*scale);
-      edge=new Float32Array(bw);
+      edgeTop=new Float32Array(bw); edgeBot=new Float32Array(bw);
       rnd1D=new Float32Array(RN);
       for(var y2=0;y2<RN;y2++) rnd1D[y2]=Math.random();
       makeSprites();
@@ -758,17 +758,20 @@ body::before{
 
     var running=false,t=0,T=0,dur=4000,last=0,half=null,cb=null,swapped=false,tAcc=0;
     var SWAP_AT=0.8;      // 火焰蔓延烧满整页后再换页
-    var TOP_CLEAR=260;    // 火线最终越过屏顶的余量
+    var TOP_CLEAR=260;    // 上线最终越过屏顶的余量
+    var PY=0, S=0, S_MAX=0;            // 拍立得中心高度 + 蔓延半径
+    var edgeTop=null, edgeBot=null;    // 上/下两条火线（拍立得向上下蔓延）
 
-    function computeEdge(front){
+    function computeEdge(){
       var x;
       var s1=T*.5, s2=T*1.0+37, s3=T*2.0+81;
       for(x=0;x<bw;x++){
         var px=x*scale;
-        edge[x]=front
-          + (noise1(px/170+s1)-.5)*56      // 大起伏：火缘蜿蜒
-          + (noise1(px/70+s2)-.5)*30       // 中起伏
-          + (noise1(px/26+s3)-.5)*12;      // 细撕边
+        var n=(noise1(px/170+s1)-.5)*56      // 大起伏：火缘蜿蜒
+          + (noise1(px/70+s2)-.5)*30         // 中起伏
+          + (noise1(px/26+s3)-.5)*12;        // 细撕边
+        edgeTop[x]=PY - S + n;   // 上线：自拍立得向上蔓延
+        edgeBot[x]=PY + S + n;   // 下线：自拍立得向下蔓延
       }
     }
     function spawnFlames(){
@@ -777,11 +780,13 @@ body::before{
         if(flames.length>46) break;
         var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
+        var top=Math.random()<.5;
+        var ey=top?edgeTop[bx]:edgeBot[bx];
         flames.push({
           x:x+(Math.random()-.5)*8,
-          y:edge[bx]-Math.random()*16,     // 火缘处
+          y:ey+(top?-Math.random()*16:Math.random()*16),
           vx:(Math.random()-.5)*.5,
-          vy:-(.7+Math.random()*1.6),       // 克制上舔
+          vy:(top?-1:1)*(.7+Math.random()*1.6),   // 上缘上舔 / 下缘下舔
           r:7+Math.random()*9,             // 小火苗
           life:1, decay:.03+Math.random()*.03,
           ph:Math.random()*6.283
@@ -814,8 +819,10 @@ body::before{
         if(sparks.length>70) break;
         var x=Math.random()*W;
         var bx=Math.min(bw-1,(x/scale)|0);
-        sparks.push({x:x,y:edge[bx]+(Math.random()*24-12),
-          vx:(Math.random()-.5)*.8,vy:-(.6+Math.random()*1.6),
+        var top=Math.random()<.5;
+        var ey=top?edgeTop[bx]:edgeBot[bx];
+        sparks.push({x:x,y:ey+(top?-Math.random()*12:Math.random()*12),
+          vx:(Math.random()-.5)*.8,vy:(top?-1:1)*(.6+Math.random()*1.6),
           life:1,decay:.006+Math.random()*.012,
           r:.8+Math.random()*1.8,ph:Math.random()*6.28,big:Math.random()<.1});
       }
@@ -844,50 +851,62 @@ body::before{
       c.globalAlpha=1;
       c.globalCompositeOperation='source-over';
     }
-    function renderPixels(){                 // 已燃炭黑 + 火缘上方焦斑/淡烟 + 金边
+    function renderPixels(){                 // 已燃炭黑 + 火缘焦斑/淡烟 + 金边（双火线）
       var data=bitData.data;
       for(var y=0;y<bh;y++){
         var py=y*scale, row=y*bw;
         for(var x=0;x<bw;x++){
           var p=(row+x)*4;
-          var v=py-edge[x];
-          if(v>=0){ data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=255; }
-          else if(v>-40){
-            var ch=1+v/40, sp=nArr[row+x];
-            var a=(.4+.6*ch)*(.55+.45*sp);
-            data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a*255)|0;
-          } else if(v>-58){
-            var q=1+(v+40)/18;
-            data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*60)|0;
-          } else { data[p+3]=0; }
+          var vTop=edgeTop[x]-py;   // >0：在火焰上缘之上（已燃）
+          var vBot=py-edgeBot[x];   // >0：在火焰下缘之下（已燃）
+          if(vTop>=0 || vBot>=0){   // 已燃：拍立得向上下两侧蔓延吞噬
+            var d=Math.min(vTop,vBot);          // 深入已燃区的距离
+            if(d>30){ data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=255; }
+            else { var a=.6+.4*(d/30); data[p]=9; data[p+1]=7; data[p+2]=6; data[p+3]=(a*255)|0; }
+          } else {                 // 未燃：夹在两条火线之间的窄带
+            var dd=Math.min(py-edgeTop[x], edgeBot[x]-py);
+            if(dd<40){
+              var ch=1-dd/40, sp=nArr[row+x];
+              var a=(.4+.6*ch)*(.55+.45*sp);
+              data[p]=16; data[p+1]=12; data[p+2]=9; data[p+3]=(a*255)|0;
+            } else if(dd<58){
+              var q=1+(dd-40)/18;
+              data[p]=26; data[p+1]=21; data[p+2]=16; data[p+3]=((1-q)*60)|0;
+            } else { data[p+3]=0; }
+          }
         }
       }
       bctx.putImageData(bitData,0,0);
       c.clearRect(0,0,W,H);
       c.imageSmoothingEnabled=true;
       c.drawImage(buf,0,0,bw,bh,0,0,W,H);
-      // 金边：火缘描一条金色发光细线 + 内白热
+      // 金边：两条火线各描金色发光细线 + 内白热
       c.globalCompositeOperation='lighter';
       c.lineJoin='round';
-      function strokeEdge(color,w){
+      function strokeEdge(color,w,arr){
         c.beginPath();
-        for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=edge[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
+        for(var x2=0;x2<bw;x2++){ var sx=x2*scale, sy=arr[x2]; if(x2===0)c.moveTo(sx,sy); else c.lineTo(sx,sy); }
         c.strokeStyle=color; c.lineWidth=w; c.stroke();
       }
-      strokeEdge('rgba(201,160,80,.30)',7);    // 外金晕
-      strokeEdge('rgba(244,206,128,.55)',2.4); // 金边
-      strokeEdge('rgba(255,244,214,.5)',1);    // 内白热
+      strokeEdge('rgba(201,160,80,.30)',7,edgeTop);    // 外金晕（上缘）
+      strokeEdge('rgba(244,206,128,.55)',2.4,edgeTop); // 金边（上缘）
+      strokeEdge('rgba(255,244,214,.5)',1,edgeTop);    // 内白热（上缘）
+      strokeEdge('rgba(201,160,80,.30)',7,edgeBot);    // 外金晕（下缘）
+      strokeEdge('rgba(244,206,128,.55)',2.4,edgeBot); // 金边（下缘）
+      strokeEdge('rgba(255,244,214,.5)',1,edgeBot);    // 内白热（下缘）
       c.globalCompositeOperation='source-over';
     }
     function draw(now){
       var dt=Math.min(50,now-last); last=now;
       t+=dt/dur; if(t>1) t=1;
       T+=dt/1000;
+      PY=H*0.46;                                          // 拍立得中心高度（屏幕中部偏上）
+      S_MAX=Math.max(PY+TOP_CLEAR, (H+24)-PY);            // 确保蔓延烧满全屏
       if(t<SWAP_AT){
         var u=t/SWAP_AT;
         var e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;          // ease-in-out
-        var front=(H+24)+(-(TOP_CLEAR)-H-24)*e;           // 自页底蔓延至越过屏顶
-        computeEdge(front);
+        S=S_MAX*e;                                        // 自拍立得向上下蔓延
+        computeEdge();
         renderPixels();
         spawnFlames(); drawFlames();
         spawnSparks(); drawSparks();
@@ -896,7 +915,8 @@ body::before{
         if(!swapped){ swapped=true; if(half) half(); }    // 火焰消失后才切到新页
         var q=(t-SWAP_AT)/(1-SWAP_AT);
         cv.style.opacity=Math.max(0,1-q);
-        computeEdge(-300);
+        S=S_MAX;                                          // 保持全屏已燃
+        computeEdge();
         renderPixels();
         drawFlames(); drawSparks();
       }
